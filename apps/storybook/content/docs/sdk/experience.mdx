@@ -1,0 +1,193 @@
+---
+title: 组件交互与后端调用
+description: 公开 SDK 统一目录、上传、发送、产物与用量恢复，体验页和自建后端共用接入方式
+---
+
+Web 的组件交互统一消费 `@openagentpack/kit-sdk` 各功能的数据入口和 `/hooks`，
+例如 `/sessions/hooks`、`/files/hooks`、`/chat/hooks` 和 `/usage/hooks`。
+数据 Client 配置在 `apps/web/src/lib/backend.ts`，聊天 Provider 配置在 `chat-backend.ts`；
+Kit Server 是示例后端。外部纯前端项目替换请求与响应映射后使用相同 hooks，无需依赖 Web 源码或部署 Kit Server。
+
+## 接入边界
+
+| 能力 | 公开 SDK | 组件 / 宿主保留 |
+| --- | --- | --- |
+| 会话目录 | `useSessionDirectory`、`useSessionSearch`：分组、最近、分页缓存、防抖取消、重命名、操作计划 | 折叠、滚动触发、行内编辑、路由与选中来源 |
+| 历史附件 | `useSessionDetails` 取消旧查询，并调用已有 `chat.setMessageFiles` | 气泡渲染 |
+| 上传 | `useAttachments`：校验、上传、扫描轮询、取消、失败和暂存 | 文件选择、拖放、粘贴、附件卡片 |
+| 首次发送 | `useComposer`：建会话、标题、附件、单飞，然后调用已有 `chat.send` | 草稿、键盘、技能选择；Promise 成功后才清草稿 |
+| 产物 | `useArtifactActions`：鉴权读取、类型解析、安全预览判断与保存降级 | 注入 `ArtifactHost`，执行开窗、object URL 和实际保存 |
+| 用量 | `useUsageLimits`、`useQuotaRecovery`、`useCreateQuotaRequest` | 展示和表单绑定；后端负责计量与权限 |
+
+这些是前端调用流程封装。鉴权、归属校验、扫描结果、挂载、额度判断和一次性确认令牌仍由后端负责。
+Stream、Request、Chat、审批以及组件已有的输入能力均复用原实现。
+
+## 显式 Client 与可选能力
+
+使用 `createKitClient({ request, operations })`。操作的 `buildRequest` 接收与 Client 方法一致的参数元组；
+`mapResponse` 将后端响应映射成现有 DTO，取消信号通过 `context.signal` 提供。
+HTTP 错误映射配置在 `createRequest({ mapHttpError })`，不会新增另一套请求客户端。
+
+只配置需要的操作，通过 `client.supports("uploadFile")` 等判断并隐藏未支持的入口。
+未配置操作会在本地报错，绝不回退 `/api/kit/*`，也不自动添加 Kit 协议头、重试或超时。
+旧 `createKitClient({ baseUrl })` 和 `KitProvider` 保留兼容；所有本页 hooks 都可以显式接收 `client`。
+新的调用面仍名为 KitClient，但显式模式没有 Kit Server 路由假设。
+
+后端输出 `SessionEvent` 的聊天接入见 [Provider 与自建后端](/docs/sdk/custom-backend)。
+上传返回 `file_id/filename/size`，扫描返回 `status/available`；查询分页返回 `sessions/nextPageToken`。
+删除与归档必须先返回 `plan_id/confirm_token/expires_at/diff`，确认后才调用执行操作。
+
+## 组件绑定示例
+
+下面代码与英文 Skill 从同一 TSX 源生成，不维护第二份实现。
+`client`、`provider` 和 `host` 均由应用初始化并保持稳定。
+
+{/* skill-example: use-kit-chat/examples/experience.tsx */}
+
+```tsx
+import { Attachments, Chat, ConfirmDialog, SessionSidebar } from "@openagentpack/kit-chat-ui";
+import { useAgentCatalog, useAgentResources } from "@openagentpack/kit-sdk/agents/hooks";
+import { useChat, useComposer } from "@openagentpack/kit-sdk/chat/hooks";
+import type { ArtifactHost } from "@openagentpack/kit-sdk/files";
+import { useArtifactActions, useAttachments } from "@openagentpack/kit-sdk/files/hooks";
+import type { ChatProvider } from "@openagentpack/kit-sdk/providers";
+import type { KitClient } from "@openagentpack/kit-sdk/providers/kit";
+import { useSessionDetails, useSessionDirectory, useSessionSearch } from "@openagentpack/kit-sdk/sessions/hooks";
+import { useQuotaRecovery, useUsageLimits } from "@openagentpack/kit-sdk/usage/hooks";
+import { useState } from "react";
+
+// No KitProvider is required. Keep client/provider/host stable outside this component.
+export function Experience({
+	client,
+	provider,
+	host,
+	agentSlug,
+}: {
+	client: KitClient;
+	provider: ChatProvider;
+	host: ArtifactHost;
+	agentSlug: string;
+}) {
+	const [sessionId, setSessionId] = useState<string | null>(null);
+	const [keyword, setKeyword] = useState("");
+	const chat = useChat({ sessionId, provider });
+	const directory = useSessionDirectory({
+		client,
+		onExecuted: (id) => {
+			if (id === sessionId) setSessionId(null);
+		},
+	});
+	const search = useSessionSearch(keyword, { client });
+	const details = useSessionDetails({ client, sessionId, setMessageFiles: chat.setMessageFiles });
+	const attachments = useAttachments({ client });
+	const composer = useComposer({
+		client,
+		agentSlug,
+		sessionId,
+		files: attachments.files,
+		send: chat.send,
+		onSessionCreated: setSessionId,
+		onAccepted: attachments.consume,
+	});
+	const artifacts = useArtifactActions({ client, host, sessionId: sessionId ?? undefined, artifacts: chat.artifacts });
+	const recovery = useQuotaRecovery({ client });
+	const { agents } = useAgentCatalog({ client });
+	const resources = useAgentResources(agentSlug, { client });
+	const limits = useUsageLimits({ client });
+	const pending = directory.actions.pending;
+	return (
+		<main>
+			<p>
+				{agents.length} agents, {resources?.skills?.length ?? 0} skills
+			</p>
+			<SessionSidebar
+				activeId={sessionId}
+				groups={directory.groups.map((group) => ({
+					...group,
+					id: group.slug,
+					name: group.slug,
+					onLoad: group.load,
+					onLoadMore: group.loadMore,
+					onRetry: group.retry,
+				}))}
+				recent={{ ...directory.recent, onLoadMore: directory.recent.loadMore }}
+				searchInput={keyword}
+				onSearchInput={setKeyword}
+				search={keyword ? { ...search, onLoadMore: search.loadMore, onRetry: search.retry } : undefined}
+				onSelect={(session) => setSessionId(session.session_id)}
+			/>
+			{details.error && <p role="alert">{details.error}</p>}
+			{client.supports("uploadFile") && client.supports("fileStatus") && (
+				<Attachments
+					items={attachments.files.map((file) => ({
+						uid: file.file_id,
+						name: file.filename,
+						status: file.available ? "done" : "uploading",
+					}))}
+					onSelectFiles={(files) => void attachments.upload(files)}
+					onRemove={(file) => attachments.remove(file.uid)}
+				/>
+			)}
+			<Chat
+				messages={chat.messages}
+				canSend={(!sessionId || chat.canSend) && !attachments.processing && !composer.pending}
+				onSend={composer.send}
+				onStop={chat.stop}
+				onArtifactOpen={(id, type) => void artifacts.open(id, type).catch(() => undefined)}
+				onArtifactDownload={(id) => void artifacts.download(id).catch(() => undefined)}
+			/>
+			{composer.error ? <p role="alert">Sending failed; the draft and attachments are retained.</p> : null}
+			{limits.error && <p role="alert">{limits.error}</p>}
+			<button type="button" disabled={recovery.loading} onClick={() => void recovery.recheck()}>
+				Recheck server limits
+			</button>
+			{sessionId && client.supports("sessionPlan") && client.supports("deleteSession") && (
+				<button type="button" onClick={() => void directory.actions.request(sessionId, "delete")}>
+					Prepare deletion
+				</button>
+			)}
+			{pending && (
+				<ConfirmDialog
+					title="Confirm session change"
+					busy={directory.actions.busy}
+					body={pending.error ?? JSON.stringify(pending.plan?.diff ?? [])}
+					onCancel={directory.actions.cancel}
+					onConfirm={() => void directory.actions.confirm()}
+				/>
+			)}
+		</main>
+	);
+}
+```
+
+{/* /skill-example */}
+
+发送失败会拒绝 Promise，组件保留草稿；SDK 仅在成功后向 `onAccepted` 返回本次文件 ID。
+首次创建后绑定返回的会话 ID 会继续完成发送；用户切换到其他会话或智能体时取消旧流程，
+迟到的创建结果不再触发导航或发送。
+扫描未就绪或超时应禁用发送，后端仍需再次校验。只有服务端明确返回附件未就绪的可重试冲突，
+建会话才有限重试；已经发送的消息不会自动重发。
+
+`useSessionDetails` 按 `client/sessionId` 管理请求生命周期。`setMessageFiles` 可以使用内联回调，
+回调更新不会重新请求详情，当前请求完成时使用最新回调；切换目标会取消旧请求并忽略迟到结果。
+
+`directory.actions.request` 只读取计划，`confirm` 才执行；失败后的再次确认先获取新计划，用户需再次确认。
+使用 `ConfirmDialog`（AlertDialog 语义）展示计划，不能跳过确认。`useQuotaRecovery.recheck()`
+仅在所有启用指标由新响应确认可用时返回 true；网络错误、未知状态或 null 均不能解除发送禁用。
+
+## 身份与宿主
+
+`createMemberAuthController` 同时接收 `createClient(request)` 与 `createChatProvider(request)`，
+为同一身份创建固定 token 的实例，退出、401 和切换身份会取消旧请求及响应正文。
+`createMemberSessionStorage(baseUrl, getStorage)` 是可注入的公开存储适配器；完整服务地址隔离登录态。
+浏览器可传 `() => window.sessionStorage`，其他宿主提供同形的 `getItem/setItem/removeItem`。
+Host 只包含文件与剪贴板等交互能力，不保存 token、身份或服务地址。
+
+跨域文件下载若通过响应头提供文件名，需要后端暴露 `Content-Disposition`（CORS
+`Access-Control-Expose-Headers`）；否则传入已有产物列表的 `filename` 作为文件名来源。
+
+`createSessionDirectory`、`createSessionDetails` 从 `/sessions` 导入；`createAttachments`、
+`createArtifactActions` 从 `/files` 导入；`createComposer` 从 `/chat` 导入；`createQuotaRecovery`
+从 `/usage` 导入。上述路径均以 `@openagentpack/kit-sdk` 为前缀，可供非 React 项目使用；
+订阅快照并在卸载时 `dispose()`。对应 hooks 从各功能的 `/hooks` 子入口导入。
+这些控制器不访问 `window/document`，实际文件交互适配保留在宿主。

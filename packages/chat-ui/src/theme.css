@@ -1,0 +1,323 @@
+/* 冻结设计 token：业务代码不得新增颜色/间距/圆角/阴影常量（AGENTS.md UI 规范）。 */
+:root {
+	--kit-bg: #ffffff;
+	--kit-bg-subtle: #f6f7fb;
+	--kit-fg: #101322;
+	--kit-fg-muted: #5b6478;
+	--kit-border: #e3e6ef;
+	--kit-accent: #4f46e5;
+	--kit-accent-fg: #ffffff;
+	--kit-user-bubble: #eef0ff;
+	--kit-assistant-bubble: #f6f7fb;
+	/* 管理端用量统计卡底色（产品指定）；console 不启用暗色主题，仅提供亮色值。 */
+	--kit-stat-tint: #e3f1ff;
+	--kit-stat-subtle: #e5ebf5;
+	/* 每日用量热力色阶的满档蓝（0 档用 --kit-border，1/2 档用该色低透明度）。 */
+	--kit-heat: #2563eb;
+	--kit-danger: #dc2626;
+	--kit-success: #059669;
+	--kit-radius: 14px;
+	--kit-radius-sm: 9px;
+	--kit-radius-composer: 24px;
+	--kit-composer-pane-max-height: 160px;
+	--kit-space-1: 4px;
+	--kit-space-2: 8px;
+	--kit-space-3: 12px;
+	--kit-space-4: 16px;
+	--kit-space-6: 24px;
+	--kit-shadow: 0 8px 28px rgb(16 19 34 / 8%);
+	/* 语义补充：默认沿用既有外观，员工端可单独覆盖。 */
+	--kit-surface: var(--kit-bg);
+	--kit-nav-active: var(--kit-user-bubble);
+	--kit-border-subtle: var(--kit-border);
+	--kit-focus: var(--kit-accent);
+	--kit-overlay: rgb(0 0 0 / 40%);
+	--kit-danger-fg: #ffffff;
+	--kit-warning: #f59e0b;
+	--kit-warning-fg: #b45309;
+	--kit-radius-xs: 3px;
+	/* 技能 chip 拍板形状（ADR-0016）：矩形小圆角，不随主题微调。 */
+	--kit-radius-chip: 6px;
+	/* 技能 chip 拍板色板（chip C 靛蓝 tint）：不随主题 accent 变灰，workspace 下仍按拍板出靛蓝。 */
+	--kit-skill-chip-bg: #eef2ff;
+	--kit-skill-chip-fg: #3730a3;
+	--kit-radius-icon-sm: 10px;
+	--kit-radius-icon: 12px;
+	--kit-text-meta: 11px;
+	--kit-text-caption: 12px;
+	--kit-text-label: 13px;
+	--kit-text-base: 14px;
+	--kit-text-body: 15px;
+	--kit-text-heading: 16px;
+	--kit-text-title: 17px;
+	--kit-text-display: 28px;
+	--kit-text-prose-title: 24px;
+	--kit-text-prose-heading: 20px;
+	--kit-text-prose-subheading: 18px;
+	--kit-code-keyword: #7355a8;
+	--kit-code-string: #217250;
+	--kit-code-number: #99602e;
+	--kit-leading-body: 1.625;
+	--kit-chat-width: 48rem;
+	/* 滚动区边缘淡出层的最大模糊半径；配合 mask 渐变实现由清晰到模糊的渐进过渡。 */
+	--kit-blur-overlay: 8px;
+	/* 骨架屏占位：消息块底色、助手卡面、卡内文字条与扫光高光；暗色在主题段覆盖。 */
+	--kit-skeleton: #ececec;
+	--kit-skeleton-card: #f7f7f7;
+	--kit-skeleton-bar: #e4e4e4;
+	--kit-skeleton-sheen: rgb(255 255 255 / 70%);
+	/* 资源面板宽度（标准档）：大屏 25rem，笔记本随视口收缩，下限 15rem；面板内容按可读下限截断。 */
+	--kit-aside-width: clamp(15rem, 22vw, 25rem);
+	/* 子 Agent 卡展开体的最大高度，超出内部滚动。 */
+	--kit-sub-agent-body-height: 26rem;
+}
+[data-kit-theme="dark"] {
+	--kit-code-keyword: #bba2ee;
+	--kit-code-string: #8bc4a3;
+	--kit-code-number: #e1b17a;
+	--kit-surface: var(--kit-bg);
+	--kit-nav-active: var(--kit-user-bubble);
+	--kit-border-subtle: var(--kit-border);
+	--kit-focus: var(--kit-accent);
+	--kit-bg: #0b0e1a;
+	--kit-bg-subtle: #141a2e;
+	--kit-fg: #e8ecf8;
+	--kit-fg-muted: #98a2bd;
+	--kit-border: #232b45;
+	--kit-accent: #818cf8;
+	--kit-accent-fg: #0b0e1a;
+	--kit-heat: #60a5fa;
+	--kit-user-bubble: #1d2440;
+	--kit-assistant-bubble: #141a2e;
+	--kit-skeleton: #1a2136;
+	--kit-skeleton-card: #141a2e;
+	--kit-skeleton-bar: #232b45;
+	--kit-skeleton-sheen: rgb(255 255 255 / 8%);
+	--kit-shadow: 0 8px 28px rgb(0 0 0 / 45%);
+	--kit-warning-fg: #fcd34d;
+	/* 技能 chip 拍板色板的暗色对应值。 */
+	--kit-skill-chip-bg: rgb(129 140 248 / 14%);
+	--kit-skill-chip-fg: #a5b4fc;
+}
+
+/* 员工端视觉基础：由 apps/web 的 html 显式启用，不改变管理端与默认组件预览。
+   2026-11-02 定稿黑白灰：内容区与右侧面板纯白，灰面只留给左侧栏，强调色近黑。 */
+[data-kit-appearance="workspace"] {
+	--kit-bg: #ffffff;
+	--kit-bg-subtle: #f7f7f7;
+	--kit-surface: #ffffff;
+	--kit-fg: #171717;
+	--kit-fg-muted: #737373;
+	--kit-border: #e5e5e5;
+	--kit-border-subtle: #ececec;
+	--kit-accent: #171717;
+	--kit-accent-fg: #ffffff;
+	--kit-focus: #737373;
+	--kit-nav-active: #ececec;
+	--kit-user-bubble: #efefef;
+	--kit-assistant-bubble: #f7f7f7;
+	--kit-danger: #ad372f;
+	--kit-danger-fg: #ffffff;
+	--kit-success: #217250;
+	--kit-warning: #b58025;
+	--kit-warning-fg: #805917;
+	--kit-overlay: rgb(23 23 23 / 32%);
+	--kit-radius: 16px;
+	--kit-radius-sm: 10px;
+	--kit-radius-xs: 4px;
+	/* 技能 chip 拍板色板：员工端黑白灰基调下仍按拍板出靛蓝。 */
+	--kit-skill-chip-bg: #eef2ff;
+	--kit-skill-chip-fg: #3730a3;
+	--kit-radius-icon-sm: 10px;
+	--kit-radius-icon: 12px;
+	--kit-shadow: 0 4px 20px rgb(23 23 23 / 6%), 0 1px 4px rgb(23 23 23 / 4%);
+	--kit-text-meta: 12px;
+	--kit-text-title: 20px;
+	--kit-leading-body: 1.7;
+}
+[data-kit-appearance="workspace"][data-kit-theme="dark"],
+[data-kit-theme="dark"] [data-kit-appearance="workspace"],
+[data-kit-appearance="workspace"] [data-kit-theme="dark"] {
+	--kit-bg: #1a1a1a;
+	--kit-bg-subtle: #242424;
+	--kit-surface: #2b2b2b;
+	--kit-fg: #ededed;
+	--kit-fg-muted: #a3a3a3;
+	--kit-border: #404040;
+	--kit-border-subtle: #333333;
+	--kit-accent: #e5e5e5;
+	--kit-accent-fg: #1a1a1a;
+	--kit-focus: #c4c4c4;
+	--kit-heat: #60a5fa;
+	--kit-nav-active: #383838;
+	--kit-user-bubble: #383838;
+	--kit-assistant-bubble: #292929;
+	--kit-skeleton: #303030;
+	--kit-skeleton-card: #292929;
+	--kit-skeleton-bar: #3d3d3d;
+	--kit-skeleton-sheen: rgb(255 255 255 / 8%);
+	--kit-danger: #fa9489;
+	--kit-danger-fg: #1a1a1a;
+	--kit-success: #7cc5a2;
+	--kit-warning: #d6aa5c;
+	--kit-warning-fg: #e2bb71;
+	--kit-overlay: rgb(0 0 0 / 55%);
+	--kit-shadow: 0 4px 20px rgb(0 0 0 / 16%), 0 1px 4px rgb(0 0 0 / 12%);
+	/* 技能 chip 拍板色板的暗色对应值（workspace 暗色）。 */
+	--kit-skill-chip-bg: rgb(129 140 248 / 14%);
+	--kit-skill-chip-fg: #a5b4fc;
+}
+
+/* 动效 token：组件状态变化必须有过渡（AGENTS.md UI 规范），时长/缓动/keyframes 冻结在此，
+   并在 prefers-reduced-motion 下整体降级为无动画。 */
+:root {
+	--kit-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+	--kit-duration-fast: 160ms;
+	--kit-duration-base: 240ms;
+	--kit-animate-in: kit-fade-up var(--kit-duration-base) var(--kit-ease-out) both;
+	--kit-animate-overlay-in: kit-fade-in var(--kit-duration-fast) ease-out both;
+	--kit-animate-overlay-out: kit-fade-out var(--kit-duration-fast) ease-in both;
+	--kit-animate-dialog-in: kit-dialog-in var(--kit-duration-base) var(--kit-ease-out) both;
+	--kit-animate-dialog-out: kit-dialog-out var(--kit-duration-fast) ease-in both;
+	--kit-animate-panel-in: kit-panel-in var(--kit-duration-base) var(--kit-ease-out) both;
+	--kit-animate-expand: kit-expand var(--kit-duration-fast) var(--kit-ease-out) both;
+	--kit-animate-skeleton: kit-skeleton-sweep var(--kit-skeleton-period) linear infinite;
+	/* 骨架屏扫光周期：比常规过渡长，扫光是持续状态不是完成反馈。 */
+	--kit-skeleton-period: 1.4s;
+	/* 执行中流光周期：高亮带只在周期约四分之一时段划过，需要比骨架屏更慢才不显急促。 */
+	--kit-shimmer-period: 2.4s;
+	/* 允许 size 关键字参与过渡：启用 .kit-collapse 的 details 高度动画（Chromium 渐进增强）。 */
+	interpolate-size: allow-keywords;
+}
+
+@keyframes kit-fade-up {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+@keyframes kit-fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+@keyframes kit-fade-out {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+@keyframes kit-dialog-in {
+	from {
+		opacity: 0;
+		transform: translateY(10px) scale(0.97);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+@keyframes kit-dialog-out {
+	from {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: translateY(6px) scale(0.98);
+	}
+}
+@keyframes kit-panel-in {
+	from {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+@keyframes kit-expand {
+	from {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+@keyframes kit-skeleton-sweep {
+	to {
+		translate: 100% 0;
+	}
+}
+@keyframes kit-shimmer-slide {
+	from {
+		background-position: 200% 50%;
+	}
+	to {
+		background-position: -200% 50%;
+	}
+}
+
+/* 原生 <details> 高度过渡基类：给 details 加 .kit-collapse；不支持 ::details-content 的
+   浏览器忽略本规则，保持瞬时开合。 */
+.kit-collapse::details-content {
+	block-size: 0;
+	overflow-y: clip;
+	transition:
+		content-visibility var(--kit-duration-fast) allow-discrete,
+		block-size var(--kit-duration-fast) var(--kit-ease-out);
+}
+.kit-collapse[open]::details-content {
+	block-size: auto;
+}
+
+/* 执行中标题流光：文字渐变扫光，与骨架屏扫光同语义（进行中状态，周期复用）；
+   只包纯文本子元素使用，避免 background-clip: text 遇到透明度动画子元素的渲染分歧。 */
+.kit-shimmer-text {
+	background-image: linear-gradient(
+		110deg,
+		var(--kit-fg-muted) 0%,
+		var(--kit-fg-muted) 42%,
+		var(--kit-fg) 50%,
+		var(--kit-fg-muted) 58%,
+		var(--kit-fg-muted) 100%
+	);
+	background-size: 200% 100%;
+	background-clip: text;
+	-webkit-background-clip: text;
+	color: transparent;
+	animation: kit-shimmer-slide var(--kit-shimmer-period) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--kit-animate-in: none;
+		--kit-animate-overlay-in: none;
+		--kit-animate-overlay-out: none;
+		--kit-animate-dialog-in: none;
+		--kit-animate-dialog-out: none;
+		--kit-animate-panel-in: none;
+		--kit-animate-expand: none;
+		--kit-animate-skeleton: none;
+	}
+	.kit-collapse::details-content {
+		transition: none;
+	}
+	.kit-shimmer-text {
+		animation: none;
+		background-image: none;
+		color: inherit;
+	}
+}

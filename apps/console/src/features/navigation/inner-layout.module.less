@@ -1,0 +1,110 @@
+// 内容区页头样式：规格迁移自 bailian-web packages/bfal-components/src/components/InnerLayout/styles.ts
+// （antd-style 重写为本仓 CSS Modules；左右留白由外壳 contentInner 与 Card 提供，组件自身不加 padding）。
+// 颜色一律消费 var(--ant-*)；断点 768px 与 kit-sdk/adapters/react useIsMobile 同口径。
+
+.layout {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	min-height: 44px;
+	column-gap: 8px;
+}
+
+.left {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+}
+
+/* 箭头与标题同处一行内对齐（上游 title-row 结构）：有描述行时箭头仍与标题垂直居中 */
+.titleRow {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
+}
+
+.backIcon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	border: none;
+	background: none;
+	cursor: pointer;
+	font-size: 16px;
+	color: var(--ant-color-text);
+	flex-shrink: 0;
+}
+
+.titleHeader {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	gap: 4px;
+	flex: 1;
+	min-width: 0;
+}
+
+.title {
+	min-width: 0;
+	overflow: hidden;
+	margin: 0;
+	font-size: 16px;
+	line-height: 22px;
+	font-weight: 500;
+	color: var(--ant-color-text);
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+/* 上游描述行自身带 margin-bottom 16，此处间距交给宿主布局（pageRoot gap 16），避免双重间距 */
+.description {
+	min-width: 0;
+	overflow: hidden;
+	margin: 0;
+	font-size: 14px;
+	line-height: 22px;
+	color: var(--ant-color-text-tertiary);
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.right {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+	min-width: 0;
+	gap: 8px;
+	/* 按钮多时（如详情页版本管理/编辑/应用）窄屏换行且保持靠右，不溢出 header */
+	flex-wrap: wrap;
+	justify-content: flex-end;
+}
+
+@media (min-width: 768px) {
+	.header {
+		min-height: 64px;
+		column-gap: 40px;
+	}
+
+	.backIcon {
+		/* 上游 back-icon 容器 28px，但其图标库 svg 自带留白，视觉箭头仅约标题高的 2/3；
+		   LeftOutlined 满格渲染，需缩小字号才能视觉对齐（满格 28px 会又大又贴字） */
+		font-size: 20px;
+	}
+
+	.title {
+		font-size: 28px;
+		line-height: 40px;
+	}
+
+	.right {
+		gap: 12px;
+	}
+}

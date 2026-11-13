@@ -1,0 +1,84 @@
+// 根级页面聚合样式（CSS Modules / Less）：启动引导、页脚、评测页共用。
+// 颜色一律消费 --ant-* / --kit-* 变量，不写死色值。
+
+/* ============ 启动引导（main.tsx） ============ */
+
+.bootstrapMain {
+	padding: 24px;
+}
+
+/* ============ 通用 meta 文本（eval-page.tsx 等） ============ */
+
+.monoMeta {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 12px;
+}
+
+.metaText {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 页脚说明 */
+.pageFootnote {
+	margin-top: 24px;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* ============ 评测页（eval-page.tsx） ============ */
+
+.evalRoot {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.evalPanel {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	background: var(--kit-bg-subtle);
+	padding: 16px;
+}
+
+.evalControls {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+}
+
+.workspaceSelect {
+	width: 320px;
+}
+
+.passRate {
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.tabularNum {
+	font-variant-numeric: tabular-nums;
+}
+
+.runsTitle {
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.runsSection {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.reportFrame {
+	width: 100%;
+	height: 70vh;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	background: #fff;
+}

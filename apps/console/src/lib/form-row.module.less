@@ -1,0 +1,32 @@
+// 横排表单行样式（CSS Modules / Less）：label 固定 96px 左列、控件占满剩余宽度，
+// 窄屏回落为上下两行；断点 sm 640px。form-row.ts 转发这里的类名给各表单组件。
+
+.row {
+	display: grid;
+	align-items: start;
+	gap: 4px;
+}
+
+.label {
+	font-size: 13px;
+}
+
+/* 无标题的行内块缩进到控件列起点（96px 列宽 + 12px 列距） */
+.indent {
+	min-width: 0;
+}
+
+@media (min-width: 640px) {
+	.row {
+		grid-template-columns: 96px minmax(0, 1fr);
+		column-gap: 12px;
+	}
+
+	.label {
+		padding-top: 6px;
+	}
+
+	.indent {
+		margin-left: 108px;
+	}
+}

@@ -1,0 +1,16 @@
+{
+  "title": "SDK",
+  "pages": [
+    "index",
+    "stream",
+    "request",
+    "state",
+    "custom-backend",
+    "use-chat",
+    "client",
+    "experience",
+    "use-sessions",
+    "tool-approvals",
+    "discovery-usage"
+  ]
+}

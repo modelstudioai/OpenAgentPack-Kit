@@ -1,0 +1,28 @@
+OpenAgentPack Kit (OpenAgentPack-Kit)
+Copyright 2026 The OpenAgentPack Kit Authors
+
+This product includes software developed at
+Model Studio AI (https://github.com/modelstudioai).
+
+---------------------------------------------------------------------
+Third-party notices
+---------------------------------------------------------------------
+
+This product depends on the OpenAgentPack SDK (@openagentpack/sdk),
+which is licensed under the Apache License, Version 2.0.
+Copyright The OpenAgentPack Authors.
+https://github.com/modelstudioai/OpenAgentPack
+
+The canonical session-event contract used by this project is the
+`SessionEvent` type published by @openagentpack/sdk. This project does
+not fork or re-implement that contract; it consumes it via the SDK's
+browser-safe `./session-events` subpath and re-exports the types.
+
+Documentation and developer-experience structure draw inspiration from
+the AI SDK documentation site (https://ai-sdk.dev, Apache-2.0), and the
+copy-in component registry model draws inspiration from AI Elements
+(https://elements.ai-sdk.dev, Apache-2.0). No source code from either
+project is included in this repository.
+
+All other third-party dependencies are listed in the root and per-package
+`package.json` files and remain under their own licenses.

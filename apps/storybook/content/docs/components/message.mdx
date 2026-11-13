@@ -1,0 +1,151 @@
+---
+title: 富内容分片
+description: 思考过程、工具卡、交付文件与 Markdown 在消息中的组合预览
+---
+
+一条 Agent 消息由 `MessagePart` 分片组成：思考与工具折成可折叠的执行过程，交付文件渲染为
+文件卡，正文按 Markdown 排版。分片模型与整条消息的接口见
+[Message](/docs/components/general/message#chatmessage)。
+
+```tsx
+import { Message } from "@openagentpack/kit-chat-ui";
+```
+
+使用 copy-in 接入时执行：
+
+```bash
+pnpm kit:add message
+pnpm add react-markdown@^10.1.0 rehype-sanitize@^6.0.0 remark-gfm@^4.0.1 lowlight@^3.3.0 mermaid@^11.12.0
+```
+
+复制源码不自动安装 npm 包；`markdown` 与 `chat` 共用这条 Markdown 依赖链。主题接入见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 单独复用工具卡、思考块或 Markdown，或确认执行过程的折叠、耗时等展示合同。
+- 需要用户确认的工具走 [ToolApprovalCard](/docs/components/feedback/tool-approval)，
+  交付文件的展示与下载见 [FileCard](/docs/components/feedback/file-card)，
+  完成回答的复制与赞踩见 [Actions](/docs/components/feedback/actions)。
+
+## 代码演示
+
+预览使用本地数据；演示面板内可查看源码与接入命令。
+
+### 组合消息
+
+<Showcase name="message" />
+
+预览使用 `variant="workspace"` 阅读布局，组件默认值仍是 `"default"`，差异见
+[Message 工作区样式](/docs/components/general/message#工作区样式)。
+
+- 连续的思考与工具分片折成「执行过程」，正文、文件与状态打断分组；运行中保持展开，
+  正文到达或消息完成后自动收起，之后保留手动开合。
+- 组头显示阶段、总步数与耗时；耗时来自分片时间戳，缺时间戳的历史数据不显示、不估算。
+- 思考与工具步骤默认收起，摘要行为动词 + 内容预览（如「读取文件 data.csv」），可展开
+  查看思考原文、输入参数与执行结果。
+
+### 工具卡三态
+
+<Showcase name="tools" />
+
+`tool.status` 取 `running / done / error`，core 按 call_id 匹配、后到的 output 更新原卡片；
+输出为 JSON 对象/数组时用代码高亮，其余保留等宽原文，未提供参数和结果时显示「暂无调用详情」。
+演示同时可切换思考状态并追加内容：摘要行随状态变化，手动展开在累计快照间保留。
+
+### 思考生命周期
+
+状态来自 `reasoning` 分片自己的 `status`，不由整条消息推断；未提供 `status` 时初始收起且
+不标记完成。单独复用时：
+
+{/* skill-example: kit-components/examples/reasoning.tsx */}
+
+```tsx
+import { ReasoningBlock } from "@openagentpack/kit-chat-ui";
+import { useState } from "react";
+
+// Real chat messages supply each reasoning part's status through the Provider.
+// These controls demonstrate one stable component across lifecycle transitions.
+export function ReasoningLifecycle() {
+	const [status, setStatus] = useState<"streaming" | "done" | "failed" | "interrupted">("done");
+	return (
+		<div className="flex flex-col gap-3" data-kit-appearance="workspace">
+			<fieldset className="flex flex-wrap gap-3">
+				<legend className="sr-only">Reasoning lifecycle controls</legend>
+				<button type="button" onClick={() => setStatus("streaming")}>
+					Start reasoning
+				</button>
+				<button type="button" onClick={() => setStatus("done")}>
+					Complete
+				</button>
+				<button type="button" onClick={() => setStatus("interrupted")}>
+					Interrupt
+				</button>
+				<button type="button" onClick={() => setStatus("failed")}>
+					Fail
+				</button>
+			</fieldset>
+			<ReasoningBlock text="Compare the evidence before answering." status={status} />
+		</div>
+	);
+}
+```
+
+{/* /skill-example */}
+
+### Markdown
+
+```bash
+pnpm kit:add markdown
+```
+
+<Showcase name="markdown" />
+
+`children` 为 Markdown 原文，代码围栏交给
+[CodeHighlighter](/docs/components/feedback/code-highlighter)、`mermaid` 围栏交给
+[Mermaid](/docs/components/feedback/mermaid)，两者也可独立接入。**rehype-sanitize 是硬要求**：
+事件正文来自 Provider 与工具输出，属于不可信输入。宽表格在区域内部横向滚动，不会撑宽页面。
+
+## API
+
+### ReasoningBlock
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `text` | 必填，思考原文；摘要行取首个非空行 | `string` | — |
+| `status` | 思考状态；缺省不标记完成 | `"streaming" \| "done" \| "failed" \| "interrupted"` | — |
+| `className` | 追加到根 `details` 的工具类 | `string` | — |
+| `contentMaxHeight` | 展开内容限高工具类，整体替换默认值；`max-h-none` 取消限高 | `string` | `"max-h-80"` |
+
+### ToolCallCard
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `part` | 必填，工具分片；字段见 [MessagePart](/docs/components/general/message#messagepart) | `ToolPart` | — |
+| `className` | 同 ReasoningBlock | `string` | — |
+| `contentMaxHeight` | 同 ReasoningBlock | `string` | `"max-h-80"` |
+
+### Markdown
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `children` | Markdown 原文 | `string` | — |
+
+### ArtifactCard
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `filename` | 必填，文件名 | `string` | — |
+| `contentType` | MIME 类型，决定图标 | `string` | — |
+| `onOpen` | 点击文件名打开预览 | `() => void` | — |
+| `onDownload` | 下载 | `() => void` | — |
+
+在 Message / MessageList / Chat 中使用时，改用消息级 `onArtifactOpen(fileId, contentType?)` 与
+`onArtifactDownload(fileId)` 接线；卡片展示复用 [FileCard](/docs/components/feedback/file-card)。
+
+## 主题变量（Design Token）
+
+本页组件复用各内容组件的 token：气泡与正文见 [Message](/docs/components/general/message)、
+代码高亮三色见 [CodeHighlighter](/docs/components/feedback/code-highlighter)、文件卡见
+[FileCard](/docs/components/feedback/file-card)。其中 `--kit-code-keyword` / `--kit-code-string` /
+`--kit-code-number` 只随亮暗主题变化，不随工作区外观变灰。

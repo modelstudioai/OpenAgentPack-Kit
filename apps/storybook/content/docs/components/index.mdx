@@ -1,0 +1,174 @@
+---
+title: 组件总览
+description: kit-chat-ui 组件清单、copy-in 用法与可交互预览
+---
+
+import { Cards, Card } from "fumadocs-ui/components/card";
+
+`@openagentpack/kit-chat-ui` 是 **copy-in registry** 形态（ADR-0005）：组件源码可以整份复制进你的项目自由修改，
+样式只用 Tailwind 工具类 + `theme.css` 冻结 token。本站的预览渲染的是**真实组件**（文档站直接依赖 workspace 包），
+预览默认显式启用 `workspace` 主题与对应布局变体；复制时保持相同主题、props 与父容器高度即可复现。
+手机预览在独立 iframe 视口内运行，用于实际触发移动断点、抽屉和窄屏内容布局。
+
+让 coding agent 帮助选择与组合组件时，可使用英文
+[kit-components Skill](/docs/skill/kit-components)。其索引覆盖全部公开组件、子组件与
+兼容别名，并同步源码 API 与经过类型检查的组合示例。
+
+```bash
+pnpm kit:add message       # Message / MessageList 及富内容组件
+pnpm kit:add session-list  # 独立会话列表
+pnpm kit:add session-sidebar # 会话目录区（分组 + 最近 + 搜索）
+pnpm kit:add agent-header  # Agent 页头
+pnpm kit:add prompts       # Prompts 提示集
+pnpm kit:add sender        # Sender 输入框
+pnpm kit:add attachments   # Attachments 附件
+pnpm kit:add suggestion    # Suggestion 快捷指令
+pnpm kit:add actions       # Actions 操作列表、复制与反馈
+pnpm kit:add file-card     # FileCard 文件展示与下载入口
+pnpm kit:add code-highlighter # CodeHighlighter 代码高亮
+pnpm kit:add mermaid       # Mermaid 图表与源码视图
+pnpm kit:add chat          # Chat 及其依赖（sender / message / markdown）
+pnpm kit:add chrome        # 页头、状态与确认弹窗等辅助组件
+pnpm kit:add layout        # 整页布局、移动抽屉与页头插槽
+pnpm kit:add plaza         # 广场卡片、分类与用量展示
+```
+
+## 源码目录
+
+每个独立组件都有自己的目录与中文 `README.md`，入口为
+`packages/chat-ui/src/components/<component>/index.tsx`；执行过程组件位于
+`components/process/<component>/`。README 说明职责、主要参数、组合关系和文档入口，
+已有单测随组件存放，跨组件回归放在包的 `tests/` 中。
+
+`Sender.Header`、`Actions.Copy`、`Attachments.FileCard` 等复合子组件随主组件维护。
+`chrome`、`plaza`、`states`、`tool-approval` 保留为重导出入口，原 copy-in 命令继续可用；
+也可以单独复制 `confirm-dialog`、`plaza-card`、`meter-bar`、`tool-approval-card` 等组件。
+复制后的代码同样保留目录层级；包方式接入仍从 `@openagentpack/kit-chat-ui` 导入。
+
+从旧 copy-in 项目升级时，需要同步更新业务导入：原 `src/components/kit/message.tsx` 中的
+`Message` 对应新入口 `src/components/kit/message/index.tsx`，`MessageList` 对应
+`src/components/kit/message-list/index.tsx`。`kit:add` 不会删除旧文件或自动合并自定义改动，
+请先合并改动并更新导入，再清理旧文件。
+
+## 通用
+
+通用组件覆盖单条消息、消息列表、会话选择与 Agent 身份信息，既可以独立使用，也可组成体验页。
+
+<Cards>
+  <Card title="Message 对话气泡" description="单条消息的角色布局、内容与发送状态" href="/docs/components/general/message" />
+  <Card title="MessageList 消息列表" description="排列多条消息，提供滚动容器、自动跟随、空态与虚拟滚动" href="/docs/components/general/message-list" />
+  <Card title="SessionList 会话列表" description="排列会话摘要，提供选中、行内状态标记与操作菜单插槽" href="/docs/components/general/session-list" />
+  <Card title="SessionSidebar 会话目录" description="智能体分组、最近会话、搜索与行内操作组成的会话目录区" href="/docs/components/general/session-sidebar" />
+  <Card title="AgentHeader Agent 页头" description="Agent 图标、名称、描述与操作插槽" href="/docs/components/general/agent-header" />
+</Cards>
+
+## 基础
+
+基础组件是被会话行、列表与业务页面复用的轻量交互原语：溢出提示与操作菜单。
+
+<Cards>
+  <Card title="Tooltip 溢出提示" description="悬停/聚焦气泡提示，可按内容截断自动显隐" href="/docs/components/basic/tooltip" />
+  <Card title="Menu 菜单" description="操作菜单、键盘导航与焦点管理" href="/docs/components/basic/menu" />
+</Cards>
+
+## 唤醒
+
+唤醒类组件在对话开始前引导用户，帮助用户了解 Agent 能做什么并发起第一轮提问。
+
+<Cards>
+  <Card title="Prompts 提示集" description="示例问题与能力入口，支持布局、禁用、分组与渐入" href="/docs/components/wake/prompts" />
+</Cards>
+
+## 表达
+
+表达类组件覆盖输入、附件和快捷指令，调用方负责把交互接到 hooks 与 client。
+
+<Cards>
+  <Card title="Sender 输入框" description="受控输入、提交、停止生成与头尾插槽" href="/docs/components/express/sender" />
+  <Card title="Attachments 附件" description="输入框上方的附件暂存行：选择、拖放、上传状态与移除" href="/docs/components/express/attachments" />
+  <Card title="Suggestion 快捷指令" description="输入触发、级联候选与键盘选择" href="/docs/components/express/suggestion" />
+</Cards>
+
+## 反馈
+
+反馈类组件帮助用户阅读和处理 Agent 的回答：复制或评价回答、查看文件、阅读代码和图表。
+操作结果与业务请求由调用方管理。
+
+<Cards>
+  <Card title="Actions 操作列表" description="自定义操作、复制回答与受控赞踩反馈" href="/docs/components/feedback/actions" />
+  <Card title="FileCard 文件卡片" description="文件信息、加载态与预览、下载回调" href="/docs/components/feedback/file-card" />
+  <Card title="CodeHighlighter 代码高亮" description="代码语言、复制与行号" href="/docs/components/feedback/code-highlighter" />
+  <Card title="Mermaid 图表" description="图表与源码切换、流式等待和错误恢复" href="/docs/components/feedback/mermaid" />
+  <Card title="ToolApprovalCard 工具审批" description="参数完整可查、允许与拒绝一步直提、多项横向翻页" href="/docs/components/feedback/tool-approval" />
+</Cards>
+
+## 组合与富内容
+
+<Cards>
+  <Card title="Layout 整页布局" description="桌面侧栏、移动抽屉、页头与内容区" href="/docs/components/layout" />
+  <Card title="Chat 与 Sender 组合" description="主子 Agent、历史查询、消息与输入框的完整交互" href="/docs/components/chat" />
+  <Card title="富内容分片" description="思考过程、工具三态、Artifact 卡与 Markdown" href="/docs/components/message" />
+  <Card title="子 Agent 分区" description="资源面板中的派发任务与执行记录弹窗" href="/docs/components/general/sub-agent-panel" />
+  <Card title="页面组合与辅助交互" description="桌面侧栏、状态灯、子线程、空/错态与确认弹窗" href="/docs/components/chrome" />
+  <Card title="广场与用量" description="Agent 卡片、受控分类、配额进度与每日活动" href="/docs/components/plaza" />
+</Cards>
+
+## 组件清单
+
+| 组件 | registry 名 | 说明 |
+| --- | --- | --- |
+| `Message` / `MessageList` | `message` | 单条消息展示，以及带滚动跟随、空态的消息列表 |
+| `MessageAnchorRail` | `message-anchor-rail` | 回合锚点与摘要提示；MessageList 可通过 anchorRail 自动组合 |
+| `MessageListSkeleton` | `message-skeleton` | 会话历史读取期间的骨架屏，传入 empty 插槽 |
+| `SessionList` | `session-list` | 不限定侧栏或抽屉布局的会话列表 |
+| `SessionSidebar` | `session-sidebar` | 会话目录区：智能体分组（展开懒加载）、最近、搜索与行内操作 |
+| `AgentHeader` | `agent-header` | Agent 展示信息与 `actions` 操作插槽 |
+| `Prompts` | `prompts` | 示例问题与能力入口；支持横向滚动、纵向、换行、禁用、分组与渐入 |
+| `Sender` | `sender` | 受控输入、提交、停止生成、头尾插槽与粘贴文件 |
+| `Attachments` | `attachments` | 文件选择、拖放、上传状态与移除入口 |
+| `Suggestion` | `suggestion` | 输入触发、级联候选与键盘选择 |
+| `Actions` | `actions` | 操作列表与 `Actions.Copy`、`Actions.Feedback` |
+| `FileCard` | `file-card` | 通用文件卡片；`ArtifactCard` 与输入附件卡复用其展示 |
+| `CodeHighlighter` | `code-highlighter` | 代码高亮、复制与可选行号；未知语言以纯文本展示 |
+| `Mermaid` | `mermaid` | Mermaid 图表与源码双视图，解析失败时保留源码 |
+| `Tooltip` | `tooltip` | 溢出文本提示，支持视口碰撞调整 |
+| `Menu` / `MenuTrigger` / `MenuContent` / `MenuItem` | `menu` | 基于 Radix 的操作菜单、键盘导航与焦点恢复 |
+| `ToolApprovalCard` / `ToolApprovalGroup` | `tool-approval` | 单项工具审批与多项审批分页组合 |
+| `SubAgentPanel` | `sub-agent-panel` | 资源面板中的子 Agent 概览与任务执行记录 |
+| `Layout` | `layout` | 整页布局与移动抽屉；侧栏、页头、弹窗和内容均由插槽注入 |
+| `Chat` | `chat` | 组合消息与输入；`multiAgent` 支持主子 Agent、只读历史、分页和重试 |
+| `ToolCallCard` | `message` | 工具调用卡（running / done / error + input/output） |
+| `ArtifactCard` | `message` | 交付文件卡（点击走 server 代理下载，屏蔽预签名 URL 过期） |
+| `ReasoningBlock` | `message` | 默认收起，摘要行露出思考预览；支持手动查看 |
+| `Markdown` | `markdown` | GFM 与 sanitize；代码块使用 `CodeHighlighter`，Mermaid 围栏使用 `Mermaid` |
+| `PlazaCard` / `CategoryTabs` / `MeterBar` / `ActivityHeatmap` | `plaza` | Agent 发现、分类选择、配额进度与每日活动 |
+| `StatusIndicator` / `EmptyState` / `ErrorState` / `ConfirmDialog` / `ThreadPanel` | `chrome` | 状态与辅助交互；`chrome` 也包含 `AgentHeader`（`EmptyState` / `ErrorState` 有独立 `states` 条目） |
+
+## 主题
+
+引入 `@openagentpack/kit-chat-ui/theme.css`，用 `data-kit-theme="dark"` 切暗色。
+
+员工端在根节点显式设置 `data-kit-appearance="workspace"`，启用暖灰视觉基础；与暗色属性
+组合时切换到中性深灰。本站组件预览显式选择同一主题；未设置此属性的调用方仍保留原有色板。
+主题属性控制色板，`variant="workspace"` 控制组件布局，两者分别设置；组件的默认 `variant` 仍为 `default`。
+
+| 用途 | Token / 员工端表现 |
+| --- | --- |
+| 页面与侧栏 | `--kit-bg` 为浅暖白，`--kit-bg-subtle` 为暖灰 |
+| 卡片、表单与弹层 | `--kit-surface` 提供独立实色表面，`--kit-border-subtle` 弱化区域分隔 |
+| 选中与焦点 | `--kit-nav-active` 为中性选中背景，`--kit-focus` 用于键盘轮廓与输入框聚焦 |
+| 文字层级 | `--kit-text-meta/caption/label/base/body/heading/title/display`，员工端辅助文字至少 12px，页面标题 20px |
+| 正文与代码 | `--kit-text-prose-title/heading/subheading` 定义正文前三层标题；`--kit-code-keyword/string/number` 提供独立亮暗高亮配色 |
+| 圆角与阴影 | 控件 10px、卡片 16px；图标与热力图使用独立圆角 token，阴影保持轻量 |
+| 输入卡片 | `--kit-radius-composer` 为 24px；`--kit-composer-pane-max-height` 为 160px，编辑区和附件区还会按可视视口高度进一步限制 |
+| 状态与遮罩 | danger / success / warning 保留语义色；`--kit-overlay` 统一模态遮罩 |
+| 动效 | `--kit-duration-fast/base` + `--kit-ease-out` 驱动 `--kit-animate-*` 入场/弹层过渡与 `.kit-collapse` details 高度过渡；`prefers-reduced-motion` 下自动降级为无动画 |
+
+字体尺寸类使用 `text-[length:var(--kit-text-body)]` 等显式长度提示，避免与文字颜色混淆。
+员工端主题在 HTML 根节点启用，因此移动抽屉与 Portal 弹窗也能继承同一组 token。
+token 是冻结的：业务代码不得新增颜色/间距/圆角/阴影常量（`packages/chat-ui/AGENTS.md` 不变量 2）。
+
+## 新组件的门槛
+
+**至少一个真实调用方**（`apps/web`、`apps/console` 或 templates）才能进 chat-ui——
+只为准需求预建组件库是过度设计。缺 Primitive 时按 Radix + Tailwind v4 + CVA 自研并记录原因。

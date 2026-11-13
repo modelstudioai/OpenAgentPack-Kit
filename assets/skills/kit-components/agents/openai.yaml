@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kit Components"
+  short_description: "Compose Kit chat components and attachment flows"
+  default_prompt: "Use $kit-components to build a chat interface with caller-managed attachments and message feedback."

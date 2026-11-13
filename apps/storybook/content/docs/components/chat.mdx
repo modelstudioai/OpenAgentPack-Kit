@@ -1,0 +1,171 @@
+---
+title: Chat 与 Sender 组合
+description: 消息列表、流式中间态与输入框的在线预览
+---
+
+`Chat` 组合 [MessageList](/docs/components/general/message-list) 与
+[Sender](/docs/components/express/sender)，只认 props，不 fetch、不依赖 server。
+
+```tsx
+import { Chat } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（复制后 import 改为项目内路径）：
+
+```bash
+pnpm kit:add chat
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 需要「消息列表 + 输入框」标准组合：流式中间态、审批嵌入、欢迎态与滚动跟随一次到位。
+- 只要列表或只要输入框时，分别用 [MessageList](/docs/components/general/message-list) 与
+  [Sender](/docs/components/express/sender)。
+
+## 代码演示
+
+预览使用本地模拟数据，不连接服务；演示面板内可查看源码与接入命令。
+
+### 流式中间态与欢迎态
+
+发送、停止、技能 chip 与欢迎态都可操作。
+
+<Showcase name="chat" />
+
+### 多 Agent 对话
+
+子 Agent 卡片、只读历史、分页与重试可操作；先输入草稿再开合卡片，观察草稿不变。
+
+<Showcase name="multi-agent" />
+
+## 接入
+
+示例放在已配置的 `KitProvider` 下，由 [Layout](/docs/components/layout) 或宿主提供有界高度；
+外层按主题约定设置 `data-kit-appearance="workspace"`。自建 Provider 的
+`useChat({ sessionId, provider })` 使用同一组 props。
+
+{/* skill-example: kit-components/examples/chat-runtime.tsx */}
+
+```tsx
+import { Chat, type SenderSkill, ToolApprovalCard } from "@openagentpack/kit-chat-ui";
+import { useChat } from "@openagentpack/kit-sdk/chat/hooks";
+import { useState } from "react";
+
+// Render below a configured KitProvider, inside a bounded Layout content area.
+// The same component works with useChat({ sessionId, provider }) for a custom backend.
+export function SessionChat({ sessionId, skills }: { sessionId: string | null; skills?: SenderSkill[] }) {
+	const chat = useChat(sessionId);
+	const [error, setError] = useState<string | null>(null);
+	const report = (cause: unknown) => setError(cause instanceof Error ? cause.message : "The request failed.");
+
+	return (
+		<div className="flex min-h-0 flex-1 flex-col" data-kit-appearance="workspace">
+			{error || chat.streamError ? <p role="alert">{error ?? chat.streamError?.message}</p> : null}
+			<Chat
+				variant="workspace"
+				messages={chat.messages}
+				skills={skills}
+				multiAgent={chat.multiAgent}
+				scrollKey={sessionId}
+				turnRunning={chat.turnRunning}
+				canSend={chat.canSend}
+				onSend={async (text, selectedSkills) => {
+					setError(null);
+					try {
+						await chat.send(text, { skills: selectedSkills });
+					} catch (cause) {
+						report(cause);
+						throw cause; // Preserve Chat's draft when sending fails.
+					}
+				}}
+				onStop={() => chat.stop().catch(report)}
+				approvals={
+					chat.approvals.length > 0
+						? chat.approvals.map((approval) => (
+								<ToolApprovalCard
+									key={JSON.stringify([approval.batch_id, approval.call_id])}
+									approval={approval}
+									onDecision={chat.submitApproval}
+									onRefresh={chat.refreshApprovals}
+									onStop={() => void chat.stop().catch(report)}
+								/>
+							))
+						: null
+				}
+			/>
+		</div>
+	);
+}
+```
+
+{/* /skill-example */}
+
+- 默认 Sender 的草稿在提交成功且未被改写时才清空，失败、等待审批或重连时保留；`scrollKey`
+  变化只重置滚动跟随、不重新挂载输入框，也不要给整个 Chat 加变化的 `key`。
+- `onSend(text, selectedSkills)` 接 `chat.send(text, { skills: selectedSkills })`，不要直接赋
+  `chat.send`（hook 第二参数是选项对象）；技能候选来自当前 Agent 的 `resources.skills`，
+  未知技能按原文还原。
+- `approvals` 无审批时传 `null`；传空数组或始终存在的空 JSX 仍会显示「等待审批」提示。
+
+## 多 Agent 对话
+
+传入 `multiAgent={chat.multiAgent}`，契约见
+[`ChatMultiAgent`](/docs/components/general/sub-agent-panel#chatmultiagent)。执行中的子 Agent
+自动展开、完成后收起，也可手动开合；历史经 `loadThreadEvents(id, { more })` 翻页、
+`{ retry: true }` 重试，无历史查询能力时明确提示。子 Agent 无独立输入与审批入口，主输入区的
+停止按钮停止整个主会话。资源面板可另接 [SubAgentPanel](/docs/components/general/sub-agent-panel)。
+
+## 自定义输入区
+
+附件、快捷指令或自定义提交策略通过 `sender` 插槽接入，完整组合见
+[Sender 附件示例](/docs/components/express/sender) 与 [Suggestion](/docs/components/express/suggestion)。
+自定义 Sender 传 `variant="workspace"`，并连接 `value`、`onChange`、`onSubmit`、
+`loading={chat.turnRunning}`、`submitDisabled={!chat.canSend}` 与 `onCancel={chat.stop}`；
+此时 Chat 不再接管输入区，但仍需传 `turnRunning` 供等待首帧指示。
+
+## Props
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `messages` | [`ChatMessage[]`](/docs/components/general/message#chatmessage) | 必填 | 主 Agent 消息，传给 MessageList |
+| `multiAgent` | [`ChatMultiAgent`](/docs/components/general/sub-agent-panel#chatmultiagent) | — | 直接传入 `useChat().multiAgent`，在消息流中展示子 Agent 卡片、只读历史、分页与重试 |
+| `turnRunning` | `boolean` | `false` | 默认 Sender 是否显示停止按钮 |
+| `sending` | `boolean` | `false` | 发送请求在途（含新建会话）：乐观气泡出现前列表尾显示「发送中…」指示，回合开始后归「生成中…」 |
+| `canSend` | `boolean` | `true` | 是否允许提交；设 false 仍可编辑草稿 |
+| `composerDisabled` | `boolean` | `false` | 禁用默认输入区，例如配额耗尽；已有生成仍可停止。自定义 sender 需自行传入 disabled |
+| `approvals` | `ReactNode` | — | 主 Agent 当前待办审批卡，内嵌到消息流末尾；输入区上方只留精简等待提示 |
+| `onSend` | `(text: string, skills?: string[]) => void \| Promise<void>` | — | 默认 Sender 提交文本和派生技能名；成功后清理未被改写的草稿 |
+| `onStop` | `() => void \| Promise<void>` | — | 默认 Sender 的停止回调 |
+| `onArtifactDownload` | `(fileId: string) => void` | — | 文件下载回调 |
+| `onArtifactOpen` | `(fileId: string, contentType?: string) => void` | — | 文件名称的预览回调；与下载入口独立 |
+| `skills` | `SenderSkill[]` | — | 当前 Agent 的技能候选，传给默认 Sender 与消息列表；自定义 sender 需另行传入 |
+| `virtualize` | `boolean` | `true` | 长会话分窗渲染开关，透传 MessageList |
+| `onCopy` | `(text: string) => void \| Promise<void>` | 浏览器剪贴板 | 回答复制能力，透传到 MessageList；Web 体验页接入本地宿主能力 |
+| `empty` | `ReactNode` | — | 消息为空时的占位（欢迎态）；输入区保持挂载，消息出现后退出 |
+| `scrollKey` | `string \| null` | — | 逻辑会话标识；变化时恢复滚底跟随 |
+| `sender` | `ReactNode` | — | 替换默认 Sender |
+| `anchorRail` | `boolean` | `false` | 主会话右缘显示回合锚点栏；规则见 [MessageList 回合锚点栏](/docs/components/general/message-list#回合锚点栏) |
+| `variant` | `"default" \| "workspace"` | `"default"` | workspace 用 `--kit-chat-width` 居中阅读宽度对齐消息、审批与输入区 |
+
+同一会话中向上阅读历史会暂停跟随，回到底部、`scrollKey` 变化或消息清空后恢复；关闭自动跟随时
+直接组合 `MessageList autoScroll={false}` 与 Sender。
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-chat-width` | workspace 阅读宽度：消息、审批提示与输入区共用同一居中宽度 | `48rem` | `48rem` |
+| `--kit-warning-fg` | 「等待审批」精简提示文字与呼吸点 | `#b45309` | `#805917` |
+| `--kit-border-subtle` | 默认布局中输入区的上边界线（workspace 布局无边框） | `var(--kit-border)` | `#ececec` |
+
+「等待审批」提示走 `--kit-text-label` 文字档位；输入区底部留白用
+`--kit-space-3` / `--kit-space-6` 与移动端安全区取较大值。消息与输入区本体（气泡、分片、
+工具卡、附件、技能 chip）的 token 分别见 [MessageList](/docs/components/general/message-list)、
+[Message](/docs/components/message) 与 [Sender](/docs/components/express/sender)；更多主题配置见
+[组件总览](/docs/components#主题)。

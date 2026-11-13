@@ -1,0 +1,113 @@
+---
+title: SessionList 会话列表
+description: 排列会话摘要，提供选中、行内状态标记与行尾操作菜单插槽
+---
+
+`SessionList` 将 [`SessionSummary[]`](#sessionsummary) 渲染为可滚动的会话导航：点击选中、行内
+状态标记，业务动作经 `menu` 注入。父容器需提供有界高度（flex 布局配合 `min-h-0`）。
+
+```tsx
+import { SessionList } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（复制后 import 改为项目内路径）：
+
+```bash
+pnpm kit:add session-list
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 侧栏或抽屉的会话导航：传入服务端索引的会话摘要，选中状态由调用方更新；需要智能体分组、最近会话
+  与搜索组成的完整目录区用 [SessionSidebar](/docs/components/general/session-sidebar)。
+- 会话行需要重命名、归档、删除等操作时，用 `menu` 传入自己的行尾菜单：`menu(session)` 返回的元素在
+  会话作用域里构造，菜单项 `onClick` 直接取该行 `session` 数据，重命名项改 `editingId` 进入行内编辑。
+  归档与删除是破坏性操作，
+  菜单或确认弹窗（AlertDialog）里先展示影响再发起请求，见
+  [页面组合与辅助交互](/docs/components/chrome)。
+
+## 代码演示
+
+预览使用本地会话数据；每个演示的面板内可查看源码与接入命令。
+
+### 基本用法
+
+点击切换选中；「查看空列表」观察空态。未传 `menu` 时行尾没有操作入口。
+
+<Showcase name="session-list" />
+
+### 行内状态与更多操作
+
+每行按 `session.status` 标注：生成中（旋转指示环）、等待审批（警示三角）、执行失败（红叉）、
+已归档（小字）；打开行的实时状态经 `activeStatus` 注入。行尾菜单经 `menu` render prop 渲染
+（⋯ 触发按钮也在业务侧），悬停会话行后可见；「重命名」项经受控 `editingId` 进入行内编辑。
+完整组装见预览面板内源码。
+
+<Showcase name="session-list-status" />
+
+## API
+
+### SessionList
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `sessions` | 必填，按展示顺序排列的会话摘要；空数组显示「暂无会话」 | [`SessionSummary[]`](#sessionsummary) | — |
+| `activeId` | 必填，当前选中会话的 `session_id` | `string \| null` | — |
+| `onSelect` | 必填，选择会话：回传该行会话摘要（导航所需的 `agent_slug` 随点击携带）；选中状态由调用方更新 | `(session: SessionSummary) => void` | — |
+| `menu` | 行尾「更多操作」菜单：每行渲染时调用 `menu(session)`，返回元素闭包持有该行会话——⋯ 触发按钮、弹层与菜单项全部由业务渲染；删除等破坏性动作由业务自备确认弹窗。函数身份无需稳定 | `(session: SessionSummary) => ReactNode` | — |
+| `editingId` | 受控行内重命名：设为会话 id 让该行进入编辑态（通常在菜单「重命名」项 `onClick` 里设置），退出后由调用方清空 | `string \| null` | — |
+| `onEdited` | 编辑提交（Enter 或失焦）后回调；入参为会话 id 与去空白、截断到 120 字符的新标题，清空或与现标题相同视为取消、不触发 | `(id: string, title: string) => void` | — |
+| `onEditEnd` | 编辑态退出（提交或 Escape）时回调；受控模式下由调用方在此清空 `editingId` | `(id: string) => void` | — |
+| `activeStatus` | 当前选中会话的实时状态，优先于该行索引状态——回合收敛后索引要等列表重取才更新；只作用于打开行，不传时该行按 `session.status` 展示。取值为中性展示词，协议相位由调用方映射：`running`=生成中、`attention`=需注意（如等待审批）、`failed`=失败、`completed`=刚完成（纯前端提示：由调用方在回合收敛时设置，点击行或切换会话后清除） | `"running" \| "attention" \| "failed" \| "completed"` | — |
+| `variant` | `workspace` 使用舒展行高与按输入方式显隐的操作槽 | `"default" \| "workspace"` | `"default"` |
+| `ariaLabel` | 导航的无障碍名称；同一页面有多个会话列表（分组、最近）时用不同名称区分 | `string` | `"会话列表"` |
+| `className` | 添加到列表滚动容器的 Tailwind 工具类 | `string` | — |
+
+状态标记次序：`activeStatus` > 该行 `session.status`。展示标题优先 `title`，缺失回退
+`agent_slug`；建议创建会话时把首句消息折叠为标题传入（会话在首次发送时才创建）。列表按传入顺序
+排列，不请求数据、不修改会话，也不代替调用方完成确认。
+
+### SessionSummary
+
+从 `@openagentpack/kit-sdk/protocol` 导入；由服务端会话索引返回，通常经数据层直接传入。
+
+| 属性 | 说明 | 类型 | 必填 |
+| --- | --- | --- | --- |
+| `session_id` | 会话唯一标识，作列表 key 与 `activeId` 取值 | `string` | 是 |
+| `agent_slug` | 所属 Agent 标识；`title` 缺失时作为标题回退 | `string` | 是 |
+| `title` | 展示标题 | `string` | 否 |
+| `status` | 服务端索引状态：`idle` / `running` / `requires_action` / `failed` / `archived`；组件为前三种渲染标记，`archived` 显示「已归档」小字，其余不标注 | `string` | 否 |
+| `created_at` | 创建时间（ISO 字符串） | `string` | 是 |
+| `last_event_at` | 最近事件时间；组件不展示，仅供调用方排序 | `string` | 否 |
+
+## 语义结构
+
+| 区域 | 当前结构与交互 |
+| --- | --- |
+| 滚动容器 | 组件内部 `nav` 承载滚动（`min-h-0 flex-1 overflow-y-auto`），不依赖外层滚动 |
+| 会话行 | 行容器内选中按钮、状态标记与操作槽并列，不嵌套 `button` |
+| 状态标记 | 线形图标 + 悬停文字说明；`prefers-reduced-motion` 下旋转指示环静止 |
+| 行内重命名 | 受控：`editingId` 命中的行渲染输入框并整组卸载操作槽；Enter 或失焦提交（去空白、截断到 120 字符，空值或未变化视为取消，经 `onEdited` 通知），提交与 Escape 都触发 `onEditEnd` 退出，调用方随后清空 `editingId` |
+| 操作槽 | 触发按钮与 [Menu](/docs/components/basic/menu) 弹层由业务经 `menu(session)` 渲染：方向键导航、Escape 关闭、焦点圈来自 Menu 原语 |
+| 操作槽显隐 | 组件持有：仅悬停、细指针且无触摸输入的设备收起未选中行操作槽，悬停或键盘聚焦显示；触屏设备常显；业务触发按钮保持 Tab 顺序 |
+| 截断标题 | 单行截断；截断时悬停或键盘聚焦经 [Tooltip](/docs/components/basic/tooltip) 显示完整内容，未截断不出提示 |
+| 空态 | 「暂无会话」文字 |
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-nav-active` | 选中与悬停背景 | `#eef0ff` | `#ececec` |
+| `--kit-accent` | 生成中旋转指示环 | `#4f46e5` | `#171717` |
+| `--kit-warning` | 等待审批警示三角 | `#f59e0b` | `#b58025` |
+| `--kit-danger` | 执行失败红叉与删除项文字 | `#dc2626` | `#ad372f` |
+| `--kit-surface` | 重命名输入框底色；default 变体的行悬停背景 | `#ffffff` | `#ffffff` |
+
+悬停与显隐过渡消费 `--kit-duration-fast` / `--kit-ease-out`，键盘焦点环用 `--kit-focus`。更多主题配置见
+[组件总览](/docs/components#主题)。

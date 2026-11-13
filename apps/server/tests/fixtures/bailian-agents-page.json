@@ -1,0 +1,4591 @@
+{
+  "data": [
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:16]",
+      "description": "",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": 0.7,
+        "max_tokens": null,
+        "enable_thinking": true,
+        "thinking_budget": 4000
+      },
+      "system": null,
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": {
+            "enabled": false,
+            "permission_policy": {
+              "type": "always_allow"
+            }
+          },
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [],
+      "metadata": {},
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:16]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": 0.7,
+          "max_tokens": null,
+          "enable_thinking": true,
+          "thinking_budget": 4000
+        },
+        "system": null,
+        "description": "",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": {
+              "enabled": false,
+              "permission_policy": {
+                "type": "always_allow"
+              }
+            },
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [],
+        "multiagent": null,
+        "metadata": {},
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:42]",
+      "description": "[redacted:6]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:13427]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": null,
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:22]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:19]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:18]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:25]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:8]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:17]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:23]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:16]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:13]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:21]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [
+        {
+          "type": "official",
+          "skill_id": "[redacted:32]",
+          "version": "[redacted:3]",
+          "source": null,
+          "provider": null,
+          "name": null,
+          "description": null
+        },
+        {
+          "type": "official",
+          "skill_id": "[redacted:32]",
+          "version": "[redacted:3]",
+          "source": null,
+          "provider": null,
+          "name": null,
+          "description": null
+        },
+        {
+          "type": "official",
+          "skill_id": "[redacted:32]",
+          "version": "[redacted:3]",
+          "source": null,
+          "provider": null,
+          "name": null,
+          "description": null
+        }
+      ],
+      "mcp_servers": [
+        {
+          "type": "official",
+          "name": "[redacted:22]",
+          "url": null
+        }
+      ],
+      "metadata": {
+        "card_unactive_img_url": "[redacted:91]",
+        "card_active_img_url": "[redacted:91]",
+        "cases": "[redacted:33]",
+        "contact_url": "",
+        "type": "official",
+        "version": "[redacted:3]",
+        "avatar_img_url": "[redacted:91]",
+        "agentstudio_agent_id": "[redacted:32]",
+        "card_unactive_text": "[redacted:6]",
+        "ability_prompts": "[redacted:419]",
+        "provider": "[redacted:5]",
+        "credit_pack": "[redacted:593]",
+        "card_standby_img_url": "[redacted:91]",
+        "intros": "[redacted:351]",
+        "template_id": "[redacted:35]",
+        "app_id": "[redacted:12]"
+      },
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:42]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:13427]",
+        "description": "[redacted:6]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": null,
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:22]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:19]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:18]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:25]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:8]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:17]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:23]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:16]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:13]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:21]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [
+          {
+            "type": "official",
+            "name": "[redacted:22]",
+            "url": null
+          }
+        ],
+        "skills": [
+          {
+            "type": "official",
+            "skill_id": "[redacted:32]",
+            "version": "[redacted:3]",
+            "source": null,
+            "provider": null,
+            "name": null,
+            "description": null
+          },
+          {
+            "type": "official",
+            "skill_id": "[redacted:32]",
+            "version": "[redacted:3]",
+            "source": null,
+            "provider": null,
+            "name": null,
+            "description": null
+          },
+          {
+            "type": "official",
+            "skill_id": "[redacted:32]",
+            "version": "[redacted:3]",
+            "source": null,
+            "provider": null,
+            "name": null,
+            "description": null
+          }
+        ],
+        "multiagent": null,
+        "metadata": {
+          "card_unactive_img_url": "[redacted:91]",
+          "card_active_img_url": "[redacted:91]",
+          "cases": "[redacted:33]",
+          "contact_url": "",
+          "type": "official",
+          "version": "[redacted:3]",
+          "avatar_img_url": "[redacted:91]",
+          "agentstudio_agent_id": "[redacted:32]",
+          "card_unactive_text": "[redacted:6]",
+          "ability_prompts": "[redacted:419]",
+          "provider": "[redacted:5]",
+          "credit_pack": "[redacted:593]",
+          "card_standby_img_url": "[redacted:91]",
+          "intros": "[redacted:351]",
+          "template_id": "[redacted:35]",
+          "app_id": "[redacted:12]"
+        },
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:42]",
+      "description": "[redacted:7]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:2270]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": null,
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [
+        {
+          "type": "official",
+          "skill_id": "[redacted:32]",
+          "version": "[redacted:3]",
+          "source": null,
+          "provider": null,
+          "name": null,
+          "description": null
+        }
+      ],
+      "mcp_servers": [],
+      "metadata": {
+        "card_unactive_img_url": "",
+        "card_active_img_url": "",
+        "cases": "[redacted:33]",
+        "contact_url": "",
+        "type": "official",
+        "version": "[redacted:3]",
+        "avatar_img_url": "[redacted:91]",
+        "agentstudio_agent_id": "[redacted:32]",
+        "card_unactive_text": "[redacted:7]",
+        "ability_prompts": "[redacted:557]",
+        "provider": "[redacted:5]",
+        "credit_pack": "[redacted:593]",
+        "card_standby_img_url": "",
+        "intros": "[redacted:352]",
+        "template_id": "[redacted:35]",
+        "app_id": "[redacted:12]"
+      },
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:42]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:2270]",
+        "description": "[redacted:7]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": null,
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [
+          {
+            "type": "official",
+            "skill_id": "[redacted:32]",
+            "version": "[redacted:3]",
+            "source": null,
+            "provider": null,
+            "name": null,
+            "description": null
+          }
+        ],
+        "multiagent": null,
+        "metadata": {
+          "card_unactive_img_url": "",
+          "card_active_img_url": "",
+          "cases": "[redacted:33]",
+          "contact_url": "",
+          "type": "official",
+          "version": "[redacted:3]",
+          "avatar_img_url": "[redacted:91]",
+          "agentstudio_agent_id": "[redacted:32]",
+          "card_unactive_text": "[redacted:7]",
+          "ability_prompts": "[redacted:557]",
+          "provider": "[redacted:5]",
+          "credit_pack": "[redacted:593]",
+          "card_standby_img_url": "",
+          "intros": "[redacted:352]",
+          "template_id": "[redacted:35]",
+          "app_id": "[redacted:12]"
+        },
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:42]",
+      "description": "[redacted:4]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:3139]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": null,
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:14]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:14]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:8]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:13]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:33]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:34]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:34]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:18]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:11]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:17]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:17]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:18]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:20]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:18]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:22]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:35]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:15]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:12]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [
+        {
+          "type": "official",
+          "name": "[redacted:14]",
+          "url": null
+        },
+        {
+          "type": "official",
+          "name": "[redacted:14]",
+          "url": null
+        },
+        {
+          "type": "official",
+          "name": "[redacted:8]",
+          "url": null
+        },
+        {
+          "type": "official",
+          "name": "[redacted:13]",
+          "url": null
+        },
+        {
+          "type": "official",
+          "name": "[redacted:18]",
+          "url": null
+        },
+        {
+          "type": "official",
+          "name": "[redacted:17]",
+          "url": null
+        },
+        {
+          "type": "official",
+          "name": "[redacted:18]",
+          "url": null
+        },
+        {
+          "type": "official",
+          "name": "[redacted:15]",
+          "url": null
+        }
+      ],
+      "metadata": {
+        "card_unactive_img_url": "[redacted:91]",
+        "card_active_img_url": "[redacted:91]",
+        "cases": "[redacted:33]",
+        "contact_url": "",
+        "type": "official",
+        "version": "[redacted:3]",
+        "avatar_img_url": "[redacted:91]",
+        "agentstudio_agent_id": "[redacted:32]",
+        "card_unactive_text": "[redacted:4]",
+        "ability_prompts": "[redacted:579]",
+        "provider": "[redacted:5]",
+        "credit_pack": "[redacted:593]",
+        "card_standby_img_url": "[redacted:91]",
+        "intros": "[redacted:358]",
+        "template_id": "[redacted:35]",
+        "app_id": "[redacted:12]"
+      },
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:42]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:3139]",
+        "description": "[redacted:4]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": null,
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:14]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:14]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:8]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:13]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:33]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:34]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:34]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:18]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:11]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:17]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:17]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:18]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:20]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:18]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:22]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:35]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:15]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:12]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [
+          {
+            "type": "official",
+            "name": "[redacted:14]",
+            "url": null
+          },
+          {
+            "type": "official",
+            "name": "[redacted:14]",
+            "url": null
+          },
+          {
+            "type": "official",
+            "name": "[redacted:8]",
+            "url": null
+          },
+          {
+            "type": "official",
+            "name": "[redacted:13]",
+            "url": null
+          },
+          {
+            "type": "official",
+            "name": "[redacted:18]",
+            "url": null
+          },
+          {
+            "type": "official",
+            "name": "[redacted:17]",
+            "url": null
+          },
+          {
+            "type": "official",
+            "name": "[redacted:18]",
+            "url": null
+          },
+          {
+            "type": "official",
+            "name": "[redacted:15]",
+            "url": null
+          }
+        ],
+        "skills": [],
+        "multiagent": null,
+        "metadata": {
+          "card_unactive_img_url": "[redacted:91]",
+          "card_active_img_url": "[redacted:91]",
+          "cases": "[redacted:33]",
+          "contact_url": "",
+          "type": "official",
+          "version": "[redacted:3]",
+          "avatar_img_url": "[redacted:91]",
+          "agentstudio_agent_id": "[redacted:32]",
+          "card_unactive_text": "[redacted:4]",
+          "ability_prompts": "[redacted:579]",
+          "provider": "[redacted:5]",
+          "credit_pack": "[redacted:593]",
+          "card_standby_img_url": "[redacted:91]",
+          "intros": "[redacted:358]",
+          "template_id": "[redacted:35]",
+          "app_id": "[redacted:12]"
+        },
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:42]",
+      "description": "[redacted:5]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:1842]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": null,
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:22]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:17]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:23]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:21]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:22]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:17]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:22]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:18]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:19]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:17]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:22]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:16]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:20]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:15]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:29]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:22]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:27]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:20]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:21]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:16]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:23]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:24]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:27]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:23]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:25]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:26]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:18]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:37]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:22]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:18]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:19]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:17]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:32]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:18]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:26]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:13]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:20]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:21]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:28]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [
+        {
+          "type": "official",
+          "name": "[redacted:22]",
+          "url": null
+        },
+        {
+          "type": "official",
+          "name": "[redacted:22]",
+          "url": null
+        },
+        {
+          "type": "official",
+          "name": "[redacted:22]",
+          "url": null
+        },
+        {
+          "type": "official",
+          "name": "[redacted:22]",
+          "url": null
+        },
+        {
+          "type": "official",
+          "name": "[redacted:22]",
+          "url": null
+        }
+      ],
+      "metadata": {
+        "card_unactive_img_url": "",
+        "card_active_img_url": "",
+        "cases": "[redacted:33]",
+        "contact_url": "",
+        "type": "official",
+        "version": "[redacted:3]",
+        "avatar_img_url": "[redacted:91]",
+        "agentstudio_agent_id": "[redacted:32]",
+        "card_unactive_text": "[redacted:5]",
+        "ability_prompts": "[redacted:740]",
+        "provider": "[redacted:5]",
+        "credit_pack": "[redacted:593]",
+        "card_standby_img_url": "",
+        "intros": "[redacted:352]",
+        "template_id": "[redacted:35]",
+        "app_id": "[redacted:12]"
+      },
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:42]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:1842]",
+        "description": "[redacted:5]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": null,
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:22]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:17]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:23]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:21]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:22]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:17]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:22]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:18]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:19]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:17]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:22]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:16]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:20]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:15]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:29]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:22]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:27]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:20]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:21]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:16]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:23]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:24]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:27]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:23]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:25]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:26]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:18]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:37]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:22]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:18]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:19]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:17]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:32]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:18]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:26]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:13]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:20]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:21]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:28]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [
+          {
+            "type": "official",
+            "name": "[redacted:22]",
+            "url": null
+          },
+          {
+            "type": "official",
+            "name": "[redacted:22]",
+            "url": null
+          },
+          {
+            "type": "official",
+            "name": "[redacted:22]",
+            "url": null
+          },
+          {
+            "type": "official",
+            "name": "[redacted:22]",
+            "url": null
+          },
+          {
+            "type": "official",
+            "name": "[redacted:22]",
+            "url": null
+          }
+        ],
+        "skills": [],
+        "multiagent": null,
+        "metadata": {
+          "card_unactive_img_url": "",
+          "card_active_img_url": "",
+          "cases": "[redacted:33]",
+          "contact_url": "",
+          "type": "official",
+          "version": "[redacted:3]",
+          "avatar_img_url": "[redacted:91]",
+          "agentstudio_agent_id": "[redacted:32]",
+          "card_unactive_text": "[redacted:5]",
+          "ability_prompts": "[redacted:740]",
+          "provider": "[redacted:5]",
+          "credit_pack": "[redacted:593]",
+          "card_standby_img_url": "",
+          "intros": "[redacted:352]",
+          "template_id": "[redacted:35]",
+          "app_id": "[redacted:12]"
+        },
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:42]",
+      "description": "[redacted:4]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:4030]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": null,
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:22]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:11]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:22]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:32]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [
+        {
+          "type": "official",
+          "skill_id": "[redacted:32]",
+          "version": "[redacted:3]",
+          "source": null,
+          "provider": null,
+          "name": null,
+          "description": null
+        },
+        {
+          "type": "official",
+          "skill_id": "[redacted:32]",
+          "version": "[redacted:3]",
+          "source": null,
+          "provider": null,
+          "name": null,
+          "description": null
+        }
+      ],
+      "mcp_servers": [
+        {
+          "type": "official",
+          "name": "[redacted:22]",
+          "url": null
+        },
+        {
+          "type": "official",
+          "name": "[redacted:22]",
+          "url": null
+        }
+      ],
+      "metadata": {
+        "card_unactive_img_url": "",
+        "card_active_img_url": "",
+        "cases": "[redacted:33]",
+        "contact_url": "",
+        "type": "official",
+        "version": "[redacted:3]",
+        "avatar_img_url": "[redacted:93]",
+        "agentstudio_agent_id": "[redacted:32]",
+        "card_unactive_text": "[redacted:4]",
+        "ability_prompts": "[redacted:451]",
+        "provider": "[redacted:5]",
+        "credit_pack": "[redacted:593]",
+        "card_standby_img_url": "",
+        "intros": "[redacted:350]",
+        "template_id": "[redacted:35]",
+        "app_id": "[redacted:12]"
+      },
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:42]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:4030]",
+        "description": "[redacted:4]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": null,
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:22]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:11]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:22]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:32]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [
+          {
+            "type": "official",
+            "name": "[redacted:22]",
+            "url": null
+          },
+          {
+            "type": "official",
+            "name": "[redacted:22]",
+            "url": null
+          }
+        ],
+        "skills": [
+          {
+            "type": "official",
+            "skill_id": "[redacted:32]",
+            "version": "[redacted:3]",
+            "source": null,
+            "provider": null,
+            "name": null,
+            "description": null
+          },
+          {
+            "type": "official",
+            "skill_id": "[redacted:32]",
+            "version": "[redacted:3]",
+            "source": null,
+            "provider": null,
+            "name": null,
+            "description": null
+          }
+        ],
+        "multiagent": null,
+        "metadata": {
+          "card_unactive_img_url": "",
+          "card_active_img_url": "",
+          "cases": "[redacted:33]",
+          "contact_url": "",
+          "type": "official",
+          "version": "[redacted:3]",
+          "avatar_img_url": "[redacted:93]",
+          "agentstudio_agent_id": "[redacted:32]",
+          "card_unactive_text": "[redacted:4]",
+          "ability_prompts": "[redacted:451]",
+          "provider": "[redacted:5]",
+          "credit_pack": "[redacted:593]",
+          "card_standby_img_url": "",
+          "intros": "[redacted:350]",
+          "template_id": "[redacted:35]",
+          "app_id": "[redacted:12]"
+        },
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:6]",
+      "description": "[redacted:32]",
+      "model": {
+        "id": "[redacted:15]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:230]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": {
+            "enabled": true,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [],
+      "metadata": {},
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:6]",
+        "model": {
+          "id": "[redacted:15]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:230]",
+        "description": "[redacted:32]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": {
+              "enabled": true,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [],
+        "multiagent": null,
+        "metadata": {},
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:6]",
+      "description": "[redacted:39]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:268]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": {
+            "enabled": true,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [],
+      "metadata": {},
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:6]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:268]",
+        "description": "[redacted:39]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": {
+              "enabled": true,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [],
+        "multiagent": null,
+        "metadata": {},
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:4]",
+      "description": "[redacted:5]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:275]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": {
+            "enabled": true,
+            "permission_policy": null
+          },
+          "configs": []
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [],
+      "metadata": {
+        "agents.project": "[redacted:25]",
+        "agents.resource": "[redacted:4]",
+        "openagentbot_template": "[redacted:9]",
+        "openagentbot_template_run": "[redacted:36]",
+        "openagentbot_key_scope": "[redacted:75]"
+      },
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:4]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:275]",
+        "description": "[redacted:5]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": {
+              "enabled": true,
+              "permission_policy": null
+            },
+            "configs": []
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [],
+        "multiagent": {
+          "type": "coordinator",
+          "agents": [
+            {
+              "type": "agent",
+              "id": "[redacted:32]",
+              "version": null
+            },
+            {
+              "type": "agent",
+              "id": "[redacted:32]",
+              "version": null
+            },
+            {
+              "type": "agent",
+              "id": "[redacted:32]",
+              "version": null
+            }
+          ]
+        },
+        "metadata": {
+          "agents.project": "[redacted:25]",
+          "agents.resource": "[redacted:4]",
+          "openagentbot_template": "[redacted:9]",
+          "openagentbot_template_run": "[redacted:36]",
+          "openagentbot_key_scope": "[redacted:75]"
+        },
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:4]",
+      "description": "[redacted:5]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:115]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": {
+            "enabled": true,
+            "permission_policy": null
+          },
+          "configs": []
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [],
+      "metadata": {
+        "agents.project": "[redacted:25]",
+        "agents.resource": "[redacted:4]",
+        "openagentbot_template": "[redacted:9]",
+        "openagentbot_template_run": "[redacted:36]",
+        "openagentbot_key_scope": "[redacted:75]"
+      },
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:4]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:115]",
+        "description": "[redacted:5]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": {
+              "enabled": true,
+              "permission_policy": null
+            },
+            "configs": []
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [],
+        "multiagent": null,
+        "metadata": {
+          "agents.project": "[redacted:25]",
+          "agents.resource": "[redacted:4]",
+          "openagentbot_template": "[redacted:9]",
+          "openagentbot_template_run": "[redacted:36]",
+          "openagentbot_key_scope": "[redacted:75]"
+        },
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:5]",
+      "description": "[redacted:5]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:105]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": {
+            "enabled": true,
+            "permission_policy": null
+          },
+          "configs": []
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [],
+      "metadata": {
+        "agents.project": "[redacted:25]",
+        "agents.resource": "[redacted:5]",
+        "openagentbot_template": "[redacted:9]",
+        "openagentbot_template_run": "[redacted:36]",
+        "openagentbot_key_scope": "[redacted:75]"
+      },
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:5]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:105]",
+        "description": "[redacted:5]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": {
+              "enabled": true,
+              "permission_policy": null
+            },
+            "configs": []
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [],
+        "multiagent": null,
+        "metadata": {
+          "agents.project": "[redacted:25]",
+          "agents.resource": "[redacted:5]",
+          "openagentbot_template": "[redacted:9]",
+          "openagentbot_template_run": "[redacted:36]",
+          "openagentbot_key_scope": "[redacted:75]"
+        },
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:4]",
+      "description": "[redacted:8]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:111]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": {
+            "enabled": true,
+            "permission_policy": null
+          },
+          "configs": []
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [],
+      "metadata": {
+        "agents.project": "[redacted:25]",
+        "agents.resource": "[redacted:4]",
+        "openagentbot_template": "[redacted:9]",
+        "openagentbot_template_run": "[redacted:36]",
+        "openagentbot_key_scope": "[redacted:75]"
+      },
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:4]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:111]",
+        "description": "[redacted:8]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": {
+              "enabled": true,
+              "permission_policy": null
+            },
+            "configs": []
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [],
+        "multiagent": null,
+        "metadata": {
+          "agents.project": "[redacted:25]",
+          "agents.resource": "[redacted:4]",
+          "openagentbot_template": "[redacted:9]",
+          "openagentbot_template_run": "[redacted:36]",
+          "openagentbot_key_scope": "[redacted:75]"
+        },
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:7]",
+      "description": "[redacted:8]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:85]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:14]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:9]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:19]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:18]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [
+        {
+          "type": "customer",
+          "skill_id": "[redacted:32]",
+          "version": "[redacted:3]",
+          "source": null,
+          "provider": null,
+          "name": null,
+          "description": null
+        }
+      ],
+      "mcp_servers": [
+        {
+          "type": "official",
+          "name": "[redacted:14]",
+          "url": null
+        },
+        {
+          "type": "official",
+          "name": "[redacted:9]",
+          "url": null
+        }
+      ],
+      "metadata": {
+        "agents.project": "[redacted:25]",
+        "agents.resource": "[redacted:7]",
+        "openagentbot_key_scope": "[redacted:75]"
+      },
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:7]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:85]",
+        "description": "[redacted:8]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:14]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:9]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:19]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:18]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [
+          {
+            "type": "official",
+            "name": "[redacted:14]",
+            "url": null
+          },
+          {
+            "type": "official",
+            "name": "[redacted:9]",
+            "url": null
+          }
+        ],
+        "skills": [
+          {
+            "type": "customer",
+            "skill_id": "[redacted:32]",
+            "version": "[redacted:3]",
+            "source": null,
+            "provider": null,
+            "name": null,
+            "description": null
+          }
+        ],
+        "multiagent": null,
+        "metadata": {
+          "agents.project": "[redacted:25]",
+          "agents.resource": "[redacted:7]",
+          "openagentbot_key_scope": "[redacted:75]"
+        },
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:5]",
+      "description": "",
+      "model": {
+        "id": "[redacted:4]",
+        "temperature": 0.71,
+        "max_tokens": 10240,
+        "enable_thinking": true,
+        "thinking_budget": 4000
+      },
+      "system": null,
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": {
+            "enabled": false,
+            "permission_policy": {
+              "type": "always_allow"
+            }
+          },
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [],
+      "metadata": {},
+      "version": 2,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:5]",
+        "model": {
+          "id": "[redacted:4]",
+          "temperature": 0.71,
+          "max_tokens": 10240,
+          "enable_thinking": true,
+          "thinking_budget": 4000
+        },
+        "system": null,
+        "description": "",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": {
+              "enabled": false,
+              "permission_policy": {
+                "type": "always_allow"
+              }
+            },
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [],
+        "multiagent": null,
+        "metadata": {},
+        "version": 2,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:11]",
+      "description": "",
+      "model": {
+        "id": "[redacted:4]",
+        "temperature": null,
+        "max_tokens": 49969,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": null,
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": {
+            "enabled": false,
+            "permission_policy": {
+              "type": "always_allow"
+            }
+          },
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [],
+      "metadata": {},
+      "version": 2,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:11]",
+        "model": {
+          "id": "[redacted:4]",
+          "temperature": null,
+          "max_tokens": 49969,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": null,
+        "description": "",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": {
+              "enabled": false,
+              "permission_policy": {
+                "type": "always_allow"
+              }
+            },
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [],
+        "multiagent": null,
+        "metadata": {},
+        "version": 2,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:4]",
+      "description": "[redacted:22]",
+      "model": {
+        "id": "[redacted:4]",
+        "temperature": 0.7,
+        "max_tokens": 1111,
+        "enable_thinking": true,
+        "thinking_budget": 4000
+      },
+      "system": "[redacted:332]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": {
+            "enabled": false,
+            "permission_policy": {
+              "type": "always_allow"
+            }
+          },
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [],
+      "metadata": {},
+      "version": 2,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:4]",
+        "model": {
+          "id": "[redacted:4]",
+          "temperature": 0.7,
+          "max_tokens": 1111,
+          "enable_thinking": true,
+          "thinking_budget": 4000
+        },
+        "system": "[redacted:332]",
+        "description": "[redacted:22]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": {
+              "enabled": false,
+              "permission_policy": {
+                "type": "always_allow"
+              }
+            },
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [],
+        "multiagent": null,
+        "metadata": {},
+        "version": 2,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:5]",
+      "description": "[redacted:5]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": 0.7,
+        "max_tokens": null,
+        "enable_thinking": true,
+        "thinking_budget": 4000
+      },
+      "system": "[redacted:6]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": {
+            "enabled": false,
+            "permission_policy": {
+              "type": "always_allow"
+            }
+          },
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [
+        {
+          "type": "customer",
+          "skill_id": "[redacted:32]",
+          "version": "[redacted:3]",
+          "source": null,
+          "provider": null,
+          "name": null,
+          "description": null
+        }
+      ],
+      "mcp_servers": [],
+      "metadata": {},
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:5]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": 0.7,
+          "max_tokens": null,
+          "enable_thinking": true,
+          "thinking_budget": 4000
+        },
+        "system": "[redacted:6]",
+        "description": "[redacted:5]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": {
+              "enabled": false,
+              "permission_policy": {
+                "type": "always_allow"
+              }
+            },
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [
+          {
+            "type": "customer",
+            "skill_id": "[redacted:32]",
+            "version": "[redacted:3]",
+            "source": null,
+            "provider": null,
+            "name": null,
+            "description": null
+          }
+        ],
+        "multiagent": null,
+        "metadata": {},
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:42]",
+      "description": "[redacted:4]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:2794]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": null,
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        },
+        {
+          "type": "mcp_toolkit",
+          "mcp_server_name": "[redacted:9]",
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:24]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:22]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:33]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:22]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:13]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:8]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:16]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:24]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:18]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:18]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:16]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:16]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:21]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:12]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [
+        {
+          "type": "official",
+          "skill_id": "[redacted:32]",
+          "version": "[redacted:3]",
+          "source": null,
+          "provider": null,
+          "name": null,
+          "description": null
+        }
+      ],
+      "mcp_servers": [
+        {
+          "type": "official",
+          "name": "[redacted:9]",
+          "url": null
+        }
+      ],
+      "metadata": {
+        "card_unactive_img_url": "",
+        "card_active_img_url": "",
+        "cases": "[redacted:33]",
+        "contact_url": "",
+        "type": "official",
+        "version": "[redacted:3]",
+        "avatar_img_url": "[redacted:91]",
+        "agentstudio_agent_id": "[redacted:32]",
+        "card_unactive_text": "[redacted:6]",
+        "ability_prompts": "[redacted:555]",
+        "provider": "[redacted:5]",
+        "credit_pack": "[redacted:593]",
+        "card_standby_img_url": "",
+        "intros": "[redacted:345]",
+        "template_id": "[redacted:35]",
+        "app_id": "[redacted:12]"
+      },
+      "version": 2,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:42]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:2794]",
+        "description": "[redacted:4]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": null,
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          },
+          {
+            "type": "mcp_toolkit",
+            "mcp_server_name": "[redacted:9]",
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:24]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:22]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:33]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:22]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:13]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:8]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:16]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:24]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:18]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:18]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:16]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:16]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:21]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:12]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [
+          {
+            "type": "official",
+            "name": "[redacted:9]",
+            "url": null
+          }
+        ],
+        "skills": [
+          {
+            "type": "official",
+            "skill_id": "[redacted:32]",
+            "version": "[redacted:3]",
+            "source": null,
+            "provider": null,
+            "name": null,
+            "description": null
+          }
+        ],
+        "multiagent": null,
+        "metadata": {
+          "card_unactive_img_url": "",
+          "card_active_img_url": "",
+          "cases": "[redacted:33]",
+          "contact_url": "",
+          "type": "official",
+          "version": "[redacted:3]",
+          "avatar_img_url": "[redacted:91]",
+          "agentstudio_agent_id": "[redacted:32]",
+          "card_unactive_text": "[redacted:6]",
+          "ability_prompts": "[redacted:555]",
+          "provider": "[redacted:5]",
+          "credit_pack": "[redacted:593]",
+          "card_standby_img_url": "",
+          "intros": "[redacted:345]",
+          "template_id": "[redacted:35]",
+          "app_id": "[redacted:12]"
+        },
+        "version": 2,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:42]",
+      "description": "[redacted:6]",
+      "model": {
+        "id": "[redacted:11]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:983]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": null,
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:14]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:9]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [],
+      "metadata": {
+        "card_unactive_img_url": "[redacted:91]",
+        "card_active_img_url": "[redacted:91]",
+        "cases": "[redacted:33]",
+        "contact_url": "",
+        "type": "official",
+        "version": "[redacted:3]",
+        "avatar_img_url": "[redacted:91]",
+        "agentstudio_agent_id": "[redacted:32]",
+        "card_unactive_text": "[redacted:6]",
+        "ability_prompts": "[redacted:651]",
+        "provider": "[redacted:5]",
+        "credit_pack": "[redacted:593]",
+        "card_standby_img_url": "[redacted:91]",
+        "intros": "[redacted:349]",
+        "template_id": "[redacted:35]",
+        "app_id": "[redacted:12]"
+      },
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:42]",
+        "model": {
+          "id": "[redacted:11]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:983]",
+        "description": "[redacted:6]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": null,
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:14]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:9]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [],
+        "multiagent": null,
+        "metadata": {
+          "card_unactive_img_url": "[redacted:91]",
+          "card_active_img_url": "[redacted:91]",
+          "cases": "[redacted:33]",
+          "contact_url": "",
+          "type": "official",
+          "version": "[redacted:3]",
+          "avatar_img_url": "[redacted:91]",
+          "agentstudio_agent_id": "[redacted:32]",
+          "card_unactive_text": "[redacted:6]",
+          "ability_prompts": "[redacted:651]",
+          "provider": "[redacted:5]",
+          "credit_pack": "[redacted:593]",
+          "card_standby_img_url": "[redacted:91]",
+          "intros": "[redacted:349]",
+          "template_id": "[redacted:35]",
+          "app_id": "[redacted:12]"
+        },
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    },
+    {
+      "id": "[redacted:32]",
+      "name": "[redacted:30]",
+      "description": "[redacted:29]",
+      "model": {
+        "id": "[redacted:12]",
+        "temperature": null,
+        "max_tokens": null,
+        "enable_thinking": null,
+        "thinking_budget": null
+      },
+      "system": "[redacted:152]",
+      "tools": [
+        {
+          "type": "builtin_toolkit",
+          "mcp_server_name": null,
+          "default_config": {
+            "enabled": false,
+            "permission_policy": null
+          },
+          "configs": [
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:5]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:4]",
+              "enabled": true,
+              "permission_policy": null
+            },
+            {
+              "name": "[redacted:10]",
+              "enabled": true,
+              "permission_policy": null
+            }
+          ]
+        }
+      ],
+      "skills": [],
+      "mcp_servers": [],
+      "metadata": {
+        "agents.project": "[redacted:5]",
+        "agents.resource": "[redacted:30]"
+      },
+      "version": 1,
+      "type": "agent",
+      "workspace_id": "[redacted:20]",
+      "created_at": "[redacted:25]",
+      "updated_at": "[redacted:25]",
+      "archived_at": null,
+      "attributes": {
+        "type": "agent",
+        "id": "[redacted:32]",
+        "name": "[redacted:30]",
+        "model": {
+          "id": "[redacted:12]",
+          "temperature": null,
+          "max_tokens": null,
+          "enable_thinking": null,
+          "thinking_budget": null
+        },
+        "system": "[redacted:152]",
+        "description": "[redacted:29]",
+        "tools": [
+          {
+            "type": "builtin_toolkit",
+            "mcp_server_name": null,
+            "default_config": {
+              "enabled": false,
+              "permission_policy": null
+            },
+            "configs": [
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:5]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:4]",
+                "enabled": true,
+                "permission_policy": null
+              },
+              {
+                "name": "[redacted:10]",
+                "enabled": true,
+                "permission_policy": null
+              }
+            ]
+          }
+        ],
+        "mcp_servers": [],
+        "skills": [],
+        "multiagent": null,
+        "metadata": {
+          "agents.project": "[redacted:5]",
+          "agents.resource": "[redacted:30]"
+        },
+        "version": 1,
+        "created_at": "[redacted:25]",
+        "updated_at": "[redacted:25]",
+        "archived_at": null,
+        "workspace_id": "[redacted:20]"
+      }
+    }
+  ],
+  "has_more": true,
+  "next_page": "[redacted:32]"
+}

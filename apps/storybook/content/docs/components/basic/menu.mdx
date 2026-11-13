@@ -1,0 +1,92 @@
+---
+title: Menu 命令菜单
+description: 点击触发的轻量命令菜单：Radix 键盘导航，弹层与行高亮随 kit 主题
+---
+
+`Menu` 是 Radix DropdownMenu 的薄包装：`Menu`/`MenuTrigger` 原样透传 Radix 能力（方向键导航、Escape
+关闭、焦点圈、`asChild`），`MenuContent` 定型弹层，`MenuItem` 定型行高亮。体验页输入框「附件」与
+侧栏行尾「更多操作」都是它。
+
+```tsx
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（复制后 import 改为项目内路径）：
+
+```bash
+pnpm kit:add menu
+pnpm add @radix-ui/react-dropdown-menu
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 输入框「添加附件」等多动作入口：`onSelect` 把文件类型交给宿主选择器（如 `useAttachments` 的
+  `pickAndUpload({ accept })`），Menu 本身不感知上传。
+- 列表行尾「更多操作」：`align="end"` 贴右展开不溢出；删除项用 `--kit-danger` 文字色，删除会话等
+  不可逆操作仍须先走 AlertDialog 确认。
+- 从裸 Radix DropdownMenu 迁移：Root/Trigger 的受控 `open`/`onOpenChange`、`modal`、`asChild` 原样可用。
+
+## 代码演示
+
+预览使用本地数据；演示面板内可查看源码与接入命令。
+
+### 基本用法
+
+输入框组合器 prefix 里的「附件」入口（体验页同款位置）：`asChild` 挂到自己的按钮，`onSelect` 同时响应点击与键盘 Enter。
+
+<Showcase name="menu" />
+
+### 行尾对齐与危险项
+
+会话列表每行的「更多操作」：触发器贴右，`align="end"` 让弹层向左展开；删除项用 `--kit-danger` 色，归档/删除由调用方先走确认弹窗。
+
+<Showcase name="menu-align" />
+
+## API
+
+四个导出对应 Radix 的 Root/Trigger/Content/Item：`Menu` 与 `MenuTrigger` 原样透传 Radix props
+（受控 `open`/`onOpenChange`、`defaultOpen`、`modal`、`asChild`），弹层定位避让与翻面由 Radix 处理。
+
+### MenuContent
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `align` | 弹层与触发器的对齐方向；`end` 用于行尾菜单 | `"start" \| "center" \| "end"` | `"start"` |
+| `sideOffset` | 弹层与触发器的间距 | `number` | `6` |
+| `className` | 追加到弹层的 Tailwind 工具类 | `string` | — |
+| 其余属性 | 透传 Radix Content（`side`、`collisionPadding` 等） | Radix Content props | — |
+
+弹层经 Portal 渲染到 body，`z-index` 固定 9999；贴底触发器空间不足时自动向上翻面。
+
+### MenuItem
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `onSelect` | 选中回调，点击与键盘 Enter 都触发 | `(event: Event) => void` | — |
+| `disabled` | 禁用该项，键盘导航自动跳过 | `boolean` | `false` |
+| `className` | 追加到菜单项的 Tailwind 工具类（danger 项在此置色） | `string` | — |
+| 其余属性 | 透传 Radix Item | Radix Item props | — |
+
+悬停与键盘高亮走 Radix 的 `data-highlighted`，样式已在 `MenuItem` 定型；图标与文本直接作 children。
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-surface` | 弹层底色 | `#ffffff` | `#ffffff` |
+| `--kit-border` | 弹层描边 | `#e3e6ef` | `#e5e5e5` |
+| `--kit-bg-subtle` | 菜单项悬停与键盘高亮底色 | `#f6f7fb` | `#f7f7f7` |
+| `--kit-fg` | 菜单文字 | `#101322` | `#171717` |
+| `--kit-danger` | 危险项文字（业务 className 置色） | `#dc2626` | `#ad372f` |
+| `--kit-radius-sm` | 弹层圆角 | `9px` | `10px` |
+| `--kit-shadow` | 弹层阴影 | `0 8px 28px rgb(16 19 34 / 8%)` | `0 4px 20px rgb(23 23 23 / 6%), 0 1px 4px rgb(23 23 23 / 4%)` |
+| `--kit-text-label` | 菜单项文字档位 | `13px` | `13px` |
+
+入场动效消费 `--kit-animate-overlay-in`，菜单项高亮过渡用 `--kit-duration-fast` + `--kit-ease-out`，
+`prefers-reduced-motion` 下自动降级为无动画。更多主题配置见 [组件总览](/docs/components#主题)。

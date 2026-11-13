@@ -1,0 +1,37 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "storybook#build": {
+      "dependsOn": ["^build"],
+      "cache": false
+    },
+    "typecheck": {
+      "dependsOn": ["^build"]
+    },
+    "kit-web-experience#typecheck": {
+      "dependsOn": [
+        "^build",
+        "@openagentpack/kit-sdk#build",
+        "@openagentpack/kit-chat-ui#build"
+      ]
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "gen:openapi": {
+      "dependsOn": ["^build"],
+      "outputs": ["openapi.json"]
+    },
+    "gen:api-types": {
+      "dependsOn": ["^build"],
+      "outputs": ["src/protocol/generated/**"]
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}

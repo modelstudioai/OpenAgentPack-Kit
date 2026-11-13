@@ -1,0 +1,105 @@
+---
+title: SubAgentPanel 子 Agent 分区
+description: 资源面板中按名归并子 Agent 派发，点击任务行打开执行记录弹窗
+---
+
+`SubAgentPanel` 在资源面板（右栏）按展示名归并当前会话的子 Agent 派发：每个名字一行标注次数，
+展开列出每次派发，点任务行打开执行记录弹窗。数据直接来自 `useChat()` 快照的 `multiAgent`，
+会话尚无子 Agent 线程时分区不渲染。
+
+```tsx
+import { SubAgentPanel } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（复制后 import 改为项目内路径）：
+
+```bash
+pnpm kit:add sub-agent-panel
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 资源面板展示子 Agent 派发与执行记录：与 [Layout](/docs/components/layout) 的 `aside` 组合，分区顺序建议位于
+  「Agent 信息」之后、「技能与 MCP / 工具」之前（员工端同序）。
+- 执行记录弹窗读子线程自身事件（`loadThreadEvents`），不依赖主消息流加载；头部状态与流内
+  [子 Agent 卡](/docs/components/chat#多-agent-对话)同词汇：正在执行 Ns（逐秒计时）/
+  已完成 · 耗时 / 执行出错。
+
+## 代码演示
+
+预览使用本地线程数据；演示面板内可查看源码与接入命令。
+
+### 基本用法
+
+research 按展示名分组计数，行内区分运行中 / 已完成 / 出错；勾选清空线程后分区整体不渲染。
+
+<Showcase name="sub-agent-panel" />
+
+### 执行记录弹窗与历史加载
+
+点任务行打开弹窗：research 演示「加载更早消息」翻页（`options.more`），slide-maker 无可回放历史，只显示本次连接收到的消息。
+
+<Showcase name="sub-agent-panel-history" />
+
+## API
+
+### SubAgentPanel
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `multiAgent` | 当前会话的子 Agent 快照，直接传 `useChat().multiAgent`；`threads` 按展示名去重分组，组内按创建时间倒序（最新派发在前） | [`ChatMultiAgent`](#chatmultiagent) | — |
+| `className` | 追加到分区根节点的 Tailwind 工具类，用于宿主布局 | `string` | `""` |
+
+弹窗正文为单一滚动区（最大高度 `min(72vh, 640px)`）：主 Agent 指令（超长在 160px 内部滚动）+
+`StepRows` 消息步骤 + 子线程事件时间线；翻页沿用「加载更早消息」，失败给行内重试。
+
+### ChatMultiAgent
+
+从 `@openagentpack/kit-sdk/chat` 导入；`useChat()` 快照字段，由 hook / Provider 维护，组件不自行请求 HTTP。
+
+| 属性 | 说明 | 类型 |
+| --- | --- | --- |
+| `threads` | 全部子 Agent 线程，本组件的数据源 | [`ChatAgentThread[]`](#chatagentthread) |
+| `selectedThreadId` | 流内卡联动的选中线程 id；本组件不消费 | `string \| null` |
+| `selectThread` | 选中子线程（流内卡联动用） | `(id: string \| null) => void` |
+| `refreshThreads` | 重取线程目录 | `() => Promise<void>` |
+| `loadThreadEvents` | 拉取子线程事件历史：弹窗打开时自动补拉（`historyAvailable` 且未加载时）；`options.more` 翻页、`options.retry` 重试 | `(id: string, options?: { more?: boolean; retry?: boolean }) => Promise<void>` |
+| `loading` / `error` | 线程目录加载状态 | `boolean` / `string \| null` |
+
+### ChatAgentThread
+
+| 属性 | 说明 | 类型 |
+| --- | --- | --- |
+| `id` | 线程唯一标识，弹窗取数与翻页的定位键 | `string` |
+| `name` | 子 Agent 展示名，去重分组的键 | `string` |
+| `task` | 主 Agent 派发的任务文本；缺失时行显示「未记录任务」 | `string` |
+| `status` | 线程状态：运行中显示进行环，`failed` 显示红点与「出错」，终态显示耗时 | `string \| null` |
+| `createdAt` / `endedAt` | 起止时间；决定耗时展示与运行计时起点 | `string` |
+| `messages` | 已加载的消息步骤，弹窗正文直接渲染 | `ChatMessage[]` |
+| `loading` / `error` | 事件加载状态；`error` 非空时时间线给行内重试 | `boolean` / `string \| null` |
+| `nextPageToken` | 有值时时间线显示「加载更早消息」 | `string \| null` |
+| `historyAvailable` | 服务端是否有线程历史；`false` 时弹窗提示「仅显示本次连接收到的消息」 | `boolean` |
+| `loaded` | 历史是否已拉取过 | `boolean` |
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-bg-subtle` | 分区行与任务行悬停底色 | `#f6f7fb` | `#f7f7f7` |
+| `--kit-accent` | 运行中的旋转指示环 | `#4f46e5` | `#171717` |
+| `--kit-danger` | 失败状态点与「执行出错」文案 | `#dc2626` | `#ad372f` |
+| `--kit-border` | 弹窗描边 | `#e3e6ef` | `#e5e5e5` |
+| `--kit-surface` | 弹窗底色 | `#ffffff` | `#ffffff` |
+| `--kit-overlay` | 弹窗遮罩 | `rgb(0 0 0 / 40%)` | `rgb(23 23 23 / 32%)` |
+| `--kit-shadow` | 弹窗投影 | `0 8px 28px rgb(16 19 34 / 8%)` | `0 4px 20px rgb(23 23 23 / 6%), 0 1px 4px rgb(23 23 23 / 4%)` |
+
+键盘焦点环用 `--kit-focus`；弹窗头部分隔线用 `--kit-border-subtle`。行悬停与展开过渡消费
+`--kit-duration-fast` / `--kit-ease-out`，弹窗入场走 `--kit-animate-dialog-*` / `--kit-animate-overlay-*`，
+均随 `prefers-reduced-motion` 降级。文字走 `--kit-text-label` / `--kit-text-caption` / `--kit-text-meta`
+档位。更多主题配置见 [组件总览](/docs/components#主题)。

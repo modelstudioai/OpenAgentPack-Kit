@@ -1,0 +1,1533 @@
+{
+  "events": [
+    {
+      "type": "status",
+      "raw_type": "session_status",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:31]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "session_status",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "session_status": "[redacted:7]"
+            }
+          }
+        ]
+      },
+      "id": "sevt_01M4X2MJ6TCZV0WKJMAK4HCKMS",
+      "status": "running"
+    },
+    {
+      "type": "message",
+      "raw_type": "message",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:31]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "message",
+        "role": "user",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "text",
+            "text": "[redacted:610]"
+          }
+        ],
+        "metadata": {
+          "task_id": "[redacted:36]",
+          "benchmark": "[redacted:4]"
+        }
+      },
+      "id": "sevt_01M4X2MJ56WX14CX8N4MMAED1V",
+      "role": "user",
+      "content": "[redacted:610]"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_start",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_start",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model": "[redacted:11]",
+              "request_id": "[redacted:36]"
+            }
+          }
+        ]
+      },
+      "id": "msg_eb002138-3622-4b2c-9eb3-35aeb3682493"
+    },
+    {
+      "type": "thinking",
+      "raw_type": "reasoning",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "reasoning",
+        "role": "assistant",
+        "thread_id": "[redacted:31]"
+      },
+      "id": "msg_a97e24f8-173f-4608-8200-f88558848320",
+      "role": "assistant"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_end",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_end",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model_request_id": "[redacted:36]",
+              "model": "[redacted:11]",
+              "is_error": false,
+              "output_tokens": 1360,
+              "cache_creation_input_tokens": 147,
+              "request_id": "[redacted:36]",
+              "input_tokens": 5785,
+              "cache_read_input_tokens": 5632
+            }
+          }
+        ]
+      },
+      "id": "msg_103e8a82-2f2a-4fec-adc7-69949a792ac9"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:226]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_b041bc2c-56db-47de-8ce2-51bcb90a1544",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:226]"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:235]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_50f5928c-134f-444d-a842-5b0ddaff9ce4",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:235]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:250]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_2fc10ed5-9de4-4fde-9b84-52efa8b9b362",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:250]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:403]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_ca719361-3c2b-4678-bef7-2207d409d54f",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:403]"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_start",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_start",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model": "[redacted:11]",
+              "request_id": "[redacted:36]"
+            }
+          }
+        ]
+      },
+      "id": "msg_793bcf3d-247f-4ff5-9e58-963721b1ff4f"
+    },
+    {
+      "type": "thinking",
+      "raw_type": "reasoning",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "reasoning",
+        "role": "assistant",
+        "thread_id": "[redacted:31]"
+      },
+      "id": "msg_e958bde6-c34f-4463-a71d-336b7de6136b",
+      "role": "assistant"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_end",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_end",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model_request_id": "[redacted:36]",
+              "model": "[redacted:11]",
+              "is_error": false,
+              "output_tokens": 679,
+              "cache_creation_input_tokens": 438,
+              "request_id": "[redacted:36]",
+              "input_tokens": 6223,
+              "cache_read_input_tokens": 5779
+            }
+          }
+        ]
+      },
+      "id": "msg_5956be16-8c34-4cc4-b20e-f1c91070cca0"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:507]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_8f7ca936-b183-41ee-9783-2d6cc9371f89",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:507]"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:176]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_c19c18d6-90e0-4987-b486-6b7b747a08b6",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:176]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:166]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_19942038-b5e5-41d1-9c4a-ca2bb0ab0465",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:166]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:661]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_4d106ba3-f28d-4edc-a4d3-c5c3d6602b0a",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:661]"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_start",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_start",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model": "[redacted:11]",
+              "request_id": "[redacted:36]"
+            }
+          }
+        ]
+      },
+      "id": "msg_62242168-7f1a-4eed-9297-35a50a46dc15"
+    },
+    {
+      "type": "thinking",
+      "raw_type": "reasoning",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "reasoning",
+        "role": "assistant",
+        "thread_id": "[redacted:31]"
+      },
+      "id": "msg_d79d2a1a-2db9-4145-9b3d-4e17f89a35b7",
+      "role": "assistant"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_end",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_end",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model_request_id": "[redacted:36]",
+              "model": "[redacted:11]",
+              "is_error": false,
+              "output_tokens": 668,
+              "cache_creation_input_tokens": 560,
+              "request_id": "[redacted:36]",
+              "input_tokens": 6783,
+              "cache_read_input_tokens": 6217
+            }
+          }
+        ]
+      },
+      "id": "msg_7264a53a-0c21-4c15-9698-7180dcd44eee"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:372]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_57907048-eba7-41bf-913a-f2e549affb03",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:372]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:211]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_64650add-768b-423d-a87c-0f9fdc2c75ed",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:211]"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_start",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_start",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model": "[redacted:11]",
+              "request_id": "[redacted:36]"
+            }
+          }
+        ]
+      },
+      "id": "msg_37a02881-db3a-46b6-be82-42fb5fbbbe99"
+    },
+    {
+      "type": "thinking",
+      "raw_type": "reasoning",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "reasoning",
+        "role": "assistant",
+        "thread_id": "[redacted:31]"
+      },
+      "id": "msg_80b8893f-d861-4c84-81b5-adb2e1ee883e",
+      "role": "assistant"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_end",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_end",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model_request_id": "[redacted:36]",
+              "model": "[redacted:11]",
+              "is_error": false,
+              "output_tokens": 95,
+              "cache_creation_input_tokens": 244,
+              "request_id": "[redacted:36]",
+              "input_tokens": 7027,
+              "cache_read_input_tokens": 6777
+            }
+          }
+        ]
+      },
+      "id": "msg_bee970d7-11a9-49e6-b34c-642893666ff1"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:176]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_b7ee9457-b590-4ae4-9466-1a0766c958a8",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:176]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:279]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_28471058-20c6-4947-8f0b-5f850f82283b",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:279]"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_start",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_start",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model": "[redacted:11]",
+              "request_id": "[redacted:36]"
+            }
+          }
+        ]
+      },
+      "id": "msg_8d6d3f26-2713-49f1-b3d0-be93f1997560"
+    },
+    {
+      "type": "thinking",
+      "raw_type": "reasoning",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "reasoning",
+        "role": "assistant",
+        "thread_id": "[redacted:31]"
+      },
+      "id": "msg_2518d3bb-d8b7-4a74-8e93-9eca8d0dde4f",
+      "role": "assistant"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_end",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_end",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model_request_id": "[redacted:36]",
+              "model": "[redacted:11]",
+              "is_error": false,
+              "output_tokens": 180,
+              "cache_creation_input_tokens": 186,
+              "request_id": "[redacted:36]",
+              "input_tokens": 7213,
+              "cache_read_input_tokens": 7021
+            }
+          }
+        ]
+      },
+      "id": "msg_8014683d-d401-4178-8c0f-ca1ff992aa94"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:367]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_4e0e3638-54c6-41f9-a430-ad5ca1b1b791",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:367]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:899]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_bf960fe8-4b27-4fc1-b6b2-be2d1d135eda",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:899]"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_start",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_start",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model": "[redacted:11]",
+              "request_id": "[redacted:36]"
+            }
+          }
+        ]
+      },
+      "id": "msg_181b4afb-922c-41dc-90b3-ad05f4d90543"
+    },
+    {
+      "type": "thinking",
+      "raw_type": "reasoning",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "reasoning",
+        "role": "assistant",
+        "thread_id": "[redacted:31]"
+      },
+      "id": "msg_03bb15da-cdd4-4ed7-ba3c-204fd17766d8",
+      "role": "assistant"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_end",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_end",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model_request_id": "[redacted:36]",
+              "model": "[redacted:11]",
+              "is_error": false,
+              "output_tokens": 593,
+              "cache_creation_input_tokens": 429,
+              "request_id": "[redacted:36]",
+              "input_tokens": 7642,
+              "cache_read_input_tokens": 7207
+            }
+          }
+        ]
+      },
+      "id": "msg_a9d02e2d-a1b5-4f9c-b9ae-5d78a281814f"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:379]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_3ad596a9-3b93-4766-b8e7-b593ea5825b3",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:379]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:9707]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_79ced97e-a94b-46a8-b95e-ee3e79e7b9e8",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:9707]"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_start",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_start",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model": "[redacted:11]",
+              "request_id": "[redacted:36]"
+            }
+          }
+        ]
+      },
+      "id": "msg_a91821f6-9578-4edf-81bf-b797eb110c3b"
+    },
+    {
+      "type": "thinking",
+      "raw_type": "reasoning",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "reasoning",
+        "role": "assistant",
+        "thread_id": "[redacted:31]"
+      },
+      "id": "msg_1f57401c-cd0d-4ddd-9c46-2628fb0567c8",
+      "role": "assistant"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_end",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_end",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model_request_id": "[redacted:36]",
+              "model": "[redacted:11]",
+              "is_error": false,
+              "output_tokens": 209,
+              "cache_creation_input_tokens": 2457,
+              "request_id": "[redacted:36]",
+              "input_tokens": 10099,
+              "cache_read_input_tokens": 7636
+            }
+          }
+        ]
+      },
+      "id": "msg_9ac47ff9-bdba-4da4-a784-7db19fb5eca5"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:457]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_694c184c-727d-4164-ab70-6ce871d9fded",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:457]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:415]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_4846306f-dddb-4ddb-be95-80cb87288b09",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:415]"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_start",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_start",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model": "[redacted:11]",
+              "request_id": "[redacted:36]"
+            }
+          }
+        ]
+      },
+      "id": "msg_0f7ae929-8aa6-4bcb-9765-84787e1111df"
+    },
+    {
+      "type": "thinking",
+      "raw_type": "reasoning",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "reasoning",
+        "role": "assistant",
+        "thread_id": "[redacted:31]"
+      },
+      "id": "msg_e5c4adf8-bd32-41e4-a109-8cd426f1f281",
+      "role": "assistant"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_end",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_end",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model_request_id": "[redacted:36]",
+              "model": "[redacted:11]",
+              "is_error": false,
+              "output_tokens": 891,
+              "cache_creation_input_tokens": 288,
+              "request_id": "[redacted:36]",
+              "input_tokens": 10387,
+              "cache_read_input_tokens": 10093
+            }
+          }
+        ]
+      },
+      "id": "msg_51525d85-4386-47f0-a604-44fb0122e33a"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:185]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_40e7796d-8443-4628-80a4-2d8d7d18a5be",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:185]"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:184]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_5bc821be-09ea-44ae-88d0-8b434afe4dd3",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:184]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:2668]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_ca9bd975-ccaf-44fa-94de-761aba6bc308",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:2668]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:2668]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_555af4d3-aed3-41ce-a7d3-bee2c5de8136",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:2668]"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_start",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_start",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model": "[redacted:11]",
+              "request_id": "[redacted:36]"
+            }
+          }
+        ]
+      },
+      "id": "msg_5bfd4147-c49d-44a2-83df-1c6defdef557"
+    },
+    {
+      "type": "thinking",
+      "raw_type": "reasoning",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "reasoning",
+        "role": "assistant",
+        "thread_id": "[redacted:31]"
+      },
+      "id": "msg_9e6bf841-7144-4ca5-8bde-e9e1549d9de1",
+      "role": "assistant"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_end",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_end",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model_request_id": "[redacted:36]",
+              "model": "[redacted:11]",
+              "is_error": false,
+              "output_tokens": 690,
+              "cache_creation_input_tokens": 1409,
+              "request_id": "[redacted:36]",
+              "input_tokens": 11796,
+              "cache_read_input_tokens": 10381
+            }
+          }
+        ]
+      },
+      "id": "msg_48966f92-db30-4a78-92f5-7d1254fe6fd8"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:294]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_742b44fb-a062-4dbd-85bb-e4a927caded8",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:294]"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:413]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_df2dac32-ed87-4738-a7fb-bbc0da97a6d4",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:413]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:411]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_48197728-41be-44eb-88ba-a0a791b41245",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:411]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:952]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_9cf8ae7e-1d7e-4d13-9dc6-873587b96d84",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:952]"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_start",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_start",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model": "[redacted:11]",
+              "request_id": "[redacted:36]"
+            }
+          }
+        ]
+      },
+      "id": "msg_8b8325a4-5fe9-41d6-b870-588845519807"
+    },
+    {
+      "type": "thinking",
+      "raw_type": "reasoning",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "reasoning",
+        "role": "assistant",
+        "thread_id": "[redacted:31]"
+      },
+      "id": "msg_32973317-5247-4fac-9dac-866a914ff8ff",
+      "role": "assistant"
+    },
+    {
+      "type": "unknown",
+      "raw_type": "model_request_end",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "model_request_end",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "model_request_id": "[redacted:36]",
+              "model": "[redacted:11]",
+              "is_error": false,
+              "output_tokens": 307,
+              "cache_creation_input_tokens": 750,
+              "request_id": "[redacted:36]",
+              "input_tokens": 12546,
+              "cache_read_input_tokens": 11790
+            }
+          }
+        ]
+      },
+      "id": "msg_3a5dbfa4-5000-4462-ba74-ab1b0ea91ba2"
+    },
+    {
+      "type": "tool_use",
+      "raw_type": "tool_call",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call",
+        "role": "assistant",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "name": "[redacted:4]",
+              "arguments": "[redacted:301]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ]
+      },
+      "id": "msg_e1a42c42-0454-4c10-8165-f114ba09178f",
+      "role": "assistant",
+      "tool_name": "bash",
+      "tool_input": "[redacted:301]"
+    },
+    {
+      "type": "tool_result",
+      "raw_type": "tool_call_output",
+      "raw": {
+        "object": "[redacted:7]",
+        "status": "completed",
+        "id": "[redacted:40]",
+        "created_at": "[redacted:27]",
+        "sequence_number": null,
+        "type": "tool_call_output",
+        "role": "tool",
+        "thread_id": "[redacted:31]",
+        "content": [
+          {
+            "type": "data",
+            "data": {
+              "output": "[redacted:271]",
+              "name": "[redacted:4]",
+              "call_id": "[redacted:29]"
+            }
+          }
+        ],
+        "is_error": false
+      },
+      "id": "msg_bef505eb-a54b-459c-beb6-00b7c98b9520",
+      "role": "tool",
+      "tool_name": "bash",
+      "content": "[redacted:271]"
+    }
+  ],
+  "has_more": true,
+  "next_page": "[redacted:76]"
+}

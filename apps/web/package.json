@@ -1,0 +1,35 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenAgentPack Kit 体验页",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf dist",
+    "e2e": "pnpm --filter @openagentpack/kit-server build && node e2e/clean-data.mjs && playwright test"
+  },
+  "dependencies": {
+    "@openagentpack/kit-chat-ui": "workspace:*",
+    "@openagentpack/kit-sdk": "workspace:*",
+    "@radix-ui/react-dialog": "^1.3.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.0.4",
+    "tailwindcss": "^4.1.14",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9",
+    "vitest": "^3.2.4"
+  }
+}

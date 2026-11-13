@@ -1,0 +1,85 @@
+---
+title: CodeHighlighter 代码高亮
+description: 语法高亮代码块：语言、行号、自定义标题与完整复制
+---
+
+`CodeHighlighter` 渲染可复制的语法高亮代码块，[Markdown](/docs/components/message#markdown) 的代码围栏
+与工具 JSON 输出已自动接入。未知语言按纯文本展示，复制始终是传入的原始代码。
+
+```tsx
+import { CodeHighlighter } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（复制后 import 改为项目内路径）：
+
+```bash
+pnpm kit:add code-highlighter
+pnpm add lowlight@^3.3.0
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 展示工具输出、错误堆栈等独立代码块：`lang` 高亮加行号加复制；工具 JSON 输出的接线见 [Message](/docs/components/message)。
+- 需要文件名或自定义标题：`header` 传 ReactNode，`false` 隐藏整个工具栏。
+- 接 Markdown 正文时无需自行处理围栏：普通围栏由 Markdown 交给本组件，mermaid 围栏由 [Mermaid](/docs/components/feedback/mermaid) 渲染。
+
+## 代码演示
+
+预览使用本地数据；演示面板内可查看源码与接入命令。
+
+### 基本用法
+
+切换语言观察 token 高亮；行号只作展示，复制始终是原始代码（含换行与缩进）。
+
+<Showcase name="code-highlighter" />
+
+### 自定义标题与工具栏
+
+`header` 传 ReactNode 显示文件名，`false` 隐藏整个工具栏（复制按钮一并隐藏）；长标题省略号截断，`title` 属性保留完整内容。
+
+<Showcase name="code-highlighter-header" />
+
+### 纯文本降级与长行
+
+未注册语言保留原文；长行不折行，Tab 聚焦「代码内容」滚动区后可用方向键读行尾。
+
+<Showcase name="code-highlighter-fallback" />
+
+## API
+
+### CodeHighlighter
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `children` | 原始代码文本；组件只渲染，不执行 | `string` | 必填 |
+| `lang` | 语言名，大小写不敏感；未注册语言按纯文本展示 | `string` | — |
+| `header` | 工具栏标题；传 ReactNode 自定义（函数则以返回节点为标题），`false` 隐藏整个工具栏 | `ReactNode \| (() => ReactNode)` | 未传时显示语言名 |
+| `copyable` | 工具栏内的复制按钮（[Actions.Copy](/docs/components/feedback/actions)），隐藏工具栏时一并隐藏 | `boolean` | `true` |
+| `showLineNumbers` | 显示行号；行号不参与复制与朗读 | `boolean` | `false` |
+| `className` | 根节点 Tailwind 工具类 | `string` | — |
+
+复制复用 Actions.Copy：始终复制传入的原始代码，不含行号与工具栏文字。超过 50,000 字符跳过高亮按
+纯文本展示（流式更新不创建大量语法节点），复制不受影响。
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-code-keyword` | 关键字、选择器与名称 | `#7355a8` | `#7355a8` |
+| `--kit-code-string` | 字符串、正则 | `#217250` | `#217250` |
+| `--kit-code-number` | 数字、字面量与属性 | `#99602e` | `#99602e` |
+| `--kit-bg-subtle` | 代码区底色 | `#f6f7fb` | `#f7f7f7` |
+| `--kit-surface` | 工具栏底色 | `#ffffff` | `#ffffff` |
+| `--kit-border-subtle` | 卡片描边、工具栏与行号分隔线 | `#e3e6ef` | `#ececec` |
+| `--kit-fg-muted` | 注释与行号文字 | `#5b6478` | `#737373` |
+| `--kit-danger` | diff 删除类标记 | `#dc2626` | `#ad372f` |
+| `--kit-focus` | 代码滚动区键盘焦点环 | `#4f46e5` | `#737373` |
+
+三个代码色只随亮暗主题变化，不随工作区外观变灰；圆角走 `--kit-radius`，工具栏文字
+`--kit-text-caption`、代码字号 `--kit-text-base`。更多主题配置见 [组件总览](/docs/components#主题)。

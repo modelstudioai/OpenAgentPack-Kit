@@ -1,0 +1,42 @@
+---
+title: 指南
+description: 独立项目生成、鉴权、流式与重连、artifact 与部署
+---
+
+## 生成独立项目
+
+需要独立应用时，可以用脚手架创建自己的项目：
+
+```bash
+pnpm kit:create my-agent-app --kit /path/to/OpenAgentPack-Kit
+cd my-agent-app
+pnpm install
+pnpm dev
+```
+
+生成的项目依赖以 `file:` 指向 kit 仓库（kit 包未发布期间）；开源迁移后改为 npm 版本。
+
+## 鉴权与 Identity
+
+- 数据面：`IdentityProvider` 解析 `subjectId`（v1：anon cookie / JWT）；会话读写按 subject 过滤，
+  越权返回 `404`（不泄露存在性）。
+- 控制面：v1 `ADMIN_TOKEN` bearer；RBAC/企业 IdP（OIDC/企业 SSO）为二期能力。
+
+## 流式与重连
+
+- 客户端用 `fetch` + `ReadableStream` 读 SSE（不用 EventSource：要带 Authorization、要可控重连）。
+- 重连：指数退避（500ms×2^n，上限 15s，±20% jitter，8 次），带最后 `after` 续传；
+  `404` 全量重建；`401/403` 不重连；ping 超时（45s 无帧）判定静默断流。
+- 去重按 `event_id` 幂等；无 id 的帧用稳定合成 id（仅本地）。
+
+## Artifact 与文件
+
+下载一律 `GET /api/kit/files/:fileId/download`（server 代理，屏蔽过期预签名 URL）；
+体验页使用 `<a download>` 保存文件；嵌入其他宿主时可通过 `saveFile` 注入自定义保存能力。
+
+## 部署
+
+- 本地：`pnpm dev`；生产：`pnpm build` 后 `node apps/server/dist/bin.js` + 静态托管
+  `apps/web/dist`、`apps/console/dist`。
+- 反代场景：server 的 `/api/config` 返回空 `apiBaseUrl`（同源语义）；跨域直连用
+  `KIT_PUBLIC_BASE_URL` + `KIT_CORS_ORIGINS` 白名单。

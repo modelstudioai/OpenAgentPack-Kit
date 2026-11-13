@@ -1,0 +1,105 @@
+---
+title: SessionSidebar 会话目录
+description: 智能体分组、最近会话、搜索与行内操作组成的会话目录区
+---
+
+`SessionSidebar` 渲染员工端侧栏的会话目录区：智能体分组（展开懒加载、逐组分页）、最近会话、
+搜索与目录动作错误行。rail 框架——品牌、新聊天、业务导航与账号——由调用方组装；组件不处理
+路由、身份与数据请求，分页状态归调用方持有，取数经回调注入。
+
+```tsx
+import { SessionSidebar } from "@openagentpack/kit-chat-ui";
+```
+
+registry 已有独立条目（自动带入所依赖的 [SessionList](/docs/components/general/session-list) 与
+[EmptyState / ErrorState](/docs/components/chrome#欢迎加载与错误态)）：
+
+```bash
+pnpm kit:add session-sidebar
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 员工端侧栏的会话目录：分组/最近的页对象由调用方从 hooks 数据换算，选中、新建与行内动作
+  收口到调用方；目录只做展示、过滤与行内交互。
+- 整页骨架（桌面常驻 rail + H5 抽屉）用 [Layout](/docs/components/layout)：把整条 rail 放进
+  `sidebar` 插槽，桌面与抽屉同一时刻只挂载一份，无需 `hideOnMobile` 之类的开关。
+
+## 代码演示
+
+### 分组会话目录
+
+数据按「分组 + 最近」注入：分组展开触发 `onLoad` 懒加载，已加载计数在 `hasMore` 时显示 N+；
+触底翻页走 `onLoadMore`。同一会话会同时出现在两个分区，高亮与行内编辑跟随点击来源分区。
+
+<Showcase name="session-sidebar" />
+
+### 员工端外壳组合
+
+品牌 → 新聊天 → 目录 → 业务导航 → 账号，全在调用方的 aside 里；`activeGroupId` 让深链/刷新
+自动展开会话所在分组（只开不关），分组行「+」配合 `onNewChat` 提供组内新建入口。
+
+<Showcase name="session-sidebar-workspace" />
+
+## API
+
+### SessionSidebar
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `groups` | 智能体分组（各组独立分页状态），顺序即展示顺序 | [`SessionSidebarGroup[]`](#sessionsidebargroup) | — |
+| `recent` | 「最近」分区的分页数据 | [`SessionSidebarPage`](#sessionsidebarpage) | — |
+| `loading` | 分组清单本身的加载中：分组区还没内容时展示目录级状态 | `boolean` | `false` |
+| `error` | 分组清单错误文案；分组区还没内容时展示错误与重试 | `string \| null` | — |
+| `onReload` | 目录级错误的重试回调 | `() => void` | — |
+| `activeId` | 当前打开的会话 id | `string \| null` | — |
+| `activeSection` | 高亮归属分区；不传按分组归属（深链/外部导航的默认视图） | `"groups" \| "recent"` | `"groups"` |
+| `activeStatus` | 打开行的实时状态标记，只作用于归属分区里的那一行 | `"running" \| "attention" \| "failed" \| "completed"` | — |
+| `activeGroupId` | 自动展开的分组 id（通常来自路由的 agent slug）；只开不关 | `string \| null` | — |
+| `onSelect` | 选中会话：回传该行会话摘要与点击来源分区，导航所需 `agent_slug` 随点击携带、分区用于高亮归属 | `(session: SessionSummary, section: "groups" \| "recent") => void` | — |
+| `onNewChat` | 分组行「+」新建回调；不传则不渲染该入口。上架核验与路由由调用方自理 | `(groupId: string) => void` | — |
+| `menu` | 行尾操作菜单 render prop：返回的元素闭包持有该行会话与来源分区；删除等破坏性动作由业务自备确认弹窗 | `(session: SessionSummary, section: "groups" \| "recent") => ReactNode` | — |
+| `editing` | 受控的分区独立编辑态：编辑框只点亮指定分区里的那一行 | `{ id: string; section: "groups" \| "recent" } \| null` | — |
+| `onEdited` | 编辑提交（Enter 或失焦）：入参为会话 id 与去空白、截断到 120 字符的新标题；清空或同名视为取消 | `(id: string, title: string) => void` | — |
+| `onEditEnd` | 编辑态退出（提交或 Escape）：受控模式下由调用方在此清空 `editing` | `(id: string) => void` | — |
+| `actionError` | 目录动作（新建/重命名等）的就地错误提示，渲染为可关闭的错误行 | `string \| null` | — |
+| `onDismissError` | 关闭错误行回调 | `() => void` | — |
+| `searchInput` | 搜索框受控值：非空时进入搜索视图 | `string` | — |
+| `onSearchInput` | 搜索框输入回调 | `(value: string) => void` | — |
+| `search` | 后端检索结果页：注入后搜索覆盖全部历史会话（含未加载行），按 agent 分组展示；分页状态与取数动作仍归调用方 | [`SessionSidebarPage`](#sessionsidebarpage) | — |
+| `agentName` | 检索结果分组头的展示名解析；不传用 slug | `(slug: string) => string` | — |
+
+搜索框受控：注入 `search` 后输入非空即切换为后端检索结果视图——按 agent 分组可折叠、行只读，
+`hasMore` 渲染加载更多并支持触底翻页，检索中的旧结果不展示；未注入时退化为按标题、agent slug
+与分组名不区分大小写过滤已加载内容。分区与分组的展开状态由组件内部持有（`activeGroupId`
+命中的组自动展开）。
+
+### SessionSidebarPage
+
+一份分页数据：状态由调用方持有，取数动作以回调注入；展示层不感知协议词汇。
+
+| 属性 | 说明 | 类型 |
+| --- | --- | --- |
+| `sessions` | 已加载（并按调用方口径清洗过）的会话摘要 | [`SessionSummary[]`](/docs/components/general/session-list#sessionsummary) |
+| `initialized` | 是否已成功取过首页：分组头行据此决定是否显示已加载计数 | `boolean` |
+| `loading` / `loadingMore` | 首屏与翻页加载中 | `boolean` |
+| `hasMore` | 是否还有下一页；分组计数显示 N+、列表尾渲染加载更多 | `boolean` |
+| `error` | 本页错误文案；只渲染与重试，不感知来源 | `string \| null` |
+| `onLoad` | 分组展开时请求首页；目录级或「最近」的首次加载由调用方自理 | `() => void` |
+| `onRetry` | 本页失败后的重试 | `() => void` |
+| `onLoadMore` | 触底加载下一页 | `() => void` |
+
+### SessionSidebarGroup
+
+继承 `SessionSidebarPage` 全部属性，另加：
+
+| 属性 | 说明 | 类型 |
+| --- | --- | --- |
+| `id` | 分组 id（通常是 agent slug）：testid、折叠状态与新建回调都以它为键 | `string` |
+| `name` | 展示名：头行与搜索过滤使用 | `string` |
+
+异常会话的状态清洗（如索引滞留 `running` 但远端已不存在）在调用方完成后再传入目录；
+「已归档」小字属目录事实，保留原样。

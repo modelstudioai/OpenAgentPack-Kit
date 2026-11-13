@@ -1,0 +1,132 @@
+---
+title: Attachments 附件
+description: 输入框上方的附件暂存行：选择、拖放、上传状态与移除
+---
+
+`Attachments` 在输入框上方暂存待发送的附件：点击或拖放选择文件，卡片展示上传进度与失败原因。
+组件只负责选择与展示，上传、扫描与会话挂载由调用方完成。
+
+```tsx
+import { Attachments } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（复制后 import 改为项目内路径）：
+
+```bash
+pnpm kit:add attachments
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 输入框上方暂存待发送的附件（体验页同款）：`onSelectFiles` 收到原生 `File[]`，上传拿到
+  `file_id` 后把结果写回 `items`；发送时随消息一并提交。
+- 在自定义布局中单独展示一个文件的状态：用 `Attachments.FileCard`（即 `AttachmentFileCard`）
+  复用附件列表的同一卡片实现。
+
+## 代码演示
+
+预览使用本地数据，不会真实上传；演示面板内可查看源码与接入命令。
+
+### 基本用法
+
+点击选择或拖放文件，组件只返回 `File[]`；移除只更新列表，不发起远端删除。
+
+<Showcase name="attachments" />
+
+### 上传状态与失败卡
+
+业务把上传中、扫描中、失败三类来源统一成 [`AttachmentItem`](#attachmentitem)：上传中显示进度
+且无移除入口，失败卡经 `description` 展示原因。
+
+<Showcase name="attachments-status" />
+
+### 溢出与禁用
+
+`overflow` 决定多文件的布局策略（体验页用 `scrollX`）；`disabled` 同时冻结选择、拖放与移除。
+
+<Showcase name="attachments-overflow" />
+
+### FileCard 单文件卡片
+
+`Attachments.FileCard` 单独展示一个 [`AttachmentItem`](#attachmentitem)，复用附件列表的卡片实现，
+不含选择器与拖放区域。
+
+<Showcase name="attachments-file-card" />
+
+## API
+
+### Attachments
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `items` | 附件列表，由调用方维护并写回 | [`AttachmentItem[]`](#attachmentitem) | `[]` |
+| `onSelectFiles` | 内置选择或拖放得到文件时触发；上传由调用方完成，再把结果写回 `items` | `(files: File[]) => void` | — |
+| `onPick` | 使用宿主文件选择器（如 Electron 对话框），提供后不再渲染内置 file input | `() => void` | — |
+| `onRemove` | 移除已完成或失败的文件；上传中的文件不显示移除入口 | `(item: AttachmentItem) => void` | — |
+| `accept` | 传给内置 file input 的文件类型 | `string` | — |
+| `multiple` | 是否多选 | `boolean` | `true` |
+| `maxCount` | 数量上限；内置选择与拖放只接收剩余数量的文件 | `number` | — |
+| `disabled` | 禁止选择、拖放与移除 | `boolean` | `false` |
+| `overflow` | 列表溢出策略：换行 / 横向滚动 / 纵向滚动（容器限高） | `"wrap" \| "scrollX" \| "scrollY"` | `"wrap"` |
+| `placeholder` | 空列表占位与拖放覆盖层的提示 | `AttachmentsPlaceholder \| (type: "inline" \| "drop") => AttachmentsPlaceholder` | 内置文案 |
+| `getDropContainer` | 扩大拖放区域；目标元素需 `position: relative`，拖放提示覆盖其上 | `() => HTMLElement \| null` | 组件根节点 |
+| `className` | 根节点的 Tailwind 工具类 | `string` | — |
+| `classNames` | 语义槽位工具类：`root / list / item / placeholder / drop` | `Partial<Record<AttachmentsSemantic, string>>` | — |
+
+选择入口只在提供 `onPick` 或 `onSelectFiles` 时可用；拖放还要求提供 `onSelectFiles`。
+`onPick` 的宿主选择器自行遵守 `accept / multiple / maxCount`——组件收不到宿主选中的文件。
+
+### AttachmentItem
+
+| 属性 | 说明 | 类型 |
+| --- | --- | --- |
+| `uid` | 唯一标识，移除与写回的定位键 | `string` |
+| `name` | 文件名 | `string` |
+| `size` / `type` | 大小与 MIME，决定体积文案与文件标识 | `number` / `string` |
+| `status` | 上传状态：`uploading` 显示进度并隐藏移除入口，`error` 用危险色描边 | `"uploading" \| "done" \| "error"` |
+| `percent` | 上传进度；缺省显示不确定进度 | `number` |
+| `thumbUrl` | 图片缩略图；缺省按 MIME 或扩展名显示文件标识 | `string` |
+| `description` | 状态行内容，完成与失败态优先展示（如失败原因、扫描文案） | `ReactNode` |
+
+### AttachmentsRef
+
+| 方法/属性 | 说明 |
+| --- | --- |
+| `select()` | 打开内置文件选择；提供 `onPick` 时改调 `onPick` |
+| `nativeElement` | 根节点元素 |
+
+### AttachmentFileCard
+
+`Attachments.FileCard` 即该组件，也可单独导入：
+
+```tsx
+import { AttachmentFileCard, type AttachmentFileCardProps } from "@openagentpack/kit-chat-ui";
+```
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `item` | 文件数据：名称、大小、类型、缩略图、上传状态与说明 | [`AttachmentItem`](#attachmentitem) | 必填 |
+| `onRemove` | 提供后显示移除入口，点击回传当前文件；列表更新由调用方负责 | `(item: AttachmentItem) => void` | — |
+| `disabled` | 禁用卡片操作并隐藏移除入口 | `boolean` | `false` |
+| `className` | 卡片根节点的 Tailwind 工具类 | `string` | — |
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-bg-subtle` | 空列表占位底色 | `#f6f7fb` | `#f7f7f7` |
+| `--kit-border` | 占位与「添加」按钮的虚线描边、上传进度条轨道 | `#e3e6ef` | `#e5e5e5` |
+| `--kit-accent` | 占位与添加按钮的悬停描边/文字、拖放覆盖层虚线描边、上传进度条填充 | `#4f46e5` | `#171717` |
+| `--kit-surface` | 拖放覆盖层底色（90% 不透明） | `#ffffff` | `#ffffff` |
+| `--kit-danger` | 失败卡描边与失败原因文案 | `#dc2626` | `#ad372f` |
+| `--kit-fg-muted` | 占位说明文字、添加按钮与移除按钮 | `#5b6478` | `#737373` |
+
+键盘焦点环用 `--kit-focus`；占位标题与说明走 `--kit-text-label` / `--kit-text-caption` 文字档位。
+文件卡片本体（缩略图、文件名、体积文案）的 token 见 [FileCard](/docs/components/feedback/file-card)。
+更多主题配置见 [组件总览](/docs/components#主题)。

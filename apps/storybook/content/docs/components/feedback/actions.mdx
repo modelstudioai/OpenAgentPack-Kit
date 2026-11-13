@@ -1,0 +1,119 @@
+---
+title: Actions 操作列表
+description: 回答下方的操作行：按钮与子菜单、复制与受控赞踩
+---
+
+`Actions` 把回答下方的操作组织成一行：用 `items` 配置按钮与子菜单，或组合 `Actions.Copy` 与
+`Actions.Feedback`。[Message](/docs/components/message) 已为完成的回答内置复制入口，
+用户消息悬停显示 `iconOnly` 形态。
+
+```tsx
+import { Actions } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（复制后 import 改为项目内路径）：
+
+```bash
+pnpm kit:add actions
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 回答下方操作行：复制入口 `Message` 已内置；需要「重新生成」等业务操作或赞踩评价时自行组合。
+- 复制要接宿主能力（Electron 剪贴板桥、远端上报）：`Actions.Copy` 的 `onCopy` 注入实现。
+- 需要二级操作菜单：`items` 支持图标、禁用、danger 提示与 `subItems` 子菜单。
+
+## 代码演示
+
+预览使用本地数据；演示面板内可查看源码与接入命令。
+
+### 基本用法
+
+`items` 配置按钮与二级子菜单；点击叶子项回传 `key` 并自动收起弹层，Escape 或点击外部也可收起。
+
+<Showcase name="actions" />
+
+### 复制（Actions.Copy）
+
+默认走浏览器剪贴板；勾选「注入宿主失败」观察 `onCopy` 抛错后的失败状态，「仅图标」切换 `iconOnly` 形态。
+
+<Showcase name="actions-copy" />
+
+### 赞踩反馈（Actions.Feedback）
+
+受控组件：赞与踩互斥，再次点击当前选项回到 `default`；保存评价与上报埋点由调用方完成。
+
+<Showcase name="actions-feedback" />
+
+## API
+
+### Actions
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `items` | 操作按钮与子菜单配置 | [`ActionsItem[]`](#actionsitem) | `[]` |
+| `onClick` | 可用叶子项点击后的统一回调；展开子菜单本身不触发 | `(info: ActionsClickInfo) => void` | — |
+| `children` | 组合 `Actions.Copy`、`Actions.Feedback` 或自定义操作 | `ReactNode` | — |
+| `variant` | `items` 按钮外观；组合子组件可分别设置 | `"borderless" \| "outlined" \| "filled"` | `"borderless"` |
+| `className` | 根节点的 Tailwind 工具类 | `string` | — |
+| `aria-label` | 操作组的无障碍名称 | `string` | `"操作列表"` |
+
+### ActionsItem
+
+| 属性 | 说明 | 类型 |
+| --- | --- | --- |
+| `key` | 唯一业务标识 | `string` |
+| `label` | 操作文字 | `ReactNode` |
+| `icon` | 可选图标 | `ReactNode` |
+| `disabled` | 禁用该项 | `boolean` |
+| `danger` | 危险操作的视觉提示；不代替业务确认 | `boolean` |
+| `onItemClick` | 单项回调 | `(info: ActionsClickInfo) => void` |
+| `subItems` | 点击后展开的子操作 | [`ActionsItem[]`](#actionsitem) |
+
+`ActionsClickInfo` 包含 `key`、被点击的 `item` 与原始 `domEvent`。涉及删除会话等不可逆操作时，
+调用方仍须先展示影响并走 AlertDialog 确认。
+
+### Actions.Copy
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `text` | 待复制的原始文字 | `string` | 必填 |
+| `onCopy` | 注入复制实现：成功 resolve，失败抛错；省略时用浏览器剪贴板 | `(text: string) => void \| Promise<void>` | 浏览器剪贴板 |
+| `label` | 按钮名称与无障碍名称 | `string` | `"复制"` |
+| `iconOnly` | 只显示图标（无障碍名称仍读 `label`），复制状态文字照常出现 | `boolean` | `false` |
+| `disabled` | 禁止复制 | `boolean` | `false` |
+| `variant` | 按钮外观 | `"borderless" \| "outlined" \| "filled"` | `"borderless"` |
+| `className` | Tailwind 工具类 | `string` | — |
+
+复制状态由真实异步结果决定（复制中… / 已复制 / 复制失败，请重试），不把拒绝的剪贴板权限展示成成功；
+状态文字同时写入 sr-only 区域供读屏使用。
+
+### Actions.Feedback
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `value` | 调用方持有的反馈值 | `"default" \| "like" \| "dislike"` | 必填 |
+| `onChange` | 新反馈值：重复点击当前选项回传 `default` | `(value: "default" \| "like" \| "dislike") => void` | 必填 |
+| `disabled` | 禁止修改反馈 | `boolean` | `false` |
+| `variant` | 按钮外观 | `"borderless" \| "outlined" \| "filled"` | `"borderless"` |
+| `className` | Tailwind 工具类 | `string` | — |
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-bg-subtle` | 按钮悬停底色、`filled` 变体与子菜单触发器的悬停底色 | `#f6f7fb` | `#f7f7f7` |
+| `--kit-border` | `outlined` 变体描边、子菜单弹层描边 | `#e3e6ef` | `#e5e5e5` |
+| `--kit-surface` | 子菜单弹层底色 | `#ffffff` | `#ffffff` |
+| `--kit-fg-muted` | 默认按钮文字与图标 | `#5b6478` | `#737373` |
+| `--kit-accent` | 选中态赞/踩高亮 | `#4f46e5` | `#171717` |
+| `--kit-danger` | `danger` 项与复制失败文字 | `#dc2626` | `#ad372f` |
+
+子菜单弹层阴影用 `--kit-shadow`；键盘焦点环用 `--kit-focus`，按钮圆角走 `--kit-radius-sm`、
+文字档位 `--kit-text-caption`。更多主题配置见 [组件总览](/docs/components#主题)。

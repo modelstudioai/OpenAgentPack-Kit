@@ -1,0 +1,463 @@
+---
+title: Provider 与自建后端
+description: 用 ChatProvider 接入自己的百炼后端，支持原始 SSE、历史恢复、发送、停止和工具审批
+---
+
+自己的后端已经接入百炼 Managed Agent 时，通过 `ChatProvider` 注入请求与消息转换，继续使用
+Kit 的 `useChat` 与组件，无需部署 Kit Server；消息与审批状态由 Chat 管理。本页说明后端必须
+满足的接入合同，给 coding agent 的英文适配指南与可编译示例见
+[kit-chat-provider Skill](/docs/skill/kit-chat-provider)。
+
+## 何时使用
+
+- 后端已代理百炼原始 SSE，想复用 Kit 的订阅、历史恢复、发送与审批编排。
+- 后端已用 SDK 把百炼事件转换为 `SessionEvent`，只需实现五个 `ChatProvider` 方法。
+- 只想替换消息展示而不改协议与生命周期，用可选的 `transformMessage`。
+
+## 使用说明
+
+### 选择接入方式
+
+| 后端输出 | 接入方式 |
+| --- | --- |
+| 标准 `SessionEvent` 与本文控制帧（含示例 Kit Server） | `createSessionEventChatProvider` 配置 Request 与操作，显式传给 `useChat` |
+| 百炼原始 SSE | 使用本页的 `createBailianChatProvider`，配置 Request 与六项业务操作 |
+| 标准事件但使用其他流封装 | 自己实现五方法 `ChatProvider`，通过 `stream` 通知生命周期 |
+
+### 与真实体验页一致的接入
+
+目录、附件和用量等数据接口也采用显式 operations 配置，见
+[Client](/docs/sdk/client) 与 [组件交互与后端调用](/docs/sdk/experience)。
+ChatProvider 与 Client 均经公开 Request 调用，并共享身份与取消边界，分别配置聊天与数据能力。
+
+体验页把 Kit Server 当作示例后端，实际接入位于
+`apps/web/src/lib/chat-backend.ts`：配置每个操作的 URL、HTTP 方法、参数和 `mapResponse`，
+调用公开 `createSessionEventChatProvider`，页面再显式调用
+`useChat({ sessionId, provider })`。用户自建标准事件后端使用同一工厂和组件。
+已有应用仍可保留 `createKitChatProvider(client)` 与默认 Context 方式。
+
+此模式要求后端输出 SDK 的 `SessionEvent`，并采用
+[标准控制帧](/docs/sdk/stream#快照与游标) 的 `reset/ready/event/ping/done/error`。
+Kit Server 已实现这一合同；自己的后端可直接实现合同，不要求安装某个后端 SDK。
+原始 MA 增量事件请使用下方的原始流模式。
+
+以下独立示例使用 `/sessions` 和 `{ result }` 包装；体验页配置的是
+`/api/kit/sessions` 与 `{ data }`。更换这些映射即可复用同一运行时：
+
+{/* skill-example: kit-chat-provider/examples/normalized-provider.ts */}
+
+```ts
+import { PROTOCOL_VERSION, PROTOCOL_VERSION_HEADER } from "@openagentpack/kit-sdk/protocol";
+import type { ChatProvider } from "@openagentpack/kit-sdk/providers";
+import { createSessionEventChatProvider } from "@openagentpack/kit-sdk/providers/session-events";
+import { type BackendConfig, createBackendHttp } from "./backend-http.ts";
+
+// The Web app uses the same public factory with its own paths and { data } mapping.
+// This independent backend instead uses /sessions, { result } and application auth.
+// It adopts the documented SessionEvent/control-frame wire contract.
+export function createNormalizedProvider(config: BackendConfig): ChatProvider {
+	const backend = createBackendHttp(config);
+	return createSessionEventChatProvider({
+		request: backend.request,
+		...backend.operations,
+		stream: {
+			buildRequest({ sessionId, after }) {
+				const query = new URLSearchParams();
+				if (after) query.set("after", after);
+				const suffix = query.size ? `?${query}` : "";
+				return {
+					path: `${backend.sessionPath(sessionId)}/events/stream${suffix}`,
+					init: {
+						headers: {
+							Accept: "text/event-stream",
+							[PROTOCOL_VERSION_HEADER]: PROTOCOL_VERSION,
+						},
+					},
+				};
+			},
+		},
+	});
+}
+```
+
+{/* /skill-example */}
+
+标准事件工厂需要 `request`、`stream.buildRequest`、`sendMessage`、`interrupt`、
+`toolApprovals`、`submitToolApproval`；四项 HTTP 操作使用
+`BackendOperation<Input, Output>` 的 `buildRequest` / `mapResponse`。
+可选 `listThreads`、`listThreadEvents` 接入子 Agent 历史，页内事件须按创建顺序升序。
+默认 `connectTimeoutMs=30000`、`idleTimeoutMs=45000`，只接受正整数。
+工厂不自动添加业务协议头，不重发写操作；真实业务状态决定执行结束，SSE `done` 只结束传输。
+
+```text
+自建后端返回原始 SSE
+    → Request 获取响应，Stream 解码分帧
+    → Provider 处理就绪与历史恢复
+    → SDK 累计转换为 SessionEvent
+    → Chat 重建快照，调用 Provider.transformMessage 生成 ChatMessage
+    → Controller 持有消息、执行与审批状态
+    → useChat → 组件
+```
+
+`ChatProvider` 是前端到业务后端的会话适配器，上游依然是百炼；它不是 React 的
+`KitProvider`，实例只影响传入它的 `useChat`。百炼转换由 OpenAgentPack SDK 维护，Kit 只调用
+浏览器安全的 `@openagentpack/sdk/session-events` 入口：完整正文显式
+`{ redact: false, truncate: false }`，错误使用安全摘要，Provider 凭据只保留在后端。
+
+### 原生多 Agent
+
+需要主/子 Agent 页签与线程历史时，增加 `listThreads` 与 `listThreadEvents` 两项查询，原有
+五方法继续兼容；把 `useChat` 返回的 `multiAgent` 传给 `Chat` 即可，子 Agent 默认只读，切换后
+保留主输入草稿与附件。自建后端沿用百炼标准 API 时，把 `createBailianThreadOperations()`
+展开进配置，默认前缀 `/api/v1/agentstudio` 可用 `basePath` 改成业务代理前缀，应用身份仍由
+RequestClient 配置。可编译示例见 [kit-chat-provider](/docs/skill/kit-chat-provider)。
+
+### Provider 的消息转换
+
+SDK 负责原始协议到标准事件；可选的 `transformMessage` 负责标准事件到消息展示，默认 Kit
+Provider 与本页原始 Provider 都使用 `transformSessionEvent`（不依赖 SDK 运行时），UI 继续接收
+`ChatMessage`。
+
+| 合同 | 内容 |
+| --- | --- |
+| 输入 `MessageTransformInput` | `{ messages, event, identity }`：当前线程在本次重建中的临时消息数组、最新事件快照、稳定事件身份 |
+| 输出 `MessageTransformResult` | `{ messages, artifacts? }`：可返回原数组或替代数组，以及本事件的产物 |
+| 状态所有权 | Chat 保存事件 ledger 与返回消息；按最新快照逐事件调用策略，Provider 不缓存跨重建或跨会话消息 |
+
+转换保留稳定消息与分片 ID，支持同 ID 快照替换、清空与产物撤回；执行阶段、乐观消息、工具审批
+及重连仍由 Chat 管理。下面的例子做幂等的展示文本替换，包装实例随后端绑定创建一次：
+
+{/* skill-example: kit-chat-provider/examples/message-transform.ts */}
+
+```ts
+import { type MessageTransformer, transformSessionEvent } from "@openagentpack/kit-sdk/messages";
+import type { ChatProvider } from "@openagentpack/kit-sdk/providers";
+
+// A display-only label replacement. Reapplying it is safe when later events
+// rebuild the same thread. The original SessionEvent and lifecycle stay intact.
+const replaceDisplayLabel: MessageTransformer = (input) => {
+	const result = transformSessionEvent(input);
+	return {
+		...result,
+		messages: result.messages.map((message) => ({
+			...message,
+			parts: message.parts.map((part) =>
+				part.type === "text" ? { ...part, text: part.text.replaceAll("[[agent-name]]", "Support assistant") } : part,
+			),
+		})),
+	};
+};
+
+// Construct this wrapper once with the backend binding, not on every render.
+// Chat owns returned messages; this shared Provider stores no Session messages.
+export function withDisplayLabel(provider: ChatProvider): ChatProvider {
+	// Forward calls on the original instance, including class prototype methods.
+	return {
+		transformMessage: replaceDisplayLabel,
+		stream: (sessionId, options) => provider.stream(sessionId, options),
+		sendMessage: (sessionId, body) => provider.sendMessage(sessionId, body),
+		interrupt: (sessionId) => provider.interrupt(sessionId),
+		toolApprovals: (sessionId) => provider.toolApprovals(sessionId),
+		submitToolApproval: (sessionId, decision) => provider.submitToolApproval(sessionId, decision),
+	};
+}
+```
+
+{/* /skill-example */}
+
+省略 `transformMessage` 保持默认行为；独立使用 Store 时可通过
+`createSessionStore(sessionId, { transformMessage })` 注入策略，用 hook 时配置 Provider 即可。
+
+### 接入合同
+
+`createBailianChatProvider` 从 `@openagentpack/kit-sdk/providers/bailian` 导入，必需一个
+[RequestClient](/docs/sdk/request) 与六项操作（见 [API](#api)）：
+
+| 要求 | 合同 |
+| --- | --- |
+| 请求构造 | `buildRequest(input, context)` 返回 `{ path, init? }`；URL、方法、参数与响应包装由后端决定，不要求固定的六个 URL |
+| 响应映射 | `mapResponse(response, context)` 转换为 API 表中的结果；`context` 含注入的 `signal` 与原始 `input`，映射函数不自行 fetch |
+| 取消与时限 | 订阅与历史由 Provider 注入取消信号，`init` 不能替换；构造、鉴权、请求、映射、ready 与历史重建都在本次连接的取消与总时限内 |
+| `openStream` | `mapResponse` 不读 body、不先等待 ready，返回 `{ response, ready }`；Provider 随即读取并缓冲实时帧，再等待真实 ready |
+| `listEvents` | 交付完整升序原始快照，保留 id、created_at 及生命周期字段；只转发文本分片无法通过恢复校验 |
+| 写入 | 发送、中断与审批只发送一次；缺少完整历史或可靠顺序时失败，不能先开放发送再补齐历史 |
+
+### 完整接入示例
+
+以下是可替换的**示例业务后端合同**：JSON 用 `{ result }` 包装，历史用
+`{ data, next_page_token }`，路径与字段不是百炼固定接口；应用登录令牌不能使用百炼 API Key。
+共享请求与四项写入/审批配置如下，原始和已转换 Provider 示例均复用：
+
+{/* skill-example: kit-chat-provider/examples/backend-http.ts */}
+
+```ts
+import { KitError, SendMessageResponseSchema, ToolApprovalsResponseSchema } from "@openagentpack/kit-sdk/protocol";
+import type { SessionEventChatProviderOptions } from "@openagentpack/kit-sdk/providers/session-events";
+import { createRequest } from "@openagentpack/kit-sdk/request";
+
+export interface BackendConfig {
+	// Explicit runtime configuration; may be cross-origin.
+	baseUrl: string;
+	// Application identity only. Never supply a provider credential.
+	getAppToken: () => Promise<string>;
+}
+
+export function record(value: unknown): Record<string, unknown> {
+	if (!value || typeof value !== "object" || Array.isArray(value))
+		throw new KitError("provider_error", "The backend returned an invalid object.");
+	return value as Record<string, unknown>;
+}
+
+export async function readJson(response: Response): Promise<unknown> {
+	try {
+		return await response.json();
+	} catch {
+		throw new KitError("provider_error", "The backend returned invalid JSON.");
+	}
+}
+
+async function result(response: Response): Promise<unknown> {
+	const envelope = record(await readJson(response));
+	if (!("result" in envelope)) throw new KitError("provider_error", "The backend response has no result.");
+	return envelope.result;
+}
+
+// These routes and the { result } wrapper belong to this sample business backend.
+export function createBackendHttp(config: BackendConfig) {
+	const request = createRequest({
+		baseUrl: config.baseUrl,
+		headers: async () => ({ Authorization: `Bearer ${await config.getAppToken()}` }),
+	});
+	const sessionPath = (id: string) => `/sessions/${encodeURIComponent(id)}`;
+	const operations: Pick<
+		SessionEventChatProviderOptions,
+		"sendMessage" | "interrupt" | "toolApprovals" | "submitToolApproval"
+	> = {
+		sendMessage: {
+			buildRequest({ sessionId, body }) {
+				if (body.attachments?.length)
+					throw new KitError("invalid_request", "Mount uploaded files when creating a session.");
+				return {
+					path: `${sessionPath(sessionId)}/messages`,
+					init: {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({ input: body.text, request_id: body.client_message_id }),
+					},
+				};
+			},
+			async mapResponse(response) {
+				const parsed = SendMessageResponseSchema.safeParse(await result(response));
+				if (!parsed.success) throw new KitError("provider_error", "The backend returned an invalid send result.");
+				return parsed.data;
+			},
+		},
+		interrupt: {
+			buildRequest: ({ sessionId }) => ({ path: `${sessionPath(sessionId)}/interrupt`, init: { method: "POST" } }),
+			async mapResponse(response) {
+				const value = record(await result(response));
+				if (typeof value.interrupted !== "boolean")
+					throw new KitError("provider_error", "The backend returned an invalid interruption result.");
+				return { interrupted: value.interrupted };
+			},
+		},
+		toolApprovals: {
+			buildRequest: ({ sessionId }) => ({ path: `${sessionPath(sessionId)}/approvals` }),
+			async mapResponse(response) {
+				const parsed = ToolApprovalsResponseSchema.safeParse(await result(response));
+				if (!parsed.success) throw new KitError("provider_error", "The backend returned invalid tool approvals.");
+				return parsed.data;
+			},
+		},
+		submitToolApproval: {
+			buildRequest: ({ sessionId, decision }) => ({
+				path: `${sessionPath(sessionId)}/approvals`,
+				init: { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(decision) },
+			}),
+			async mapResponse(response) {
+				const parsed = SendMessageResponseSchema.safeParse(await result(response));
+				if (!parsed.success) throw new KitError("provider_error", "The backend returned an invalid approval result.");
+				return parsed.data;
+			},
+		},
+	};
+
+	return { request, sessionPath, operations };
+}
+```
+
+{/* /skill-example */}
+
+再组合原始流与历史配置：
+
+{/* skill-example: kit-chat-provider/examples/raw-bailian-provider.ts */}
+
+```ts
+import { KitError } from "@openagentpack/kit-sdk/protocol";
+import { createBailianChatProvider } from "@openagentpack/kit-sdk/providers/bailian";
+import { type BackendConfig, createBackendHttp, readJson, record } from "./backend-http.ts";
+
+export function createRawBailianProvider(config: BackendConfig) {
+	const backend = createBackendHttp(config);
+	return createBailianChatProvider({
+		request: backend.request,
+		...backend.operations,
+		openStream: {
+			buildRequest: ({ sessionId }) => ({
+				path: `${backend.sessionPath(sessionId)}/stream`,
+				init: { headers: { Accept: "text/event-stream" } },
+			}),
+			mapResponse(response) {
+				// Backend contract: subscribe upstream FIRST, then flush this header.
+				// Cross-origin backends must expose it through Access-Control-Expose-Headers.
+				if (response.headers.get("x-upstream-ready") !== "true")
+					throw new KitError("conflict", "The backend did not confirm upstream subscription readiness.");
+				// Do not consume body or await a separate readiness promise here.
+				return { response, ready: Promise.resolve() };
+			},
+		},
+		listEvents: {
+			buildRequest({ sessionId, pageToken }) {
+				const query = new URLSearchParams({ order: "asc" });
+				if (pageToken) query.set("page_token", pageToken);
+				return { path: `${backend.sessionPath(sessionId)}/events?${query}` };
+			},
+			async mapResponse(response) {
+				const page = record(await readJson(response));
+				if (!Array.isArray(page.data))
+					throw new KitError("provider_error", "The backend returned an invalid history page.");
+				const next = page.next_page_token;
+				if (next !== undefined && next !== null && typeof next !== "string")
+					throw new KitError("provider_error", "The backend returned an invalid history cursor.");
+				return {
+					// Keep complete raw objects, including identity and execution state.
+					events: page.data.map(record),
+					nextPageToken: next,
+				};
+			},
+		},
+	});
+}
+```
+
+{/* /skill-example */}
+
+示例要求后端先建立百炼订阅，再发送 `x-upstream-ready: true` 响应头（跨域需通过
+`Access-Control-Expose-Headers` 暴露）；其他握手方式应返回绑定本次连接的 ready Promise。在
+应用初始化时创建稳定的 Provider，交给 `useChat({ sessionId, provider })`；发送、草稿、停止与
+审批的组合见 [useChat](/docs/sdk/use-chat) 与 [use-kit-chat 示例](/docs/skill/use-kit-chat)。
+会话列表与文件上传下载由业务后端另行提供，`useSessions` 仍访问默认 KitClient。
+
+## 代码演示
+
+### 原始 SSE：连接时序与六项操作
+
+<Showcase name="bailian-provider" />
+
+mock Request 承载真实 `createBailianChatProvider`：openStream 先订阅后就绪，重建期间实时帧
+进缓冲，onReady 后交付实时增量；sendMessage 展示示例后端合同的请求与响应映射。
+
+### 已转换事件：五方法 Provider
+
+<Showcase name="provider-events" />
+
+脚本 Provider 只实现五个必需方法：stream 按 onReset → 完整事件 → onReady 交付，onEvent 携带
+累计快照与游标；回调合同见下方[已转换事件](#已转换事件直接实现-chatprovider)。
+
+### transformMessage 换展示
+
+<Showcase name="provider-transform" />
+
+同一事件分别走默认转换与展示标签替换包装，对比输出的 `ChatMessage` 文本；包装方式见
+[Provider 的消息转换](#provider-的消息转换)。
+
+## API
+
+### createBailianChatProvider(options)
+
+```ts
+function createBailianChatProvider(options: BailianChatProviderOptions): ChatProvider
+```
+
+`options.request` 是必需的 [RequestClient](/docs/sdk/request)；六个必需操作与两个可选线程查询
+（`listThreads`、`listThreadEvents`）各含 `buildRequest` 与 `mapResponse`，HTTP 统一经 Request
+执行，映射函数不自行发请求。
+
+| 操作 | 输入 | 映射结果 |
+| --- | --- | --- |
+| `openStream` | `{ sessionId }` | `{ response, ready }`，持久原始 SSE 与真实上游就绪信号 |
+| `listEvents` | `{ sessionId, pageToken? }` | `{ events, nextPageToken? }`，完整升序原始历史 |
+| `sendMessage` | `{ sessionId, body }` | 真实发送受理结果，保留 `event_ids` |
+| `interrupt` | `{ sessionId }` | 远端中断受理结果 |
+| `toolApprovals` | `{ sessionId }` | 当前 batch/call 与完整审批参数 |
+| `submitToolApproval` | `{ sessionId, decision }` | 正式 allow/deny 的受理结果 |
+
+### 可选限制配置
+
+| 可选配置 | 默认值 | 作用 |
+| --- | --- | --- |
+| `connectTimeoutMs` | `30000` | 打开流、上游就绪与完整历史重建的总时限 |
+| `idleTimeoutMs` | `45000` | 无有效业务帧或心跳的静默时限 |
+| `maxBufferedFrames` | `1024` | 重建期间暂存实时帧的数量上限 |
+| `maxBufferedBytes` | `8 * 1024 * 1024` | 暂存数据的体积上限 |
+| `maxHistoryEvents` | `10000` | 单次重建允许读取的历史事件数量上限 |
+
+## 常见问题
+
+### 连接什么时候算就绪？
+
+按「打开并缓冲实时流 → 确认上游 ready → 读完整历史 → 合并缓冲 → 通知 Hook ready」执行，只有
+最后一步完成后连接才为 `connected`；运行或待审批仍使 `canSend` 为 `false`。
+
+### 断线后怎么恢复？
+
+原始模式初连和重连都重读完整历史，恢复成本随历史增长；不使用 Kit 的 `after` 游标，也不把
+SSE `id` 或最后业务 `event_id` 当作逐帧回放游标（默认 Kit 模式继续用原游标）。断线重连由
+Controller 统一调度，适配器不另开重连循环，消息与审批都不自动重发。
+
+### 历史与实时事件冲突时怎么办？
+
+同一缓冲内保留到达顺序，两个新事件 `created_at` 相同也能恢复；同 ID 状态更新按实际顺序归并，
+消息位置保持稳定，不会把已结束的会话显示为运行中。重建期间同 ID 快照冲突且没有版本依据（或
+明确的进行中→完成转换）时，适配器拒绝恢复——`created_at` 不能证明哪个版本更新。孤立的
+`object: "content"` 分片在匹配到消息身份前不会宣布 ready。
+
+### 恢复期间消息连续吗？
+
+不承诺逐字连续：进行中历史没有可靠分片水位，Kit 保留已知展示并等待权威完整快照；最终快照、
+显式清空与相同 ID 的更新仍然生效。
+
+### 失败与上限如何表现？
+
+达到限制、分页循环或恢复合同不完整时明确失败，不会截断历史后宣布 ready。需要调整上限时，将
+边界配置与 Request、六项操作一起传给工厂，结合后端心跳频率和会话规模设置。
+
+### 自然断流等于回答完成吗？
+
+不是。自然 EOF、静默超时和业务完成是不同情况；结束一轮回答不关闭持久订阅，断流不会伪造
+回答完成。
+
+## 已转换事件：直接实现 ChatProvider
+
+后端已用 SDK 把百炼事件转换为 `SessionEvent` 时，实现 `ChatProvider` 五个必需方法并保持一个
+稳定对象，交给 `useChat({ sessionId, provider })` 即可。`stream` 使用与
+[Client 流](/docs/sdk/client) 相同的回调合同，每次只管理一次订阅：
+
+- 重建开始发 `onReset`，交付完整事件后发 `onReady`；`onReady` 不能只表示 fetch 成功。
+- 通过 `onEvent(event, cursor?)` 交付累计快照；有明确续传合同时才提供不透明游标。
+- 可恢复连接错误抛出 `KitError` 并设置 `retryable: true`；取消后停止所有回调。
+- 传输正常结束可以通知 `onDone` 并结束 Promise；它不表示主会话执行完成。
+
+默认适配器 `createKitChatProvider(client)` 也实现此接口，显式 Provider 优先于 Context；完整
+示例显式使用 `transformMessage: transformSessionEvent`，见
+[Provider Skill 示例](/docs/skill/kit-chat-provider#已转换事件)。
+
+## 依赖交付状态
+
+本页面向当前仓库 workspace 与源码集成。仓库精确依赖 npm 正式发布的
+`@openagentpack/sdk@0.10.0`，包内容由 `pnpm-lock.yaml` integrity 锁定。
+该版本通过浏览器安全的 `session-events` 入口公开
+导出 `SessionEvent` 与 `createBailianSessionEventNormalizer`，也提供 Kit Server 使用的
+服务端线程查询接口 `listSessionThreads` 与 `listSessionThreadEvents`。
+依赖升级后需核对公开导出，并运行安装、浏览器构建与相关合同测试。
+本文的示例后端合同不代表已经完成某个真实业务后端或 Cloud 联调。

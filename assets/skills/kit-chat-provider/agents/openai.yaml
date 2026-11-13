@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kit Chat Provider"
+  short_description: "Adapt a self-owned Bailian backend to Kit chat"
+  default_prompt: "Use $kit-chat-provider to connect my Bailian backend and its raw SSE subscription to Kit useChat."

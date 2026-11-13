@@ -1,0 +1,70 @@
+---
+title: 广场与用量
+description: PlazaCard、CategoryTabs、MeterBar 和 ActivityHeatmap 的 Props 与调用方责任
+---
+
+这四个组件用于体验页的 Agent 广场、个人用量页与管理端配额视图。
+组件只展示调用方提供的数据，不读取接口、不决定跳转或执行配额审批。
+
+```bash
+pnpm kit:add plaza
+```
+
+## PlazaCard
+
+展示一个 `PlazaEntry` 的图标、名称、描述、分类、精选与「我的」徽标，以及近 30 天 Turn 数。
+图标支持图片地址与 emoji，点击「开始体验」只调用 `onOpen(entry.slug)`。
+
+卡片将图标、标题与分类置于顶部，说明最多展示两行，用量和独立操作按钮置于底部。
+长标题省略显示，标题和说明通过 `title` 保留完整内容；窄屏下徽标和底部操作可以换行。
+卡片不是嵌套按钮，键盘聚焦“开始体验”时显示焦点轮廓。
+
+| 属性 | 类型 | 说明 |
+| --- | --- | --- |
+| `entry` | `PlazaEntry` | 必填，来自 `@openagentpack/kit-sdk/protocol`，包括 Agent 展示信息和 stats |
+| `onOpen` | `(slug: string) => void` | 必填，由调用方更新路由、选中 Agent 与会话状态 |
+
+## CategoryTabs
+
+受控分类选择器，在调用方传入的分类前追加 `featured`（精选）入口。
+当前只展示分类名称，`count` 暂不展示。
+
+分类条使用 `tablist` / `tab` 语义，当前项是 Tab 键的进入位置。左右方向键以及 Home / End
+移动焦点并触发 `onChange`，Tab 离开分类条；分类过多时只在分类条内横滚，不拖动整个页面。
+
+| 属性 | 类型 | 说明 |
+| --- | --- | --- |
+| `categories` | `{ id: PlazaCategory; name: string; count: number }[]` | 必填，分类列表 |
+| `active` | `PlazaTabId` | 必填，分类枚举或 `featured` |
+| `onChange` | `(next: PlazaTabId) => void` | 必填，由调用方筛选数据或重新查询 |
+
+## MeterBar
+
+用量进度条。填充比例限制在 0–100%；`unlimited=true` 或 `max <= 0` 时没有填充。
+限额计算、月度加油包叠加与发送拦截由服务端和调用方负责，组件不决定是否允许发送。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `number` | 必填 | 当前已用量 |
+| `max` | `number` | 必填 | 生效上限，调用方计入当月加油包 |
+| `unlimited` | `boolean` | `false` | 不限量时只显示轨道 |
+| `className` | `string` | `""` | 附加 Tailwind 类 |
+
+## ActivityHeatmap
+
+| 属性 | 类型 | 说明 |
+| --- | --- | --- |
+| `days` | `{ day: string; turns: number }[]` | 必填，按展示顺序排列，day 必须唯一 |
+
+按数据中的最大 Turn 数分出三档活跃度，零值显示为空闲色。
+组件不排序、不补齐缺失日期；默认 `useQuota()` 返回的数据已按 UTC 日键排序并补齐近 30 天。
+
+## 组合与数据来源
+
+体验页将广场搜索、分类与内容卡片放在同一响应式页面中，热门、我的 Agent 与主列表保持各自
+分区。加载与无结果区域复用 [EmptyState](/docs/components/chrome)，请求失败复用
+`ErrorState`；这套卡片、按钮与焦点样式也用于个人用量和成员登录页，亮暗配色由页面主题控制。
+
+广场数据用 `usePlaza()`，配额与每日活动用 `useQuota()`。这些默认 Hooks 在
+`KitProvider` 内运行，接入说明见 [广场与配额 Hooks](/docs/sdk/discovery-usage)。
+可编译的英文组合示例见 [kit-components Skill](/docs/skill/kit-components)。

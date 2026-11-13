@@ -1,0 +1,149 @@
+---
+title: Skill 效果评测
+description: pnpm eval：社区 evals/ 资产兼容 + 百炼 Managed Agents 远端运行 + 触发/质量双指标 + 报告/回归/优化建议闭环
+---
+
+`pnpm eval` 把「一个 skill 包」变成「一条可复跑、可回归、可进 CI 的评测链路」：
+上传钉版本 → 建评测 agent（沙箱三件套）→ 逐 case 真实会话 → 脚本断言 + judge 断言双判分 →
+HTML 报告 → 版本迭代后 diff 回归 → 失败聚类反推 SKILL.md 修改建议。
+
+社区资产约定（agentskills.io 的 `evals/evals.json`、NVIDIA SkillEvaluator 的 `evals/` 扩展树）
+被**原样兼容**：你的 skill 若自带 `evals/`，可直接被本工具消费；本工具的扩展字段放在旁置
+`evals/kit.json`，不污染社区文件。调研与探针依据见仓库
+`docs/research/skill-eval-community-specs.md` 与 `docs/research/skill-eval-probe.md`。
+
+## 快速开始
+
+```bash
+pnpm eval init ./my-skill          # 生成 ./my-skill-workspace/（evals.json/kit.json/config.yml）
+# 策展 case：把 draft 标记去掉、补真实 prompt 与断言；或：
+pnpm eval gen ./my-skill           # judge 模型增量起草 draft case
+pnpm eval run ./my-skill           # 真实 Cloud 全链路跑评测
+pnpm eval report ./my-skill        # 最新 run 的 report.html / report.md
+pnpm eval diff ./my-skill <base-run> [new-run]   # 逐 case 回归对比
+pnpm eval suggest ./my-skill [run-id]            # 失败聚类 → SKILL.md 修改建议
+pnpm eval gate ./my-skill --min-pass-rate 0.8    # CI 门禁（不达标 exit 1）
+pnpm eval iterate ./my-skill --run <run-id>      # 应用 suggest 的 replacements 生成 <skill>-next + workspace 骨架
+```
+
+凭据走环境变量：`BAILIAN_API_KEY`（或 `DASHSCOPE_API_KEY`）+ `BAILIAN_WORKSPACE_ID`
+（或 `BAILIAN_BASE_URL`）。评测只能跑真实 Cloud——mock gateway 不执行 skill。
+
+## workspace 布局（本地文件系统，不进 git）
+
+```
+my-skill-workspace/
+├─ evals/evals.json        # 社区 schema：{skill_name, evals:[{id,prompt,expected_output,files,assertions}]}
+├─ evals/kit.json          # 扩展：case kind(trigger_pos/trigger_neg/task)、rubric 权重、draft 标记
+├─ evals/config.yml        # model/judge_model/concurrency/超时/baseline_without_skill/sandbox_tools
+├─ evals/files/<case-id>/  # 输入 fixture（建会话时挂载进 sandbox）
+├─ index.json              # skill 内容哈希 → (skill_id, version)：迭代重跑免重等审查
+├─ env.json                # 自动创建的 cloud environment 缓存（workspace 级复用）
+└─ runs/<run-id>/
+   ├─ manifest.json        # status running→complete；钉 skill version/agent/model/case 集哈希
+   ├─ cases/<id>/{transcript,grading,timing}.json
+   ├─ benchmark.json       # 社区同构（pass_rate/turns/time 的 mean±stddev；基线关时 delta=null）
+   ├─ report.html / report.md / results.json
+   ├─ diff-<base>.json      # eval diff 产物
+   └─ suggestions.md/json   # eval suggest 产物
+```
+
+## 判分模型
+
+- **脚本断言**（确定性，优先）：`skill_activated` / `skill_not_activated` /
+  `no_clarify_before_activate` / `turns_within_budget` / `artifact_contains:<substr>`。
+  触发判定唯一信号是会话事件里的 `activate_skill` 工具调用（name 匹配），不用文本猜测；
+- **judge 断言**（语义）：rubric 项交给 judge 模型，**evidence 必须引 transcript 原文**；
+- score = 加权通过率（权重在 kit.json rubric，缺省 1）；benchmark 汇总 mean±stddev。
+
+## 三个必须知道的实测结论
+
+1. **审查分钟级**：skill 上传后 `checking → active` 实测 4–6 分钟；index.json 按内容哈希复用
+   已上传 version，改 skill 重跑时走「同名上传新版本」路径并只等新版本审查；
+2. **沙箱三件套缺一不可**：评测 agent 必须 `system`（不是 instructions）+
+   builtin_toolkit(bash/read/write, always_allow) + environment_id；少 toolkit 时 agent 无写文件
+   能力，skill 的文件产出契约会**假失败**（config `sandbox_tools: false` 可关，仅用于纯对话 skill）；
+3. **tokens 无口径**：百炼会话事件不带 usage，timing.json 的 tokens 显式 null；成本用 turns + wall time 近似；
+4. **事件分页**：评分与回收都按 `next_page` 拉全事件（单页 100 条截尾曾让长 run 的 recovery 恒空、
+   尾部断言漏判，2026-11-01 修复并 live 验证 recovery=ok）；
+5. **suggest → iterate 闭环**：suggest 现在额外产出机器可读 `replacements[{old,new}]`（old 必须逐字
+   命中 SKILL.md），`eval iterate` 一键生成 `<skill>-next` 目录与 workspace 骨架（case/config/索引复制），
+   人工 review diff 后 run → diff 验证；锚点全 miss 时报错不静默。
+
+## 进 CI
+
+```yaml
+# .github/workflows/skill-eval.yml 片段（示例）
+name: skill-eval
+on: [push, pull_request]
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @openagentpack/kit-eval build
+      - run: pnpm eval run ./my-skill
+      - run: pnpm eval gate ./my-skill --min-pass-rate 0.8 --no-zero-case
+```
+
+`gate` 读最新 complete run（或 `--run` 指定），不达标 exit 1 并打印失败断言清单。
+
+## 实例：PRD-to-Prototype 的闭环（真实 workspace 数据）
+
+以社区 skill「PRD to Prototype」为靶（front matter name 不规范，ingest 自动规范化为
+`prd-to-prototype`；原名与官方 skill 撞名时走 11300025 → 自动转「上传新版本」路径）：
+
+1. `eval init` 起草 2 条 case（正例取自 description 引号示例、负例人工策展），rubric 两条语义项；
+2. 首轮（单轮、300s）pass_rate 0.71：负例满分；正例脚本断言全过，但 judge 判「跳过确认表单」
+   「产物不可验证」——**两个真缺陷**：skill 自相矛盾（零提问 vs 平台确认门）、文件规范无回执；
+3. `eval suggest` 产出 3 条带前后原文的修改建议 → 人工采纳生成 v1.1 → 重跑；
+4. 同口径（多轮 followups + 600s 段超时）对照：v1.1 的 judge **逐字引证**「已写入
+   /workspace/docs/prd.md → 📋 GenUI Project Confirmation → 用户已确认移动端」，流程语义项通过；
+5. 两版共同剩余失败指向 `SANDBOX_CONNECT_FAILED`（cloud sandbox 抖动）→ 已由 infra_error
+   机制接管：自动重试一次、仍命中则排除出 pass_rate 分母并在报告标 ⚠️。
+
+多轮 case 的 kit.json 形态（工作流 skill 的确认门必需）：
+
+```json
+{
+  "cases": {
+    "1": {
+      "kind": "task",
+      "followups": ["移动端，沉浸式风格"],
+      "timeout_ms": 600000,
+      "rubric": [
+        { "id": "r-flow", "text": "按 SKILL.md 的阶段顺序执行，未跳过强制步骤", "weight": 2, "kind": "judge" },
+        { "id": "r-output", "text": "产物符合 SKILL.md 的文件与格式规范", "weight": 2, "kind": "judge" }
+      ],
+      "draft": false
+    }
+  }
+}
+```
+
+CI 中可依次执行评测的 `run` 与 `gate` 两段；是否把 `runs/` 留作 artifacts 由使用方流水线决定。
+
+## 泛化验证：三种 skill 形态（真实 workspace，2026-10-23）
+
+| skill 形态 | 靶子 | 关键覆盖 | 结果 |
+| --- | --- | --- | --- |
+| 工作流 + 文件产出 + 确认门（多轮） | prd-to-prototype | followups、artifact 回收、baseline delta=0.375、suggest→v1.1 闭环 | 流程语义项通过；剩余失败归因沙箱环境墙（infra_error 接管） |
+| 纯对话、无文件产出 | weekly-report-polisher | `collect_artifacts: false`、judge 结构/禁编造断言 | pass_rate 1.0（judge 引证三段结构与「未新增数据」） |
+| bash 计算 + fixture 挂载 + 文件产出 | csv-stats | mounts（csv 上传映射 .txt）、产物真回收、数值正确性 | pass_rate 1.0（回收的 summary.md 里 mean 1350.25 / 87.50 / nulls 1,1 与手算一致） |
+
+负例（trigger_neg）在三种形态上均正确不触发。provider 文件白名单（csv 被拒 415）与
+瞬态网络 abort 都已内化为 harness 行为（扩展名映射 / 自动重试），见探针记录。
+
+## 管理端浏览（只读）
+
+服务端新增三个控制面只读 op（`admin.eval.workspaces / runs / runs.get`，见
+`docs/interfaces.md`）：`KIT_EVAL_WORKSPACES`（逗号分隔的 workspace 根目录，相对路径按仓库根解析）
+配置后，管理端「评测」tab 可浏览 run 列表（pass_rate / baseline Δ / infra 排除 / case 数）并以内嵌
+srcdoc 方式渲染 `report.html`（令牌只走 Authorization header，不进 URL）。**触发执行不在此层**——
+评测跑几分钟且碰本地 FS 与凭据，仍由 CLI/CI 负责；残 run（manifest=running）在列表里自动跳过。

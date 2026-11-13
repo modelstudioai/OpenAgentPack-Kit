@@ -1,0 +1,190 @@
+---
+title: 广场与配额 Hooks
+description: usePlaza、useQuota、useQuotaRequests 与 KitClient 提额申请接口
+---
+
+`usePlaza` 来自 `@openagentpack/kit-sdk/agents/hooks`，
+`useQuota`、`useQuotaRequests` 来自 `@openagentpack/kit-sdk/usage/hooks`，
+可以显式传入稳定的 `client`，或在兼容 `KitProvider` 内运行。数据操作由公开 Client 的 operations 配置；
+传给 `useChat` 的自建 `ChatProvider` 不会替换它们使用的 Client。
+
+## 何时使用
+
+这些是示例应用的目录、资源和用量接口，用户可以接自己的业务系统。
+它们通过公开 Client/hooks 给组件提供 props，独立于 `ChatProvider` 的五项会话合同。
+
+### 智能体资源与成员限额
+
+| 接口 | 输入 | 返回与边界 |
+| --- | --- | --- |
+| `useAgentResources(slug)` | Agent 目录 slug，null 时不查询 | 工具、MCP、Skill 元数据及可选 `memory_stores` 名称/描述或 null；查询失败也返回 null，用于可选资源展示，不能据此作权限判断 |
+| `useUsageLimits({ enabled?, days? })` | 默认 enabled=true，days 指定逐日窗口 | data、loading、error、reload；使用当前 KitClient，不随显式 ChatProvider 切换 |
+| `client.usageLimits({ days? }, signal?)` | 窗口与可选取消信号 | 本地成员限额视图；成功的 null 表示非本地成员，失败不能解释为不限量 |
+
+本地成员使用服务端返回的日/月 Token 和执行时长限额；Credits 是匿名/外部身份的兼容模式。
+超限阻止后续消费，已经运行的一轮可能继续消耗。用量采集不是最终账单。
+资源、限额及历史附件元数据的可编译示例如下：
+
+{/* skill-example: use-kit-chat/examples/experience-data.tsx */}
+
+```tsx
+import { useAgentResources } from "@openagentpack/kit-sdk/agents/hooks";
+import { useChat } from "@openagentpack/kit-sdk/chat/hooks";
+import type { ChatProvider } from "@openagentpack/kit-sdk/providers";
+import type { KitClient } from "@openagentpack/kit-sdk/providers/kit";
+import { useSessionDetails } from "@openagentpack/kit-sdk/sessions/hooks";
+import { useUsageLimits } from "@openagentpack/kit-sdk/usage/hooks";
+
+// Data hooks accept an explicit Client; Context remains an optional compatibility path.
+export function AgentResourceSummary({ slug }: { slug: string | null }) {
+	const resources = useAgentResources(slug);
+	return (
+		<div>
+			<p>{resources?.skills?.map((skill) => skill.name).join(", ") || "No skill metadata"}</p>
+			<p>{resources?.memory_stores?.map((store) => store.name).join(", ") || "No memory stores"}</p>
+		</div>
+	);
+}
+
+export function MemberLimitSummary() {
+	const limits = useUsageLimits({ days: 30 });
+	if (limits.loading) return <p role="status">Loading usage limits…</p>;
+	if (limits.error) return <p role="alert">{String(limits.error)}</p>;
+	if (!limits.data) return <p>Not a local Kit member</p>;
+	return (
+		<button type="button" onClick={() => void limits.reload()}>
+			Refresh usage limits
+		</button>
+	);
+}
+
+// File associations belong to application metadata, not SSE message text.
+export function ChatWithFileMetadata({
+	client,
+	sessionId,
+	provider,
+}: {
+	client: KitClient;
+	sessionId: string;
+	provider: ChatProvider;
+}) {
+	const chat = useChat({ sessionId, provider });
+	const details = useSessionDetails({ client, sessionId, setMessageFiles: chat.setMessageFiles });
+	return details.error ? <p role="alert">{details.error}</p> : <p>{chat.messages.length} messages</p>;
+}
+
+export async function readUploadStatus(client: KitClient, fileId: string) {
+	const status = await client.fileStatus(fileId);
+	// Keep the draft until ready; the server enforces readiness and ownership too.
+	return { ready: status.available, status: status.status };
+}
+```
+
+{/* /skill-example */}
+
+- 展示 Agent 广场：精选、热门、分类与可进入的 Agent 目录。
+- 展示当月配额、加油包与用量分解，并在配额耗尽时禁用输入。
+- 引导用户显式提交提额申请，并在审批通过后刷新结果。
+
+## 使用说明
+
+### 广场与配额查询
+
+`usePlaza().view` 包含 `agents`、`featured`、`popular` 与 `categories`。
+精选和热门返回 slug 列表，页面负责按它们挑选卡片；分类只接受正式的 `PlazaCategory`，
+`featured` 是 UI tab 值，不能直接作为请求的 category。
+
+### 配额与显式申请
+
+服务端接受一轮 Turn 时消耗 1 Credit；403 `quota_exceeded` 表示未接受，不能自动重发。
+月/日以 UTC 为准。`quota.limit` 不含加油包，展示总上限时需加上 `packs` 的 credits；
+`unlimited=true` 时使用不限量展示，不能将 `remaining=-1` 当作负余额。
+
+提交提额申请使用 `client.createQuotaRequest({ requestedCredits, reason? })`。
+申请成功不代表配额立即变更；审批通过后重新读取 `quota()`。配额申请与工具审批是两套业务，
+不调用 `submitApproval()`，也不复用工具调用的 batch_id/call_id。
+
+默认 Chat 可用 `composerDisabled` 禁用配额耗尽时的输入；自定义 Sender 传 `disabled`。
+临时连接恢复和工具审批等待仍用 `submitDisabled` 保留草稿编辑，不能混淆两种禁用语义。
+
+### 组合示例
+
+以下源文件与英文 Skill 共享，展示查询、显式提交和提交后的刷新。
+
+{/* skill-example: use-kit-chat/examples/discovery-usage.tsx */}
+
+```tsx
+import { usePlaza } from "@openagentpack/kit-sdk/agents/hooks";
+import { useKitClient } from "@openagentpack/kit-sdk/providers/kit/react";
+import { useQuota, useQuotaRequests } from "@openagentpack/kit-sdk/usage/hooks";
+import { useState } from "react";
+
+// Mount inside the same KitProvider as the default chat page.
+// These hooks use KitClient; an explicit ChatProvider does not redirect them.
+export function DiscoveryAndUsage() {
+	const client = useKitClient();
+	const plaza = usePlaza({ category: "general" });
+	const usage = useQuota();
+	const history = useQuotaRequests();
+	const [pending, setPending] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+
+	async function requestCredits() {
+		if (pending) return;
+		setPending(true);
+		setError(null);
+		try {
+			await client.createQuotaRequest({ requestedCredits: 100, reason: "Additional project work" });
+			usage.reload();
+			history.reload();
+		} catch (cause) {
+			setError(cause instanceof Error ? cause.message : "Request failed");
+		} finally {
+			setPending(false);
+		}
+	}
+
+	return (
+		<section>
+			<h2>Available agents</h2>
+			{plaza.error ? <p role="alert">{plaza.error}</p> : null}
+			<ul>
+				{plaza.view?.agents.map((agent) => (
+					<li key={agent.slug}>{agent.display_name}</li>
+				))}
+			</ul>
+			<h2>Monthly usage</h2>
+			{usage.error ? <p role="alert">{usage.error}</p> : null}
+			<p>{usage.quota ? `${usage.quota.used} credits used` : "Loading usage"}</p>
+			<button
+				type="button"
+				disabled={pending || usage.loading || !usage.quota || Boolean(usage.quota.pending_request)}
+				onClick={() => void requestCredits()}
+			>
+				Request 100 credits
+			</button>
+			{error ? <p role="alert">{error}</p> : null}
+			<ul>
+				{history.requests.map((request) => (
+					<li key={request.id}>{request.status}</li>
+				))}
+			</ul>
+		</section>
+	);
+}
+```
+
+{/* /skill-example */}
+
+展示组件见 [广场与用量](/docs/components/plaza)。Client 也可独立于 React 调用
+`plaza()`、`quota()`、`quotaRequests()` 与 `createQuotaRequest()`。
+
+## API
+
+### Hook 参数与结果
+
+| Hook | 参数与结果 |
+| --- | --- |
+| `usePlaza({ category?, q? })` | 返回 `view`、`loading`、`error`、`reload`；参数变化重新查询 |
+| `useQuota()` | 返回 `quota`、`loading`、`error`、`reload`，包括当月配额、加油包、按 Agent 分解、每日用量与待审批申请 |
+| `useQuotaRequests()` | 返回 `requests`、`loading`、`reload`；当前查询失败时清空为 `[]`，没有独立 error 字段 |

@@ -1,0 +1,132 @@
+@import "tailwindcss";
+@import "@openagentpack/kit-chat-ui/theme.css";
+
+/*
+ * monorepo 显式扫描源：workspace 包经 node_modules 软链引入，Tailwind v4 的自动源探测会跳过
+ * node_modules，导致 kit-chat-ui 里的工具类（例如侧栏 `max-md:hidden`）根本不生成、H5 断点失效。
+ * 路径相对本文件；新增跨包组件目录时同步补一行。
+ */
+@source "../index.html";
+@source "./**/*.{ts,tsx}";
+@source "../../../packages/chat-ui/src/**/*.{ts,tsx}";
+
+/*
+ * console 配色随 antd（ADR-0015），主题迁移自独立站&百炼设计 token
+ * （apps/console/src/lib/antd-theme.ts：#2564f8 主色 + #14151c 中性灰阶）。
+ * 遗留消费方有两类：未迁移页面的 token 工具类，与 kit-chat-ui 组件（对话链路件按规范长期
+ * 保留）。这里把语义色 kit token 直连 antd css-var，页面逐个迁移后 token 引用随之删除。
+ *
+ * antd v6 的 `--ant-*` 变量只挂在组件根作用域类（.css-var-*）上，非 antd 元素读不到；
+ * 这里在 :root 补一份镜像（值为 antd-theme.ts 百炼主题的显式设定值），两处必须同步更新。
+ */
+:root {
+	--ant-color-primary: #2564f8;
+	--ant-color-primary-hover: #4f8aff;
+	--ant-color-primary-bg: #f0f7ff;
+	--ant-color-error: #ff4d4f;
+	--ant-color-success: #52c41a;
+	--ant-color-warning: #faad14;
+	--ant-color-text: rgb(20 21 28 / 90%);
+	--ant-color-text-base: #14151c;
+	--ant-color-text-secondary: rgb(20 21 28 / 60%);
+	--ant-color-text-tertiary: rgb(20 21 28 / 40%);
+	--ant-color-border: #e9e9ed;
+	--ant-color-bg-layout: #f2f2f4;
+}
+:root {
+	--kit-bg: #ffffff;
+	--kit-bg-subtle: #f5f5f5;
+	--kit-surface: #ffffff;
+	--kit-fg: var(--ant-color-text);
+	--kit-fg-muted: rgba(0, 0, 0, 65%);
+	--kit-border: #d9d9d9;
+	--kit-border-subtle: #f0f0f0;
+	--kit-accent: var(--ant-color-primary);
+	--kit-accent-fg: #ffffff;
+	--kit-focus: var(--ant-color-primary);
+	--kit-nav-active: #f5f5f5;
+	--kit-user-bubble: #f5f5f5;
+	--kit-assistant-bubble: #fafafa;
+	/* 统计卡蓝/灰交替底色不覆盖，保留 theme.css 原值（--kit-stat-tint/subtle）。 */
+	--kit-heat: var(--ant-color-primary);
+	--kit-danger: var(--ant-color-error);
+	--kit-danger-fg: #ffffff;
+	--kit-success: var(--ant-color-success);
+	--kit-warning: var(--ant-color-warning);
+	--kit-warning-fg: #d48806;
+	--kit-overlay: rgb(0 0 0 / 45%);
+	--kit-radius: 6px;
+	--kit-radius-sm: 6px;
+	--kit-radius-xs: 4px;
+	--kit-radius-icon-sm: 6px;
+	--kit-radius-icon: 6px;
+	--kit-shadow: 0 6px 16px rgb(0 0 0 / 8%), 0 3px 6px -4px rgb(0 0 0 / 12%), 0 9px 28px 8px rgb(0 0 0 / 5%);
+}
+
+/*
+ * 百炼浮层样式（迁移自 bfal-bailian-design-token 的 global-style）：backdrop-filter 与
+ * 下拉选项间距无法进入 antd token，统一归口在此，页面不得散落同类覆盖。
+ * 背景色与阴影已由 antd-theme.ts 的 colorBgElevated/boxShadowSecondary 承担（90% 透明白
+ * 底 + 1px 内描边柔投影），这里只补毛玻璃；只列 console 实际消费的浮层组件。
+ */
+.ant-select-dropdown {
+	-webkit-backdrop-filter: blur(30px);
+	backdrop-filter: blur(30px);
+}
+.ant-select-dropdown .ant-select-item-option + .ant-select-item-option {
+	margin-block-start: 4px;
+}
+.ant-modal-mask,
+.ant-drawer-mask {
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+/*
+ * 自绘表单字段：裸 <label> 是 inline 元素，字段行 space-y-* 的垂直 margin 对它无效，
+ * label 与控件会贴死（百炼表单 label 与控件之间有 8px 间距）。block 化后 margin 生效；
+ * antd 组件内部的 label（Checkbox/Radio/Form 等）有自身类规则且优先级更高，不受影响。
+ */
+label {
+	display: block;
+}
+
+/* 侧栏菜单已改为自绘结构（console-layout.module.less 的 .menu/.navItem 族），
+   不再消费 antd Menu，历史上的 .ant-menu-* 覆盖规则随之一并移除。 */
+
+/* 去掉 antd v6 无边框 Card 的默认投影（box-shadow-tertiary 全局 token，非 Card 组件 token，
+   无法在 antd-theme.ts 覆盖）：管理端外壳走百炼中性扁平风，不希望卡底阴影。
+   body 前缀抬高优先级：antd cssinjs 的 :where(hash).ant-card:not(.ant-card-bordered) 实际
+   优先级 (0,2,0) 与裸写打平，且其运行时 <style> 插入在入口样式之后会反杀。 */
+body .ant-card:not(.ant-card-bordered) {
+	box-shadow: none;
+}
+
+/* 管理端列表单元格行高 60（对齐百炼 td 实测 60 高 / padding 16）：padding 16 由 antd-theme.ts
+   Table 的 cellPadding* token 承担；td 的 height 在表格布局中是最小高语义，多行内容可自然撑开。
+   nowrap + 各表 scroll.x max-content：中文不再字符断行，超出部分横向滚动查看（首尾列 fixed） */
+.ant-table-wrapper .ant-table-tbody > tr > td {
+	height: 60px;
+	white-space: nowrap;
+}
+
+/* Form.Item 的 extra（补充描述，如“最多 64 个字符”）与控件之间留 4px 间距 */
+.ant-form-item .ant-form-item-extra {
+	margin-top: 4px;
+}
+
+html,
+body,
+#root {
+	height: 100%;
+}
+body {
+	margin: 0;
+	/* 对齐 antd 主题（antd-theme.ts 百炼色板）的 colorBgLayout/colorText 与 14px 基准字号 */
+	@apply text-sm;
+	background: var(--ant-color-bg-layout);
+	color: var(--ant-color-text);
+	font-family:
+		-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+		"Noto Sans CJK SC", sans-serif;
+}

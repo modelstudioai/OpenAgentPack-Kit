@@ -1,0 +1,4 @@
+{
+  "title": "API 参考",
+  "pages": ["../server-api", "meta", "kit", "admin-debug", "admin", "..."]
+}

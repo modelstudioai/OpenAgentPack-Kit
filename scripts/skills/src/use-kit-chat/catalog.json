@@ -1,0 +1,545 @@
+[
+	{
+		"name": "useAgentResources",
+		"export": "useAgentResources",
+		"module": "agents/hooks",
+		"description": "Read optional tool, MCP and skill metadata for a catalog Agent through the context KitClient.",
+		"doc": "apps/storybook/content/docs/sdk/discovery-usage.mdx",
+		"example": "examples/experience-data.tsx",
+		"notes": [
+			"Passing null skips the lookup. This application query is separate from the explicit ChatProvider."
+		]
+	},
+	{
+		"name": "useUsageLimits",
+		"export": "useUsageLimits",
+		"module": "usage/hooks",
+		"description": "Observe local-member usage limits through the context KitClient with loading, error, data and explicit reload.",
+		"doc": "apps/storybook/content/docs/sdk/discovery-usage.mdx",
+		"example": "examples/experience-data.tsx",
+		"notes": [
+			"Only a successful null response means the current identity is not a local member; an error must not unlock consumption."
+		]
+	},
+	{
+		"name": "createChatController",
+		"export": "createChatController",
+		"module": "chat",
+		"description": "Own one framework-independent Session subscription, message state and execution actions.",
+		"doc": "apps/storybook/content/docs/sdk/use-chat.mdx",
+		"example": "examples/controller.ts",
+		"notes": [
+			"connect waits for authoritative readiness, not for the persistent stream to end.",
+			"Only the Controller schedules reconnects; writes are not automatically repeated.",
+			"The host must unsubscribe and dispose when ownership ends.",
+			"Uses the Provider message strategy or transformSessionEvent when omitted; state remains in Chat."
+		]
+	},
+	{
+		"name": "ChatController",
+		"export": "ChatController",
+		"module": "chat",
+		"description": "Snapshot subscription, send/stop/approval actions and explicit disposal without React.",
+		"doc": "apps/storybook/content/docs/sdk/use-chat.mdx",
+		"example": "examples/controller.ts"
+	},
+	{
+		"name": "createSessionStore",
+		"export": "createSessionStore",
+		"module": "chat",
+		"doc": "apps/storybook/content/docs/sdk/use-chat.mdx",
+		"example": "examples/controller.ts",
+		"description": "Own event snapshots and Chat state, invoking an optional injected message strategy during reconstruction.",
+		"notes": [
+			"Independent Store consumers own event delivery; useChat consumers configure the strategy on their Provider instead.",
+			"Omitting transformMessage uses transformSessionEvent."
+		]
+	},
+	{
+		"name": "SessionStoreOptions",
+		"export": "SessionStoreOptions",
+		"module": "chat",
+		"doc": "apps/storybook/content/docs/sdk/use-chat.mdx",
+		"example": "examples/controller.ts",
+		"description": "Optional message transformation strategy for an independently managed Session Store."
+	},
+	{
+		"name": "useChat",
+		"export": "useChat",
+		"module": "chat/hooks",
+		"description": "Subscribe to one Session through KitProvider or an explicit stable ChatProvider.",
+		"doc": "apps/storybook/content/docs/sdk/use-chat.mdx",
+		"example": "examples/default-chat.tsx",
+		"notes": [
+			"Pass null before selecting or creating a Session; this does not open a subscription.",
+			"The explicit-provider overload works without KitProvider and takes precedence over context.",
+			"Share one hook result with the message, composer, and approval UI."
+		]
+	},
+	{
+		"name": "UseChatOptions",
+		"export": "UseChatOptions",
+		"module": "chat/hooks",
+		"description": "Options for a Session backed by an application-owned ChatProvider.",
+		"doc": "apps/storybook/content/docs/sdk/use-chat.mdx",
+		"example": "examples/custom-chat.tsx",
+		"notes": [
+			"Both sessionId and provider are required; sessionId can be null.",
+			"A changed Provider identity or Session ID replaces the Controller."
+		]
+	},
+	{
+		"name": "UseChatResult",
+		"export": "UseChatResult",
+		"module": "chat/hooks",
+		"description": "Message projections, connection and execution state, pending approvals, and asynchronous actions.",
+		"doc": "apps/storybook/content/docs/sdk/use-chat.mdx",
+		"example": "examples/default-chat.tsx",
+		"notes": [
+			"connected reflects connection only; canSend also includes execution and Session state.",
+			"Messages and parts may be replaced by authoritative snapshots; keep their stable IDs.",
+			"turnRunning includes waiting for approval and interruption confirmation.",
+			"No public message mutation, regenerate, or request queue API is provided."
+		]
+	},
+	{
+		"name": "send",
+		"export": "UseChatResult",
+		"member": "send",
+		"module": "chat/hooks",
+		"description": "Wait for subscription readiness and submit one message; optionally target a newly created Session.",
+		"doc": "apps/storybook/content/docs/sdk/use-chat.mdx",
+		"example": "examples/custom-chat.tsx",
+		"notes": [
+			"Promise resolution means acceptance, not completion of the Agent response.",
+			"Retain the draft on failure; connection recovery does not resend the message.",
+			"Pass options.sessionId immediately after creation to avoid the previous render's selected ID."
+		]
+	},
+	{
+		"name": "stop",
+		"export": "UseChatResult",
+		"member": "stop",
+		"module": "chat/hooks",
+		"description": "Request remote interruption and wait for the request result.",
+		"doc": "apps/storybook/content/docs/sdk/use-chat.mdx",
+		"example": "examples/default-chat.tsx",
+		"notes": [
+			"A successful request does not itself confirm execution ended.",
+			"Switching Sessions and unmounting only cancel the browser subscription."
+		]
+	},
+	{
+		"name": "refreshApprovals",
+		"export": "UseChatResult",
+		"member": "refreshApprovals",
+		"module": "chat/hooks",
+		"description": "Query the current pending tool set, especially after an uncertain or stale decision.",
+		"doc": "apps/storybook/content/docs/sdk/tool-approvals.mdx",
+		"example": "examples/approval-list.tsx",
+		"notes": [
+			"Query before another explicit user confirmation; never automatically repeat a decision POST."
+		]
+	},
+	{
+		"name": "submitApproval",
+		"export": "UseChatResult",
+		"member": "submitApproval",
+		"module": "chat/hooks",
+		"description": "Refresh and validate one current tool request, then submit the user's allow or deny decision.",
+		"doc": "apps/storybook/content/docs/sdk/tool-approvals.mdx",
+		"example": "examples/approval-list.tsx",
+		"notes": [
+			"Changed arguments or invalidated state require renewed review and confirmation.",
+			"The backend independently checks ownership, current batch/call, and prior responses."
+		]
+	},
+	{
+		"name": "KitProvider",
+		"export": "KitProvider",
+		"module": "providers/kit/react",
+		"description": "React context supplying a stable KitClient to default data hooks.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/default-chat.tsx",
+		"notes": [
+			"KitProvider is distinct from ChatProvider and the server-side ProviderGateway.",
+			"An explicit ChatProvider does not redirect useSessions or useKitClient.",
+			"Host capabilities belong to the consuming application, not the SDK."
+		]
+	},
+	{
+		"name": "createKitClient",
+		"export": "createKitClient",
+		"module": "providers/kit",
+		"description": "Create the default Kit Server client with a runtime API base URL and application identity headers.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/default-chat.tsx",
+		"notes": [
+			"Do not assume the API shares the page origin.",
+			"Create Sessions and handle files outside useChat."
+		]
+	},
+	{
+		"name": "ChatProvider",
+		"export": "ChatProvider",
+		"module": "providers",
+		"description": "Five required backend methods and an optional message transformation strategy supplied to useChat.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/custom-chat.tsx",
+		"notes": [
+			"Keep its object identity stable across renders.",
+			"Provider defines conversion; Chat invokes it against the latest event ledger and owns the messages."
+		]
+	},
+	{
+		"name": "ChatToolApproval",
+		"export": "ChatToolApproval",
+		"module": "chat",
+		"description": "Tool request projection including pending, submitting, submitted, uncertain, or stale UI state.",
+		"doc": "apps/storybook/content/docs/sdk/tool-approvals.mdx",
+		"example": "examples/approval-list.tsx",
+		"notes": [
+			"Only a pending actionable request may be confirmed.",
+			"Use the current batch_id and call_id as identity, not the tool name."
+		]
+	},
+	{
+		"name": "ToolApprovalDecision",
+		"export": "ToolApprovalDecision",
+		"module": "protocol",
+		"description": "One explicit allow or deny decision identified by current batch and call.",
+		"doc": "apps/storybook/content/docs/sdk/tool-approvals.mdx",
+		"example": "examples/approval-list.tsx",
+		"notes": [
+			"The optional deny_message has a 200-character Kit limit.",
+			"Denying one tool call is separate from stopping the whole Session."
+		]
+	},
+	{
+		"name": "usePlaza",
+		"export": "usePlaza",
+		"module": "agents/hooks",
+		"description": "Read Kit Server discovery entries, categories, and featured/popular slug lists.",
+		"doc": "apps/storybook/content/docs/sdk/discovery-usage.mdx",
+		"example": "examples/discovery-usage.tsx",
+		"notes": [
+			"Requires KitProvider; an explicit ChatProvider does not redirect this hook.",
+			"category/q changes trigger loading; reload requests a new snapshot."
+		]
+	},
+	{
+		"name": "useQuota",
+		"export": "useQuota",
+		"module": "usage/hooks",
+		"description": "Read monthly Credits, packs, daily usage and the current pending increase request.",
+		"doc": "apps/storybook/content/docs/sdk/discovery-usage.mdx",
+		"example": "examples/discovery-usage.tsx",
+		"notes": [
+			"Requires KitProvider; quota enforcement remains server-side.",
+			"The limit excludes packs; unlimited remaining is -1."
+		]
+	},
+	{
+		"name": "useQuotaRequests",
+		"export": "useQuotaRequests",
+		"module": "usage/hooks",
+		"description": "Read the current identity's quota increase request history.",
+		"doc": "apps/storybook/content/docs/sdk/discovery-usage.mdx",
+		"example": "examples/discovery-usage.tsx",
+		"notes": [
+			"Requires KitProvider.",
+			"Query failure currently clears requests to an empty array; no error field is exposed."
+		]
+	},
+	{
+		"name": "createMemberAuthController",
+		"export": "createMemberAuthController",
+		"module": "auth",
+		"description": "Own local member sign-in, restore, revocation, expiry and one fixed-identity Client per generation.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/member-auth.tsx"
+	},
+	{
+		"name": "MemberAuthController",
+		"export": "MemberAuthController",
+		"module": "auth",
+		"description": "Framework-independent member authentication lifecycle and observable snapshot.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/member-auth.tsx"
+	},
+	{
+		"name": "MemberAuthOptions",
+		"export": "MemberAuthOptions",
+		"module": "auth",
+		"description": "Final API URL, explicit authentication mode, host storage and optional fetch implementation.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/member-auth.tsx"
+	},
+	{
+		"name": "MemberAuthSnapshot",
+		"export": "MemberAuthSnapshot",
+		"module": "auth",
+		"description": "Authentication status, public member profile, isolated Client, generation, pending state and error.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/member-auth.tsx"
+	},
+	{
+		"name": "MemberSessionStorage",
+		"export": "MemberSessionStorage",
+		"module": "auth",
+		"description": "Host storage adapter scoped to a full API URL; never store passwords.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/member-auth.tsx"
+	},
+	{
+		"name": "StoredMemberSession",
+		"export": "StoredMemberSession",
+		"module": "auth",
+		"description": "Opaque member access token and its fixed expiry time.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/member-auth.tsx"
+	},
+	{
+		"name": "useMemberAuth",
+		"export": "useMemberAuth",
+		"module": "auth/hooks",
+		"description": "Subscribe to a stable member auth controller and bind start/dispose to the React lifecycle.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/member-auth.tsx"
+	},
+	{
+		"name": "ChatMultiAgent",
+		"export": "ChatMultiAgent",
+		"module": "chat",
+		"description": "Native Chat thread view, independent loading and pagination actions.",
+		"doc": "apps/storybook/content/docs/sdk/use-chat.mdx",
+		"example": "examples/custom-chat.tsx"
+	},
+	{
+		"name": "ChatAgentThread",
+		"export": "ChatAgentThread",
+		"module": "chat",
+		"description": "One child Agent instance, projected messages, history state and display name.",
+		"doc": "apps/storybook/content/docs/sdk/use-chat.mdx",
+		"example": "examples/custom-chat.tsx"
+	},
+	{
+		"name": "ChatSnapshot",
+		"export": "ChatSnapshot",
+		"module": "chat",
+		"description": "Session state plus the native Multi-Agent view.",
+		"doc": "apps/storybook/content/docs/sdk/use-chat.mdx",
+		"example": "examples/custom-chat.tsx"
+	},
+	{
+		"name": "useSessionDirectory",
+		"export": "useSessionDirectory",
+		"module": "sessions/hooks",
+		"description": "Load grouped and recent sessions, retain pages and prepare explicit session confirmations.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience.tsx"
+	},
+	{
+		"name": "useSessionSearch",
+		"export": "useSessionSearch",
+		"module": "sessions/hooks",
+		"description": "Debounce and cancel server searches using the directory pagination contract.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience.tsx"
+	},
+	{
+		"name": "useSessionDetails",
+		"export": "useSessionDetails",
+		"module": "sessions/hooks",
+		"description": "Load historical file metadata and inject it into the existing Chat state.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience.tsx"
+	},
+	{
+		"name": "useAttachments",
+		"export": "useAttachments",
+		"module": "files/hooks",
+		"description": "Upload, scan, cancel and consume attachment staging without file-picker UI.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience.tsx"
+	},
+	{
+		"name": "useComposer",
+		"export": "useComposer",
+		"module": "chat/hooks",
+		"description": "Create a session and invoke existing Chat.send; failures reject and retain submitted files.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience.tsx"
+	},
+	{
+		"name": "useArtifactActions",
+		"export": "useArtifactActions",
+		"module": "files/hooks",
+		"description": "Read authenticated artifact bytes and coordinate safe preview or save through an injected host.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience.tsx"
+	},
+	{
+		"name": "useQuotaRecovery",
+		"export": "useQuotaRecovery",
+		"module": "usage/hooks",
+		"description": "Only recover sending after a fresh server result confirms every enabled limit.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience.tsx"
+	},
+	{
+		"name": "useCreateQuotaRequest",
+		"export": "useCreateQuotaRequest",
+		"module": "usage/hooks",
+		"description": "Submit one explicit credit request without automatic retries.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience.tsx"
+	},
+	{
+		"name": "createSessionDirectory",
+		"export": "createSessionDirectory",
+		"module": "sessions",
+		"description": "Framework-independent directory state, pagination and session operations.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience-controller.ts"
+	},
+	{
+		"name": "createSessionSearch",
+		"export": "createSessionSearch",
+		"module": "sessions",
+		"description": "Framework-independent debounced search with cancellation.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience-controller.ts"
+	},
+	{
+		"name": "createSessionDetails",
+		"export": "createSessionDetails",
+		"module": "sessions",
+		"description": "Load session metadata with request generation isolation.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience-controller.ts"
+	},
+	{
+		"name": "createSessionActions",
+		"export": "createSessionActions",
+		"module": "sessions",
+		"description": "Prepare, cancel and confirm session mutations without reusing failed confirmation tokens.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience-controller.ts"
+	},
+	{
+		"name": "createAttachments",
+		"export": "createAttachments",
+		"module": "files",
+		"description": "Framework-independent upload and scan lifecycle.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience-controller.ts"
+	},
+	{
+		"name": "createComposer",
+		"export": "createComposer",
+		"module": "chat",
+		"description": "Framework-independent session creation and send coordination; no draft state.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience-controller.ts"
+	},
+	{
+		"name": "deriveTitle",
+		"export": "deriveTitle",
+		"module": "chat",
+		"description": "Derive a session title from the first message.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience-controller.ts"
+	},
+	{
+		"name": "createArtifactActions",
+		"export": "createArtifactActions",
+		"module": "files",
+		"description": "Framework-independent artifact workflow with injected host effects.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience-controller.ts"
+	},
+	{
+		"name": "resolveArtifactType",
+		"export": "resolveArtifactType",
+		"module": "files",
+		"description": "Resolve artifact MIME type from metadata, filename and response.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience-controller.ts"
+	},
+	{
+		"name": "previewableArtifactType",
+		"export": "previewableArtifactType",
+		"module": "files",
+		"description": "Allow inert artifact previews and reject active content.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience-controller.ts"
+	},
+	{
+		"name": "createQuotaRecovery",
+		"export": "createQuotaRecovery",
+		"module": "usage",
+		"description": "Observe fresh usage limits before allowing recovery.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience-controller.ts"
+	},
+	{
+		"name": "readQuotaExceeded",
+		"export": "readQuotaExceeded",
+		"module": "usage",
+		"description": "Read validated quota details without guessing from an error message.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience-controller.ts"
+	},
+	{
+		"name": "usageLimitsAllowSending",
+		"export": "usageLimitsAllowSending",
+		"module": "usage",
+		"description": "Require all enabled monthly and daily metrics to be confirmed available.",
+		"doc": "apps/storybook/content/docs/sdk/experience.mdx",
+		"example": "examples/experience-controller.ts"
+	},
+	{
+		"name": "createQuery",
+		"export": "createQuery",
+		"module": "state",
+		"description": "Observe an explicitly refreshed query with cancellation, request-generation isolation and the last successful snapshot.",
+		"doc": "apps/storybook/content/docs/sdk/state.mdx",
+		"example": "examples/call-state.ts",
+		"notes": [
+			"Refreshing aborts the previous read; failures retain data and resolve to undefined.",
+			"Dispose cancels reading and ignores late results. The host owns subscription cleanup."
+		]
+	},
+	{
+		"name": "createMutation",
+		"export": "createMutation",
+		"module": "state",
+		"description": "Run one explicit write at a time and expose pending and error state.",
+		"doc": "apps/storybook/content/docs/sdk/state.mdx",
+		"example": "examples/call-state.ts",
+		"notes": [
+			"Never automatically retries or cancels a write; action errors still reject the returned Promise.",
+			"Dispose only suppresses snapshot updates; a new view should create its own controller."
+		]
+	},
+	{
+		"name": "createObservable",
+		"export": "createObservable",
+		"module": "state",
+		"description": "Publish host-owned snapshots to subscribers without React, networking or administration business rules.",
+		"doc": "apps/storybook/content/docs/sdk/state.mdx",
+		"example": "examples/call-state.ts",
+		"notes": [
+			"set replaces the snapshot; unsubscribe when the host releases its view."
+		]
+	},
+	{
+		"name": "QuerySnapshot",
+		"export": "QuerySnapshot",
+		"module": "state",
+		"description": "Query data, loading status and readable error for the current target.",
+		"doc": "apps/storybook/content/docs/sdk/state.mdx",
+		"example": "examples/call-state.ts"
+	}
+]

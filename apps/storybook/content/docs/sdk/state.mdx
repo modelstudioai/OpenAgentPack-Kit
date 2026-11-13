@@ -1,0 +1,78 @@
+---
+title: 通用调用状态
+description: 复用查询取消、迟到结果隔离、写入单飞和快照订阅
+---
+
+`createQuery`、`createMutation`、`createObservable` 与 `QuerySnapshot` 从
+`@openagentpack/kit-sdk/state` 导出，可在无 React 的调用方使用。它们只维护调用状态，
+请求路径、身份、响应映射和业务动作由应用提供；HTTP 请求复用 [Request](/docs/sdk/request)。
+
+SDK 的组件调用流程和 Console 共用这份实现。Kit 管理端的 AdminClient、成员用量与
+Operation 恢复属于 Console，SDK 不提供 `/admin` 子入口。
+
+## 查询、提交与本地状态
+
+下面的示例接收应用已有的读取和写入方法，订阅查询、提交和编辑状态，并在离页时释放：
+
+{/* skill-example: use-kit-chat/examples/call-state.ts */}
+
+```ts
+import { createMutation, createObservable, createQuery, type QuerySnapshot } from "@openagentpack/kit-sdk/state";
+
+interface ResourceView<T> {
+	query: QuerySnapshot<T>;
+	mutation: { pending: boolean; error: string | null };
+	editing: boolean;
+}
+
+/** Backend calls are supplied by the host; the SDK only owns observable call state. */
+export function bindResource<T, Input>(
+	read: (signal: AbortSignal) => Promise<T>,
+	write: (input: Input) => Promise<void>,
+	render: (view: ResourceView<T>) => void,
+) {
+	const query = createQuery(read);
+	const mutation = createMutation(write);
+	const editing = createObservable(false);
+	const publish = () =>
+		render({ query: query.getSnapshot(), mutation: mutation.getSnapshot(), editing: editing.getSnapshot() });
+	const subscriptions = [query.subscribe(publish), mutation.subscribe(publish), editing.subscribe(publish)];
+	publish();
+	void query.refresh();
+	return {
+		refresh: query.refresh,
+		// Call after explicit user action; errors reject and are never automatically retried.
+		save: mutation.run,
+		setEditing: editing.set,
+		dispose() {
+			for (const unsubscribe of subscriptions) unsubscribe();
+			query.dispose();
+			mutation.dispose();
+		},
+	};
+}
+```
+
+{/* /skill-example */}
+
+## API 与生命周期
+
+| API | 返回的方法 | 行为 |
+| --- | --- | --- |
+| `createQuery(load)` | `getSnapshot`、`subscribe`、`refresh`、`dispose` | 显式刷新；每次刷新取消上一次读取，旧结果不能覆盖当前结果 |
+| `createMutation(action)` | `getSnapshot`、`subscribe`、`run`、`dispose` | 同一实例写入单飞；进行中重复 `run` 拒绝并返回 `conflict` |
+| `createObservable(initial)` | `getSnapshot`、`subscribe`、`set` | 调用方提供快照，`set` 替换整个快照并通知订阅者 |
+
+`QuerySnapshot<T>` 包含 `data: T | undefined`、`loading: boolean`、`error: string | null`。
+查询失败保留同一目标最近成功的 `data`，错误写入快照，`refresh()` 返回 `undefined`；
+查询成功时返回新数据。`load(signal)` 应将取消信号传到 Request。
+
+提交快照包含 `pending` 与 `error`。`run()` 返回动作结果，失败仍向调用方抛错；
+写入不会自动重试。调用方负责确认、成功后的刷新及失败提示。
+
+`subscribe` 返回取消订阅函数。离页时先取消订阅，再 `dispose()`：查询会取消读取并忽略
+迟到结果；提交只停止旧视图的状态回写，已经发出的写入继续向调用方返回结果。
+目标切换时创建新的查询或提交实例，避免将旧目标的数据用于新页面。
+
+React 中可通过 `useSyncExternalStore` 订阅，并在 effect 清理时释放。页面专用 hook 归应用；
+已有组件交互优先使用[组件调用流程](/docs/sdk/experience)提供的 hooks。

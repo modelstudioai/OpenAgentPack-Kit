@@ -1,0 +1,102 @@
+---
+title: Prompts 提示集
+description: 用一组预置卡片引导用户发起第一轮对话，点击只回调、发送由调用方决定
+---
+
+`Prompts` 用一组预置卡片引导用户发起第一轮对话：点击条目只回调 `onItemClick`，是否发送、发什么由调用方决定。
+`items` 为空时组件不渲染，可以直接传 catalog 数据。
+
+```tsx
+import { Prompts } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（复制后 import 改为项目内路径）：
+
+```bash
+pnpm kit:add prompts
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 对话开始前的开场引导：放在 `Chat` 的 `empty` 插槽，与 [EmptyState](/docs/components/chrome#欢迎加载与错误态)
+  组合展示 `suggested_prompts`（体验页同款，欢迎态行为见 [Chat 的 `empty`](/docs/components/chat#props)）；
+- 按主题展示能力入口：条目带 `children` 渲染为分组卡片；
+- 布局按空间选择：默认单行横向滚动，`wrap` 换行（窄屏逐行排列），`vertical` 纵向。
+
+## 代码演示
+
+预览使用本地数据；每个演示的面板内可查看源码与接入命令。
+
+### 开场引导
+
+体验页 Chat 空态同款：`EmptyState` 开场白 + 去重后的 `suggested_prompts`（文本直接作 `key`），
+点击条目回显发送文本；勾选模拟配额超限，条目整体禁用。
+
+<Showcase name="prompts" />
+
+### 布局与渐入
+
+同一组条目切换四种布局（横向滚动 / 纵向 / 换行 / 两列）与两种渐入；「重播」重新挂载观察逐项错峰。
+
+<Showcase name="prompts-layout" />
+
+### 分组入口
+
+条目带 `children` 时渲染为分组卡片：卡片本身不可点击，只有子项触发 `onItemClick`；
+父项 `disabled` 时整组变淡、子项一并禁用。
+
+<Showcase name="prompts-nest" />
+
+## API
+
+### Prompts
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `items` | 提示条目；为空时组件不渲染，标题也不显示 | [`PromptsItem[]`](#promptsitem) | `[]` |
+| `title` | 列表上方的标题 | `ReactNode` | — |
+| `onItemClick` | 点击可用条目时回调；分组卡片不触发，点击子项时 `data` 为该子项 | `(info: { data: PromptsItem }) => void` | — |
+| `vertical` | 纵向排列；与 `wrap` 同时传入时优先 | `boolean` | `false` |
+| `wrap` | 横向换行，窄屏逐行排列；与 `vertical` 都不传时单行横向滚动 | `boolean` | `false` |
+| `fadeIn` | 挂载时逐项淡入 | `boolean` | `false` |
+| `fadeInLeft` | 逐项从左侧淡入；与 `fadeIn` 同时传入时优先 | `boolean` | `false` |
+| `className` | 根节点 class，等同 `classNames.root` | `string` | — |
+| `classNames` | 各部位追加的工具类，键见下表 | `Partial<Record<PromptsSemantic, string>>` | — |
+
+其余 `HTMLAttributes<HTMLDivElement>`（如 `id`、`data-*`）透传到根节点；`title` 与 `onClick`
+已被上面的同名属性取代。
+
+条目是原生 `<button type="button">`，支持键盘操作与原生 `disabled`；渐入用 CSS `@starting-style`
+逐项错峰（最多 8 档延迟），不支持的浏览器直接显示，减少动态效果时关闭过渡动画。
+
+### PromptsItem
+
+| 属性 | 说明 | 类型 |
+| --- | --- | --- |
+| `key` | 唯一标识，同时作为 React key | `string` |
+| `icon` | 前置图标，按装饰元素处理（`aria-hidden`） | `ReactNode` |
+| `label` | 标题 | `ReactNode` |
+| `description` | 描述 | `ReactNode` |
+| `disabled` | 是否禁用；分组条目禁用时子项一并禁用 | `boolean` |
+| `children` | 子项，类型同 `PromptsItemBase` 但不再嵌套；存在时本项变为分组卡片 | `PromptsItemBase[]` |
+
+可读名称来自 `label` 和 `description`，只放图标、不写文字的条目对读屏用户不可用。
+
+### 语义化 classNames
+
+| 键 | 作用部位 |
+| --- | --- |
+| `root` | 根节点 |
+| `title` | 标题 |
+| `list` | 条目容器 |
+| `item` | 一级条目（按钮或分组卡片） |
+| `itemContent` | 一级条目的文字区域 |
+| `subList` | 分组卡片内的子项容器 |
+| `subItem` | 子项按钮 |
+
+`classNames` 追加在默认 class 之后，覆盖同一 CSS 属性时生效顺序由 Tailwind 生成的 CSS 决定，
+与书写顺序无关，必要时可用 `!` 后缀（如 `px-2!`）。条目默认 `flex-none`，修改尺寸用 `grow` /
+`basis-*`（如两列 `basis-[calc(50%-4px)]`），它们会覆盖 `flex` 简写的默认值。

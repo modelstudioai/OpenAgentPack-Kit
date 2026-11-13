@@ -1,0 +1,5 @@
+#!/bin/sh
+# 暂存区 lint。可用 git commit --no-verify 绕过；完整本地验收使用 pnpm gate。
+root=$(git rev-parse --show-toplevel) || exit 1
+cd "$root" || exit 1
+bash scripts/lint-changed.sh

@@ -1,0 +1,16 @@
+{
+  "title": "组件",
+  "pages": [
+    "index",
+    "general",
+    "basic",
+    "wake",
+    "express",
+    "feedback",
+    "layout",
+    "chat",
+    "message",
+    "chrome",
+    "plaza"
+  ]
+}

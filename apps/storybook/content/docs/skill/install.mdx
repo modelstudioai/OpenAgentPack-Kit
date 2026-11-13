@@ -1,0 +1,93 @@
+---
+title: 安装与更新
+description: 从仓库或离线包获取英文 Skill，并在更新时保留本地修改
+---
+
+Skill 通过完整目录交付。每个目录中的 `SKILL.md` 是入口，`references/` 提供按需阅读的
+API 和行为说明，`examples/` 提供可复用的 TypeScript 示例。
+
+## 获取离线包
+
+| 内容 | 下载 |
+| --- | --- |
+| 全部三个 Skill | [kit-skills.tgz](/skills/kit-skills.tgz) |
+| 组件组合 | [kit-components.tgz](/skills/kit-components.tgz) |
+| 会话状态与交互 | [use-kit-chat.tgz](/skills/use-kit-chat.tgz) |
+| 默认与自建后端接入 | [kit-chat-provider.tgz](/skills/kit-chat-provider.tgz) |
+
+将压缩包解压到临时目录，确认顶层 Skill 目录及其内容，再复制到当前 coding agent 支持的
+Skill 目录。单个压缩包的顶层目录就是 Skill 名称；全部压缩包包含三个同级目录。
+支持项目级 Skill 的工具应优先按项目安装，具体发现路径以所用工具的文档为准。
+
+例如，工具使用项目级 `.agents/skills/` 时，安装后的结构为：
+
+```text
+.agents/skills/
+  kit-components/
+    SKILL.md
+    references/
+    examples/
+  use-kit-chat/
+    SKILL.md
+    references/
+    examples/
+  kit-chat-provider/
+    SKILL.md
+    references/
+    examples/
+```
+
+不要只复制 `SKILL.md`：入口中的相对链接需要同目录下的参考与示例。
+三个 Skill 可以独立安装；跨 Skill 的建议不会替代各自必需的参考内容。
+
+## 从仓库生成
+
+在仓库根目录安装依赖后执行：
+
+```bash
+pnpm gen:skills
+pnpm check:skills
+pnpm pack:skills
+```
+
+源文件位于 `scripts/skills/src/<skill-name>/`；最终目录生成到 `assets/skills/<skill-name>/`，
+离线包写入 `assets/skills/dist/`。`assets/skills/<skill-name>/` 是生成物，不要直接手改。
+文档站构建会校验同步结果并准备下载文件，不会替开发者自动改写已跟踪的源或示例。
+
+压缩包保留打包时源文件的实际修改时间（精确到秒），解压后可直接查看。该时间来自当前
+工作目录的文件，不代表 Git 最后提交时间；内容或修改时间变化都会改变压缩包。
+
+Skill 不再作为独立 workspace 包存在，也不需要加入应用的运行时依赖。当前没有安装器命令
+或 npm 发布流程。
+
+## 更新已有 Skill
+
+1. 将新离线包解压到临时目录，保留当前目录的备份。
+2. 对比 `SKILL.md`、`references/` 和 `examples/`；确认新增接口、行为变化与本地定制。
+3. 合并需要保留的定制，再替换整个 Skill 目录。不要直接覆盖仍有修改的文件。
+4. 让 coding agent 重新读取入口，确认相对链接可打开，并在目标项目运行类型检查。
+
+Skill 随当前仓库 API 更新。旧版本 Kit 或已修改的 copy-in 组件可能与新参考不同，应以
+目标项目实际安装的类型和组件源码为准，不要直接套用新版本字段。
+
+## 试用提示词
+
+在工具识别到相应 Skill 后，可以用英文明确任务：
+
+```text
+Use kit-components to build a conversation panel with Sender and Attachments.
+Keep upload requests in a caller-provided callback and preserve editable drafts.
+```
+
+```text
+Use use-kit-chat to connect this page to an existing ChatProvider.
+Include send, stop, session switching, and tool approval and denial.
+```
+
+```text
+Use kit-chat-provider to connect our Bailian backend, which returns raw SSE.
+Inspect the upstream readiness and complete history contracts before writing the adapter.
+```
+
+浏览器中的应用登录令牌与百炼 Provider 凭据不同。自建后端接入始终把百炼 API Key 留在
+服务端；下载 Skill 不需要提供凭据。

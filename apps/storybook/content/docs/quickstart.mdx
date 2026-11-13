@@ -1,0 +1,68 @@
+---
+title: 快速开始
+description: 安装依赖、生成管理员令牌，以 Mock 模式启动本地服务
+---
+
+本页用 **Mock 模式 + 成员登录** 完成本地安装、配置与启动，不需要百炼凭据。
+
+## 安装并启动
+
+准备 Node.js ≥ 24 与 pnpm 9.15.9，在仓库根目录执行：
+
+```bash
+pnpm install
+pnpm setup
+[ -f .env ] || cp .env.example .env
+```
+
+`ADMIN_TOKEN` 是本项目管理端的登录密钥，相当于管理员密码。首次配置时，在终端生成：
+
+```bash
+openssl rand -hex 32
+```
+
+OpenSSL 是开源加密工具；上面的命令生成 32 字节安全随机数，并输出为 64 个十六进制字符。
+复制输出的字符串，之后用它登录管理端。已有管理员令牌时可沿用。
+
+编辑根 `.env`，更新以下字段，保留其他已有配置与凭据；将 `ADMIN_TOKEN` 的占位内容替换为
+刚生成的随机字符串：
+
+```dotenv
+KIT_GATEWAY=mock
+KIT_AUTH_MODE=member
+KIT_DATA_DIR=.scratch/local-demo/data
+ADMIN_TOKEN=<粘贴生成的随机字符串>
+PORT=8787
+```
+
+这个数据目录专用于本次演示；重复体验时保留它即可沿用已有模版和成员。
+根 `.env` 的非空值覆盖 shell 同名变量，修改配置后需重启服务。
+
+启动 server、体验页和管理端：
+
+```bash
+pnpm dev server web console
+```
+
+启动器会先构建所需依赖。另开终端检查：
+
+```bash
+curl http://localhost:8787/healthz
+```
+
+健康检查应显示 `gateway=mock`。默认入口如下，实际地址以启动日志为准：
+
+| 入口 | 默认地址 |
+| --- | --- |
+| 管理端 | `http://localhost:5174` |
+| 体验页 | `http://localhost:5173` |
+| Kit Server | `http://localhost:8787` |
+
+此时管理端显示令牌登录页，体验页显示成员登录页。不带目标的 `pnpm dev` 还会启动文档站 `:3000`。
+
+## 接下来
+
+创建模版、上架和完成成员对话，请参照[本地跑通完整 Demo](/docs/local-demo)。
+
+- [生成独立项目](/docs/guides/#生成独立项目)：使用脚手架搭建自己的应用。
+- [参与开发与验收](/docs/contributing/#门禁)：修改仓库代码后运行门禁与专项回归。

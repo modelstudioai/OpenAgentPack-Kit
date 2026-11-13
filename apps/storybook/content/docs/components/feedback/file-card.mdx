@@ -1,0 +1,99 @@
+---
+title: FileCard 文件卡片
+description: 文件名、类型徽标与加载态；预览与下载由调用方注入
+---
+
+`FileCard` 展示单个文件的名称、徽标与加载态；预览与下载由调用方注入回调，组件不请求文件、不保存凭据。
+
+```tsx
+import { FileCard } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（复制后 import 改为项目内路径）：
+
+```bash
+pnpm kit:add file-card
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 消息流内的交付文件：流内 artifact 分片经 Chat 内置的 `ArtifactCard` 适配本组件渲染
+  （[Chat](/docs/components/chat)），预览与下载双入口。
+- 管理端表单展示已选或已上传文件：纯展示形态，`description` 作状态词（console 模板文件配置即此用法）。
+- 输入附件的上传卡片（进度、错误与移除）：用 [Attachments.FileCard](/docs/components/express/attachments#filecard-单文件卡片)，
+  本组件不含上传语义。
+
+## 代码演示
+
+预览中的操作只显示回调结果，不会请求远端文件。
+
+### 预览与下载
+
+`onClick` 绑定文件名为主入口；与 `onDownload` 同传时，右侧渲染独立下载图标按钮。
+
+<Showcase name="file-card" />
+
+### 入口组合与缩略图
+
+仅 `onDownload` 时文件名即下载入口；无回调纯展示；传 `src` 时缩略图替代字符徽标。
+
+<Showcase name="file-card-entries" />
+
+### 加载与禁用
+
+`loading` 阻止操作且第二行固定「加载中…」；`disabled` 整卡变暗并禁用操作。
+
+<Showcase name="file-card-states" />
+
+## API
+
+### FileCard
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `name` | 文件名，溢出截断、悬停看全名 | `string` | — |
+| `type` | MIME 类型，参与徽标与类型词判定 | `string` | — |
+| `src` | 调用方提供的缩略图地址，提供时替代字符徽标；组件不读取文件内容 | `string` | — |
+| `description` | 第二行说明；加载态被「加载中…」占据 | `ReactNode` | — |
+| `loading` | 加载态：阻止操作，第二行固定「加载中…」 | `boolean` | `false` |
+| `disabled` | 禁用操作，整卡变暗 | `boolean` | `false` |
+| `onClick` | 文件名绑定的主入口回调 | `() => void` | — |
+| `onDownload` | 下载回调；单独传入时文件名即下载入口，与 `onClick` 同传时渲染独立图标按钮 | `() => void` | — |
+| `className` | 追加到根节点的 Tailwind 工具类；卡片宽度固定 `w-56` 并随容器收缩 | `string` | — |
+
+入口规则：主入口为 `onClick ?? onDownload`，绑定在文件名上；两个回调都不传时为静态展示。
+`type` 的已知取值（表格 / 图片 / 音频 / 视频 / PDF / 文本 / 压缩包）在文件名旁展示类型词，
+未知类型不展示占位词；有第二行时类型词让位。字符徽标先按 MIME 前缀、再按扩展名取词
+（IMG / AUD / VID / PDF / ZIP / XLS，否则扩展名前 4 位或 FILE）。
+
+下载由调用方接 `kit-sdk` client 经 server 代理执行：组件不请求 Provider，也不把预签名 URL
+当作持久下载地址。
+
+## 相关组件
+
+| 场景 | 组件 | 数据与操作 |
+| --- | --- | --- |
+| 输入附件（上传进度与移除） | [`Attachments.FileCard`](/docs/components/express/attachments#filecard-单文件卡片) | `item: AttachmentItem`、`onRemove` |
+| 消息流交付文件 / 产物 | `ArtifactCard`（Chat 内置） | `filename / contentType`、`onOpen / onDownload` |
+
+移除输入附件仅通知调用方，不删除远端文件。
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-bg-subtle` | 卡片底色 | `#f6f7fb` | `#f7f7f7` |
+| `--kit-border` | 卡片描边 | `#e3e6ef` | `#e5e5e5` |
+| `--kit-surface` | 字符徽标底色；下载图标悬停底色 | `#ffffff` | `#ffffff` |
+| `--kit-fg` | 文件名文字 | `#101322` | `#171717` |
+| `--kit-fg-muted` | 徽标字符、类型词、说明文字与下载图标 | `#5b6478` | `#737373` |
+
+键盘焦点环用 `--kit-focus`；文件名与说明走 `--kit-text-label` / `--kit-text-caption` 文字档位，
+卡片圆角 `--kit-radius-sm`；下载图标悬停过渡消费 `--kit-duration-fast` / `--kit-ease-out`。
+更多主题配置见 [组件总览](/docs/components#主题)。

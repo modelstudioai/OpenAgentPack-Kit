@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@import "@openagentpack/kit-chat-ui/theme.css";
+
+/*
+ * Tailwind v4 的自动源探测不扫 node_modules，也不扫仓库外目录，而 kit-chat-ui 的工具类
+ * 恰恰来自那里（kit 包未发布期间经 vite 别名直连 kit 仓库的 dist）。不显式声明就会出现
+ * 「class 写了但 CSS 没生成」的静默失效（2026-10-14 实测：侧栏 max-md:hidden、w-60 全部缺失）。
+ * - monorepo 内开发/构建：用下面的相对路径；
+ * - `pnpm kit:create` 生成的独立项目：脚本会再追加一行指向 kit 仓库的**绝对路径** @source
+ *   （见 scripts/kit/create-project.mjs），copy-in 的组件则由 ./** 覆盖。
+ */
+@source "../index.html";
+@source "./**/*.{ts,tsx}";
+@source "../../../packages/chat-ui/src/**/*.{ts,tsx}";
+
+html,
+body,
+#root {
+	height: 100%;
+}
+body {
+	margin: 0;
+	background: var(--kit-bg);
+	color: var(--kit-fg);
+}

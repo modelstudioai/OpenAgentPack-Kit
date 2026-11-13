@@ -1,0 +1,682 @@
+// 「用量」页聚合样式（CSS Modules / Less）：Session 用量页、模版用量面板、趋势卡、
+// 限额编辑器与限额面板共用本文件。颜色一律消费 --kit-* / --ant-* 变量，不写死色值；
+// 断点与 Tailwind 同口径（sm 640px / md 768px / xl 1280px）。
+
+/* ============ Session 用量页（session-usage-page） ============ */
+
+.pageRoot {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	min-width: 0;
+}
+
+/* flex column 容器默认 stretch 会把 Segmented 轨道拉满整行，恢复内容自适应宽度 */
+.viewToggle {
+	align-self: flex-start;
+}
+
+.pageTitle {
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.pageSub {
+	margin-top: 4px;
+	font-size: 14px;
+	color: var(--ant-color-text-secondary);
+}
+
+.mutedNote {
+	font-size: 14px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 筛选控件行 */
+.controlsRow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.searchForm {
+	display: flex;
+	min-width: 0;
+	flex: 1 1 0%;
+	align-items: center;
+	gap: 8px;
+}
+
+/* 搜索框胶囊圆角（对齐 bailian-web FilterBar search）：input 前缀抬高优先级，否则被 antd 运行时圆角规则后插覆盖 */
+input.searchInput {
+	max-width: 384px;
+	flex: 1 1 0%;
+	border-radius: 100px;
+}
+
+.searchSubmit {
+	flex-shrink: 0;
+}
+
+.pickerWrap {
+	min-width: 0;
+	flex: 1 1 0%;
+}
+
+/* 表格单元格 */
+.memberName {
+	font-weight: 500;
+}
+
+.cellMeta {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+.cellSub {
+	margin-inline-start: 6px;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 表格数字列（各组件共用） */
+.tabularNum {
+	font-variant-numeric: tabular-nums;
+}
+
+.rowActions {
+	display: flex;
+	gap: 8px;
+}
+
+.loadingRow {
+	display: flex;
+	justify-content: center;
+	padding-block: 24px;
+}
+
+/* 分页行（session-usage-page 与模版用量面板共用） */
+.pager {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 12px;
+	font-size: 14px;
+}
+
+/* ============ 模版用量面板（template-usage-panel） ============ */
+
+/* 区块纵向节奏：space-y-3/4 等价改写 */
+.cardStack {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.detailStack {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	min-width: 0;
+}
+
+.panelStack {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.telemetrySection {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	border-top: 1px solid var(--ant-color-border);
+	padding-top: 16px;
+}
+
+/* 身份行 */
+.identityRow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.identityMeta {
+	min-width: 0;
+}
+
+.sectionTitle {
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.identitySub {
+	margin-top: 2px;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+.statusOn {
+	color: var(--ant-color-success);
+}
+
+.cardActions {
+	display: flex;
+	flex-shrink: 0;
+	gap: 8px;
+}
+
+/* 统计卡栅格 */
+.statGrid {
+	display: grid;
+	gap: 12px;
+	grid-template-columns: 1fr;
+}
+
+.statPair {
+	display: flex;
+	flex-wrap: wrap;
+	column-gap: 32px;
+	row-gap: 12px;
+}
+
+/* 明细页 header */
+.detailHeader {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.detailTitle {
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.detailSub {
+	margin-top: 4px;
+	font-size: 14px;
+	color: var(--ant-color-text-secondary);
+}
+
+.collectStatus {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	font-size: 14px;
+	color: var(--ant-color-text-secondary);
+}
+
+.loadingNote {
+	padding-block: 24px;
+	font-size: 14px;
+	text-align: center;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 通用辅助小灰字（原 text-xs text-neutral-500，限额面板共用） */
+.metaText {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+.sessionTitle {
+	font-weight: 500;
+}
+
+.workspaceText {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 「暂不支持」占位卡：与 ErrorState 同量级的边框盒 */
+.unavailable {
+	display: flex;
+	min-width: 0;
+	align-items: flex-start;
+	gap: 12px;
+	border: 1px solid var(--kit-border-subtle);
+	border-radius: var(--kit-radius);
+	background: var(--kit-bg-subtle);
+	padding: 16px;
+	color: var(--kit-fg);
+}
+
+.unavailableIcon {
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	margin-top: 2px;
+	color: var(--kit-fg-muted);
+}
+
+.unavailableBody {
+	min-width: 0;
+	flex: 1 1 0%;
+}
+
+.unavailableTitle {
+	font-weight: 500;
+	font-size: var(--kit-text-base);
+}
+
+.unavailableDesc {
+	margin-top: 4px;
+	line-height: 24px;
+	font-size: var(--kit-text-label);
+	color: var(--kit-fg-muted);
+}
+
+/* 遥测筛选区 */
+.sectionHeader {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.filterRow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.datePicker {
+	width: 208px;
+}
+
+.selectName {
+	width: 176px;
+}
+
+.selectSource {
+	width: 128px;
+}
+
+/* ============ 模版用量逐日趋势卡（template-usage-trend） ============ */
+
+.card {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	border: 1px solid var(--kit-border-subtle);
+	border-radius: var(--kit-radius);
+	background: #fff;
+	padding: 16px;
+}
+
+.cardHeader {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.cardTitle {
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.headerControls {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.daysSelect {
+	width: 112px;
+}
+
+.loadingText {
+	font-size: 13px;
+	color: var(--kit-fg-muted);
+}
+
+.totals {
+	display: flex;
+	flex-wrap: wrap;
+	column-gap: 80px;
+	row-gap: 12px;
+}
+
+/* 单个汇总数字：小标签 + 大号数字 */
+.totalItem {
+	min-width: 0;
+}
+
+.totalLabel {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: var(--kit-text-caption);
+	color: var(--kit-fg-muted);
+}
+
+.totalValue {
+	margin-top: 4px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	font-size: var(--kit-text-display);
+}
+
+.totalUnit {
+	margin-left: 4px;
+	font-weight: 400;
+	font-size: var(--kit-text-caption);
+	color: var(--kit-fg-muted);
+}
+
+/* 柱状图：左 y 轴 + 右绘图区；pt-3 给最上方 max 刻度留出上溢空间 */
+.chart {
+	display: flex;
+	gap: 8px;
+	padding-top: 12px;
+}
+
+.chartAxis {
+	position: relative;
+	height: 160px;
+	width: 56px;
+	flex-shrink: 0;
+	text-align: right;
+	font-size: 11px;
+	font-variant-numeric: tabular-nums;
+	color: var(--kit-fg-muted);
+}
+
+.axisTick {
+	position: absolute;
+	right: 0;
+	transform: translateY(-50%);
+}
+
+.chartPlot {
+	min-width: 0;
+	flex: 1 1 0%;
+}
+
+.chartArea {
+	position: relative;
+	height: 160px;
+}
+
+/* 三档刻度线：0 基线实线，其余虚线 */
+.gridLine {
+	position: absolute;
+	inset-inline: 0;
+	border-top: 1px solid var(--kit-border);
+}
+
+.gridLineDashed {
+	border-top-style: dashed;
+}
+
+.barsRow {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-around;
+	gap: 4px;
+}
+
+.barSlot {
+	display: flex;
+	height: 100%;
+	min-width: 0;
+	flex: 1 1 0%;
+	align-items: flex-end;
+	justify-content: center;
+}
+
+.bar {
+	width: 100%;
+	max-width: 28px;
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	transition: height var(--kit-duration-base) var(--kit-ease-out);
+}
+
+.barToday {
+	background: var(--kit-accent);
+}
+
+/* 历史日期柱：同色半透明弱调 */
+.barPast {
+	background: var(--kit-accent);
+	opacity: 0.3;
+}
+
+.chartXAxis {
+	display: flex;
+	justify-content: space-around;
+	gap: 4px;
+	margin-top: 6px;
+	font-size: 11px;
+	font-variant-numeric: tabular-nums;
+	color: var(--kit-fg-muted);
+}
+
+.xLabel {
+	min-width: 0;
+	flex: 1 1 0%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-align: center;
+}
+
+.emptyChart {
+	padding-block: 32px;
+	font-size: 13px;
+	text-align: center;
+	color: var(--kit-fg-muted);
+}
+
+.footnote {
+	font-size: 12px;
+	color: var(--kit-fg-muted);
+}
+
+/* ============ 用量限额编辑器（usage-limit-editor） ============ */
+
+.editorRoot {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	border-top: 1px solid var(--ant-color-border);
+	padding-top: 12px;
+}
+
+.formStack {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.periodRow {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.rowLabel {
+	font-size: 13px;
+}
+
+.fieldsGrid {
+	display: grid;
+	gap: 12px;
+	grid-template-columns: 1fr;
+}
+
+/* 自绘字段骨架：label 与 antd 控件同占一行（label 块级 + 控件上边距） */
+.fieldLabel {
+	display: block;
+}
+
+.fieldInput {
+	margin-top: 4px;
+}
+
+.hintText {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+.formActions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.confirmBodyText {
+	white-space: pre-wrap;
+}
+
+/* ============ 用量限额面板（usage-limit-panels） ============ */
+
+.stack {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.limitPanel {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	background: var(--kit-bg-subtle);
+	padding: 16px;
+}
+
+.limitHeader {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.limitTitle {
+	font-weight: 600;
+}
+
+.limitActions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.preLine {
+	white-space: pre-line;
+}
+
+/* 单指标余额卡 */
+.balanceCard {
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	background: #fff;
+	padding: 12px;
+}
+
+.balanceTitle {
+	font-weight: 500;
+}
+
+.balanceGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 8px;
+	margin-top: 8px;
+	font-variant-numeric: tabular-nums;
+}
+
+.balanceLabel {
+	color: var(--ant-color-text-secondary);
+}
+
+/* 限额状态行：颜色按状态由 statusClass 映射 */
+.statusNote {
+	margin-top: 8px;
+	font-size: 12px;
+}
+
+.statusOk {
+	color: var(--ant-color-text-secondary);
+}
+
+.statusExceeded {
+	color: var(--ant-color-error);
+}
+
+.statusUnavailable {
+	color: var(--ant-color-warning);
+}
+
+/* 周期状态区 */
+.scopeRow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.scopeMeta {
+	color: var(--kit-fg-muted);
+}
+
+.balanceColumns {
+	display: grid;
+	gap: 12px;
+	grid-template-columns: 1fr;
+}
+
+/* ============ 响应式（sm 640 / md 768 / xl 1280） ============ */
+
+@media (min-width: 640px) {
+	.pickerWrap {
+		max-width: 384px;
+	}
+
+	.statGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 768px) {
+	.fieldsGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.balanceColumns {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1280px) {
+	.statGrid {
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+	}
+
+	.statCardSpan2 {
+		grid-column: span 2 / span 2;
+	}
+
+	.statCardSpan3 {
+		grid-column: span 3 / span 3;
+	}
+}

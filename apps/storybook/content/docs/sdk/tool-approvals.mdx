@@ -1,0 +1,114 @@
+---
+title: 工具审批与拒绝
+description: 通过 useChat 查询待办、逐项确认工具调用，并处理不确定的提交结果
+---
+
+主会话进入 `requires_action` 时，`useChat` 会保持当前 Turn，并在 `approvals` 中提供
+当前批次的工具请求。此时 `canSend` 为 `false`，普通消息应保留草稿并暂停发送。
+
+默认 Kit Server 与[自建后端](/docs/sdk/custom-backend)使用同一套审批交互。自建模式由
+ChatProvider 的 `toolApprovals` 与 `submitToolApproval` 接入自己的查询和提交接口，
+组件不需要改动；这两个方法与远端停止都是必需能力。
+
+## 何时使用
+
+- 主会话 `phase` 进入 `requires_action`：展示待确认的工具调用，允许与拒绝一步直提。
+- 需要处理提交后的 `submitting` / `submitted` / `uncertain` / `stale` 状态与恢复入口。
+- 无 React 宿主直接用 Client 的 `toolApprovals` / `submitToolApproval`，见本页末尾。
+
+## 使用说明
+
+把页面已有 `useChat` 的返回值传给审批区域。`ToolApprovalCard` 在卡上完整展示工具名、
+类型、线程和实际参数，允许与拒绝都是一步直提；查询和提交由 hook 完成。
+
+```tsx
+import { ToolApprovalCard } from "@openagentpack/kit-chat-ui";
+import type { UseChatResult } from "@openagentpack/kit-sdk/chat/hooks";
+
+export function ApprovalList({ chat }: { chat: UseChatResult }) {
+  return (
+    <section aria-label="工具审批">
+      {chat.approvals.map((approval) => (
+        <ToolApprovalCard
+          key={JSON.stringify([approval.batch_id, approval.call_id])}
+          approval={approval}
+          onDecision={chat.submitApproval}
+          onRefresh={chat.refreshApprovals}
+        />
+      ))}
+    </section>
+  );
+}
+```
+
+卡片处理提交中的防重复与错误提示。提交前 controller 会复核参数与身份是否变化，
+失效的提交需要刷新待办后重新确认。
+组件属性、停止入口与交互预览见 [ToolApprovalCard](/docs/components/feedback/tool-approval)。
+
+## 代码演示
+
+### 审批流走查
+
+<Showcase name="tool-approvals" />
+
+发送后进入 `requires_action`，在卡片上允许或拒绝后提交并继续执行到 `idle`；状态行全程
+可观察 `phase` 与 `canSend`。
+
+## API
+
+### useChat 的审批成员
+
+| 成员 | 用途 |
+| --- | --- |
+| `approvals` | 当前有效批次的工具请求及状态（`ChatToolApproval[]`） |
+| `submitApproval(decision)` | 提交单项允许或拒绝，返回 `Promise<void>` |
+| `refreshApprovals()` | 重新查询当前审批状态，返回 `Promise<void>` |
+
+### ToolApprovalDecision
+
+`chat.submitApproval(decision)` 接收 `@openagentpack/kit-sdk/protocol` 导出的
+`ToolApprovalDecision`，每次只提交一个调用：
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `batch_id` | `string` | 当前审批批次，取自待办 |
+| `call_id` | `string` | 当前待办调用，取自待办 |
+| `result` | `"allow" \| "deny"` | 明确允许或拒绝 |
+| `deny_message` | `string?` | 可选拒绝原因，最多 200 字符 |
+
+同一批次的多个 call 要分别确认。批准只允许已有待办继续执行，不能借此创建工具调用，
+也不能编辑工具参数。拒绝某个工具与 `chat.stop()` 中断整个执行是不同操作。
+
+## 提交与恢复
+
+| `approval.status` | 页面处理 |
+| --- | --- |
+| `pending` | 只有同时满足 `actionable` 才能发起确认 |
+| `submitting` | 正在提交，禁止重复点击 |
+| `submitted` | 已提交，继续等待 Provider 的执行状态 |
+| `uncertain` | 提交结果不明，先刷新查询结果 |
+| `stale` | 请求已失效或已处理，刷新当前待办 |
+
+提交前，controller 会等待连接就绪并刷新当前批次，校验用户审查的参数是否变化；
+服务端还会校验会话归属、有效待办与已有响应。提交成功只表示请求被接受，不能立即
+把工具标记为执行完成。
+
+如果提交前的查询被新事件或连接重建作废，本次提交会报错，不会使用旧待办继续批准或拒绝。
+刷新当前待办并重新查看参数后，再由用户确认。完全相同的重复快照不会屏蔽这次参数复核。
+
+使用自建后端时，上述服务端校验由业务后端承担，不能只依赖浏览器的刷新和参数比对。
+`submitToolApproval` 必须映射成真实批准或拒绝请求，返回真实受理结果及事件 ID；
+空实现或将拒绝改成中断整个会话都不满足合同。
+
+网络结果不明时，controller 会尝试重新查询；若页面仍显示 `uncertain`，使用
+`refreshApprovals()` 确认结果。只有查询后仍然有效且可操作的待办，才可再次由用户明确确认。
+重连不会自动重发允许或拒绝，页面也不应自动重试这类写请求。
+
+当前有效集合来自 Provider 最新主会话状态中的批次与调用标识。不要根据历史请求重新
+激活批准按钮，也不要从工具名称自行拼接标识。当前支持 `builtin` 与 `mcp` 工具；
+类型不支持或信息不完整时，待办只读，普通消息仍保持禁发。
+
+不使用 hooks 时，可通过 `client.toolApprovals(sessionId)` 查询，以及
+`client.submitToolApproval(sessionId, decision)` 提交；调用方需自行完成上述状态与交互编排。
+具体 HTTP 接口见[接口总览](/docs/server-api)。工具审批不会替代资源生命周期操作原有的
+`plan → 显式确认` 流程。

@@ -1,0 +1,90 @@
+---
+title: Tooltip 溢出提示
+description: 悬停/聚焦显示的轻量气泡提示，可按内容截断自动显隐
+---
+
+`Tooltip` 在触发器周围显示一个气泡，用于展示被省略的完整文本或补充说明。触发器内联渲染，
+`className` 透传给触发元素（截断类由调用方放在这里）；气泡 portal 到 body 并用
+`position: fixed` 定位，不会被滚动容器的 overflow 裁剪。
+
+```tsx
+import { Tooltip } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（复制后 import 改为项目内路径）：
+
+```bash
+pnpm kit:add tooltip
+```
+
+copy-in 只复制组件源码，本组件没有额外 npm 依赖。交给 coding agent 接入时使用
+[kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 被截断文本的完整内容（会话列表标题、锚点栏回合摘要等）：配合 `overflowOnly`，
+  未截断的文本不出提示。
+- 图标或紧凑控件的补充说明（技能菜单项描述等短文案）：悬停或键盘聚焦显示，
+  不承载需要用户确认的重要信息。
+
+## 代码演示
+
+预览使用本地状态，悬停或聚焦触发器查看气泡；演示面板内可查看源码与接入命令。
+
+### 方位与显隐
+
+`side` 决定气泡相对触发器的方位；气泡贴边时按实测尺寸夹回视口安全区，保持所选方位不翻转。
+
+<Showcase name="tooltip" />
+
+### 溢出提示
+
+会话列表同款：`truncate` 收敛到 Tooltip 触发器上，溢出检测才有正确的 `scrollWidth`；
+`overflowOnly` 打开时未溢出的标题不出提示。
+
+<Showcase name="tooltip-overflow" />
+
+### 富内容气泡
+
+气泡内容支持任意 ReactNode：锚点栏同款「标题 + 摘要」贴边展示；指针可移入气泡持续阅读，
+内容超过最大高度时在气泡内滚动。
+
+<Showcase name="tooltip-rich" />
+
+## API
+
+### Tooltip
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `content` | 气泡内容，支持任意 ReactNode（标题 + 摘要、多行文本）；空值不显示气泡 | `ReactNode` | — |
+| `side` | 气泡相对触发器的方位；贴边触发器（如锚点栏）用 `left` / `right` | `"top" \| "bottom" \| "left" \| "right"` | `"top"` |
+| `overflowOnly` | 仅当触发内容真的被截断（`scrollWidth` / `scrollHeight` 超出 client 区）才显示 | `boolean` | `false` |
+| `className` | 添加到触发器元素；`truncate` 等截断类放在这里 | `string` | — |
+| `children` | 触发器内容 | `ReactNode` | 必填 |
+
+悬停与键盘聚焦都会显示（聚焦经事件冒泡，触发器包在按钮里也能触发）；离开触发器后有
+短暂宽限期，指针移入气泡不收起，便于阅读与选中内容。摆位在气泡挂载后按实测尺寸解算并
+夹回视口安全区，贴边触发器不会把气泡裁出屏幕。
+
+页面滚动或窗口缩放时气泡立即收起，避免 `fixed` 气泡停在过期位置；气泡内部滚动不收起，
+内容超过最大高度（320px）时在气泡内滚动。触发器本身是 `span`，不承载交互语义，
+可交互内容由内层元素（按钮、文本）决定。真实调用方：SessionList 的会话标题溢出提示、
+MessageAnchorRail 的回合气泡（`side="left"`）、Sender 技能菜单项描述。
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-surface` | 气泡底色 | `#ffffff` | `#ffffff` |
+| `--kit-border` | 气泡描边 | `#e3e6ef` | `#e5e5e5` |
+| `--kit-fg` | 气泡正文 | `#101322` | `#171717` |
+| `--kit-shadow` | 气泡阴影 | `0 8px 28px rgb(16 19 34 / 8%)` | `0 4px 20px rgb(23 23 23 / 6%), 0 1px 4px rgb(23 23 23 / 4%)` |
+
+圆角走 `--kit-radius-sm`，文字档位为 `--kit-text-caption`；入场动效消费
+`--kit-animate-overlay-in`，`prefers-reduced-motion` 下自动关闭。更多主题配置见
+[组件总览](/docs/components#主题)。

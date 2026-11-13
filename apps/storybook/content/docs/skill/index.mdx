@@ -1,0 +1,51 @@
+---
+title: Skill
+description: 用三个英文 Skill 指导 coding agent 组合 Kit 组件、管理会话与接入自建百炼后端
+---
+
+import { Cards, Card } from "fumadocs-ui/components/card";
+
+Kit 提供三个给 coding agent 使用的 **英文 Skill**。它们把组件选择、聊天状态与后端接入
+分开组织；每个 Skill 都包含工作步骤、API 参考和经过类型检查的示例，可以独立复制使用。
+
+Skill 是写代码时读取的指南，不是运行时插件，也不会替应用创建会话或调用百炼。
+页面的实际行为仍由 `kit-chat-ui`、Kit SDK 各功能入口及其 `/hooks` 和业务后端完成。
+
+## 选择 Skill
+
+<Cards>
+  <Card title="kit-components" description="覆盖所有已实现的公开组件、子组件和兼容别名，指导 UI 组合与样式接入。" href="/docs/skill/kit-components" />
+  <Card title="use-kit-chat" description="接入 useChat，处理连接、发送、停止、会话切换以及工具批准与拒绝。" href="/docs/skill/use-kit-chat" />
+  <Card title="kit-chat-provider" description="使用默认 Kit Server，或把自建百炼后端的已转换事件、原始 SSE 接入 Provider。" href="/docs/skill/kit-chat-provider" />
+</Cards>
+
+| 想完成的工作 | 从哪个 Skill 开始 |
+| --- | --- |
+| 选择消息、输入、附件、反馈和页面辅助组件 | `kit-components` |
+| 把已有后端连接到页面，管理发送与会话状态 | `use-kit-chat` |
+| 自己有百炼后端，需要适配请求和流数据合同 | `kit-chat-provider` |
+
+完整对话页面通常会同时使用三个 Skill。只有 UI 组合需求时，可以单独使用
+`kit-components`；已有稳定 Provider 时，不需要重复实现后端适配。
+
+## 获取与阅读
+
+先阅读[安装与更新](/docs/skill/install)，再将 Skill 目录复制到 coding agent 支持的目录。
+也可以直接下载[三个 Skill 的离线包](/skills/kit-skills.tgz)并阅读其中的 `SKILL.md`。
+每个包都带有所需的 `references/` 和 `examples/`，不要只复制入口文件。
+
+Skill 源文件位于 `scripts/skills/src/`，最终目录生成到 `assets/skills/<name>/`，离线压缩包
+由 `pnpm pack:skills` 生成到 `assets/skills/dist/`。没有安装器 CLI，也没有发布 npm 包。
+文档站的使用说明保留中文，下载的 Skill 正文、API 说明、示例注释和示例界面文案均为英文。
+
+## API 与示例如何保持一致
+
+公开 TypeScript 导出是 API 结构的事实来源。`pnpm gen:skills` 更新英文 API 参考与本站
+示例；`pnpm check:skills` 只检查，不修改文件，发现公开接口、组件覆盖或示例内容漂移时失败。
+`pnpm pack:skills` 生成离线包。
+
+API 签名、Props 和类型由源码同步；用途、默认行为和接入约束由英文参考资料说明，并与
+组件和 SDK 文档核对。本站嵌入的代码来自 Skill 的同一份 TS/TSX 示例，不维护另一套代码。
+新增公开组件、子组件或兼容别名时，必须一起补齐 Skill 索引与 API 参考。
+
+运行时 API 的详细用法见[组件总览](/docs/components)与 [SDK 与 Kit 数据接入](/docs/sdk)。

@@ -1,0 +1,212 @@
+---
+title: use-kit-chat
+description: 使用英文 Skill 接入 useChat，管理发送、停止、会话切换和工具审批
+---
+
+`use-kit-chat` 指导 coding agent 把 `@openagentpack/kit-sdk/chat/hooks` 的聊天状态接入页面，
+覆盖默认 Kit Server 和显式 `ChatProvider` 两种入口。它消费已有 Provider，不重新实现
+底层 SSE 转换。Provider 定义消息转换策略，Chat 持有事件快照并调用策略，hook 绑定状态与
+React 生命周期；页面直接消费返回的 `ChatMessage`。
+
+[下载 Skill](/skills/use-kit-chat.tgz) ·
+[阅读英文入口](/skills/use-kit-chat/SKILL.md) ·
+[英文 API 参考](/skills/use-kit-chat/references/api.md)
+
+## 两种入口
+
+| 已有环境 | 接入方式 |
+| --- | --- |
+| Kit Server 与 KitClient | 在 `KitProvider` 下调用 `useChat(sessionId)` |
+| 自建百炼后端与 ChatProvider | 调用 `useChat({ sessionId, provider })`，不需要 KitProvider |
+
+传入 `null` 表示尚未选择会话，不建立订阅。显式 Provider 的实例应保持稳定；切换 Session、
+切换 Provider 或卸载会释放旧订阅。关闭订阅不等于请求百炼停止执行。
+
+## Skill 会指导什么
+
+- 根据 `canSend` 控制发送入口，用 `turnRunning` 控制停止入口，区分连接状态与执行阶段。
+- 成功受理后只清理实际发送的草稿；请求失败、等待审批或断线时保留用户输入。
+- 新建会话后使用真实 Session ID 发送，避免继续读取旧的 React 状态闭包。
+- 展示工具请求，逐项批准或拒绝；参数变化需重新确认，提交结果不明时先刷新状态。
+- 使用已有消息、线程与文件投影；对切换会话、卸载和迟到回调保持正确的生命周期。
+- 在默认 KitProvider 内使用广场与配额 Hooks，提交提额申请并刷新结果；见 [广场与配额](/docs/sdk/discovery-usage)。
+
+会话创建、列表和文件上传下载不属于 `useChat` 的 Provider 合同。默认会话列表可使用
+`useSessions`；自建后端自行提供这些接口。当前没有公开的消息编辑、重新生成或请求队列 API。
+
+## 默认 Kit Server 示例
+
+以下示例来自 Skill 源文件，展示连接、消息展示、发送与停止。KitClient 需要先按
+[Client 接入](/docs/sdk/client)从运行时配置初始化，不能假定 API 与页面同源。
+
+先准备审批列表，复用组件内的参数审查、批准、拒绝与刷新交互：
+
+{/* skill-example: use-kit-chat/examples/approval-list.tsx */}
+
+```tsx
+import { ToolApprovalCard } from "@openagentpack/kit-chat-ui";
+import type { UseChatResult } from "@openagentpack/kit-sdk/chat/hooks";
+
+export function ApprovalList({ chat }: { chat: UseChatResult }) {
+	return (
+		<section aria-label="Tool approvals">
+			{chat.approvals.map((approval) => (
+				<ToolApprovalCard
+					key={JSON.stringify([approval.batch_id, approval.call_id])}
+					approval={approval}
+					onDecision={chat.submitApproval}
+					onRefresh={chat.refreshApprovals}
+				/>
+			))}
+		</section>
+	);
+}
+```
+
+{/* /skill-example */}
+
+再接入默认 Client 与 Hook：
+
+{/* skill-example: use-kit-chat/examples/default-chat.tsx */}
+
+```tsx
+import { Chat, Sender } from "@openagentpack/kit-chat-ui";
+import { useChat } from "@openagentpack/kit-sdk/chat/hooks";
+import { KitError } from "@openagentpack/kit-sdk/protocol";
+import { createKitClient, type KitClient } from "@openagentpack/kit-sdk/providers/kit";
+import { KitProvider } from "@openagentpack/kit-sdk/providers/kit/react";
+import { useRef, useState } from "react";
+import { ApprovalList } from "./approval-list.tsx";
+
+// Initialize once. apiBaseUrl comes from runtime configuration, not location.origin.
+// getAppToken supplies application identity, never a Bailian API key.
+export function createDefaultClient(apiBaseUrl: string, getAppToken: () => Promise<string>) {
+	return createKitClient({
+		baseUrl: apiBaseUrl,
+		headers: async () => ({ Authorization: `Bearer ${await getAppToken()}` }),
+	});
+}
+
+export function DefaultChat({ client, sessionId }: { client: KitClient; sessionId: string | null }) {
+	return (
+		<KitProvider client={client}>
+			<ChatPanel key={sessionId ?? "unselected"} sessionId={sessionId} />
+		</KitProvider>
+	);
+}
+
+function ChatPanel({ sessionId }: { sessionId: string | null }) {
+	const chat = useChat(sessionId);
+	const [draft, setDraft] = useState("");
+	const [error, setError] = useState<string | null>(null);
+	const sending = useRef(false);
+	const report = (cause: unknown) => setError(cause instanceof KitError ? cause.message : "The request failed.");
+
+	async function send(text: string) {
+		if (!text.trim() || !chat.canSend || sending.current) return;
+		sending.current = true;
+		setError(null);
+		try {
+			await chat.send(text.trim());
+			setDraft((current) => (current === text ? "" : current));
+		} catch (cause) {
+			report(cause);
+		} finally {
+			sending.current = false;
+		}
+	}
+
+	return (
+		<div className="flex h-full min-h-0 flex-col" data-kit-appearance="workspace">
+			<p role="status">{`${chat.connection} / ${chat.phase}`}</p>
+			{(error || chat.streamError) && <p role="alert">{error ?? chat.streamError?.message}</p>}
+			<Chat
+				variant="workspace"
+				messages={chat.messages}
+				multiAgent={chat.multiAgent}
+				scrollKey={sessionId}
+				turnRunning={chat.turnRunning}
+				canSend={chat.canSend}
+				onStop={() => chat.stop().catch(report)}
+				approvals={chat.approvals.length > 0 ? <ApprovalList chat={chat} /> : null}
+				sender={
+					<Sender
+						variant="workspace"
+						value={draft}
+						onChange={setDraft}
+						loading={chat.turnRunning}
+						submitDisabled={!chat.canSend}
+						onSubmit={(text) => void send(text)}
+						onCancel={() => void chat.stop().catch(report)}
+						placeholder={sessionId ? "Send a message" : "Select a session to begin"}
+					/>
+				}
+			/>
+		</div>
+	);
+}
+```
+
+{/* /skill-example */}
+
+需要显式 Provider 和新建后立即发送时，可参考独立的
+[custom-chat.tsx](/skills/use-kit-chat/examples/custom-chat.tsx)。
+它使用调用方的会话创建接口，并把新 Session ID 明确传给 `send`。
+
+## 无 React 的宿主
+
+Skill 提供 core 的 `createChatController` 示例。宿主直接订阅状态并释放实例，React 页面
+继续使用 Hook；核心状态和动作来自同一实现。
+示例也列出可选的独立 Store：它接受消息转换策略，但事件交付与生命周期必须由调用方负责。
+
+{/* skill-example: use-kit-chat/examples/controller.ts */}
+
+```ts
+import {
+	createChatController,
+	createSessionStore,
+	type SessionSnapshot,
+	type SessionStoreOptions,
+} from "@openagentpack/kit-sdk/chat";
+import type { ChatProvider } from "@openagentpack/kit-sdk/providers";
+
+// This owner is independent of React and must be disposed by its host.
+export function observeSession(
+	provider: ChatProvider,
+	sessionId: string,
+	onChange: (snapshot: SessionSnapshot) => void,
+) {
+	const controller = createChatController(provider, sessionId);
+	const unsubscribe = controller.subscribe(() => onChange(controller.getSnapshot()));
+	const dispose = () => {
+		unsubscribe();
+		controller.dispose();
+	};
+	const ready = controller.connect().catch((error) => {
+		dispose();
+		throw error;
+	});
+	return { controller, ready, dispose };
+}
+
+// Lower-level alternative: this host must feed SDK SessionEvent snapshots through
+// applyEvent and manage lifecycle itself. Ordinary chat integrations use the owner above.
+export function createLocalStore(sessionId: string, provider: ChatProvider) {
+	const options: SessionStoreOptions = { transformMessage: provider.transformMessage?.bind(provider) };
+	return createSessionStore(sessionId, options);
+}
+```
+
+{/* /skill-example */}
+
+## 示例任务
+
+```text
+Use use-kit-chat to connect this page to our stable ChatProvider.
+Preserve drafts on errors and while approval is pending, support stop and session
+switching, and refresh approval state after an uncertain submission.
+```
+
+公开返回字段见 [useChat](/docs/sdk/use-chat)，审批交互见[工具审批](/docs/sdk/tool-approvals)。
+需要从后端 HTTP/SSE 格式开始适配时，继续使用
+[kit-chat-provider](/docs/skill/kit-chat-provider)。

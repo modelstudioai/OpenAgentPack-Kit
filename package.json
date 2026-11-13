@@ -1,0 +1,67 @@
+{
+  "name": "openagentpack-kit",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "OpenAgentPack Kit — 搭建 managed-agent 体验页的全栈套件（自研协议 + headless hooks + copy-in 组件 + Node server + 脚手架）",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "setup": "git config core.hooksPath .githooks",
+    "dev": "node scripts/dev.mjs",
+    "build": "turbo run build",
+    "build:release": "node scripts/build-release.mjs",
+    "kit:create": "node scripts/kit/create-project.mjs",
+    "kit:add": "node scripts/kit/add-component.mjs",
+    "catalog:list": "node scripts/kit/catalog-list.mjs",
+    "eval": "node packages/eval/dist/bin.js",
+    "typecheck": "turbo run typecheck && pnpm typecheck:skills",
+    "test": "pnpm test:scripts && turbo run test && pnpm test:skills",
+    "test:scripts": "node --test scripts/*.test.mjs scripts/kit/*.test.mjs",
+    "test:skills": "pnpm --filter @openagentpack/kit-sdk... --filter @openagentpack/kit-chat-ui... build && node --test scripts/skills/tests/*.test.mjs",
+    "lint": "biome check . --diagnostic-level=warn --error-on-warnings",
+    "lint:fix": "biome check --write .",
+    "lint:changed": "bash scripts/lint-changed.sh",
+    "format": "biome format --write .",
+    "check:architecture": "dependency-cruiser --config .dependency-cruiser.cjs --output-type err --exclude '(^|/)(dist|\\.next|\\.source|out|public/skills)/' apps packages",
+    "check:docs": "node scripts/check-docs.mjs",
+    "check:no-inner-deps": "node scripts/check-no-inner-deps.mjs",
+    "gate": "pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm check:architecture && pnpm check:docs && pnpm check:no-inner-deps",
+    "verify:fast": "pnpm typecheck && pnpm check:docs",
+    "verify:scoped": "pnpm typecheck && pnpm lint && pnpm check:docs",
+    "verify:push": "pnpm typecheck && pnpm lint && pnpm test && pnpm check:architecture && pnpm check:docs && pnpm check:no-inner-deps",
+    "verify:full": "pnpm gate",
+    "verify:release": "pnpm gate",
+    "gen:openapi": "pnpm --filter @openagentpack/kit-server gen:openapi && pnpm gen:api-types",
+    "gen:api-types": "pnpm --filter @openagentpack/kit-sdk gen:api-types",
+    "gen:skills": "node scripts/skills/generate.mjs --write",
+    "check:skills": "node scripts/skills/generate.mjs",
+    "typecheck:skills": "tsc -p scripts/skills/tsconfig.json --noEmit",
+    "pack:skills": "node scripts/skills/pack.mjs",
+    "changeset": "changeset",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "lint:strict": "biome check . --diagnostic-level=warn --error-on-warnings",
+    "e2e": "pnpm --filter web e2e"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.3",
+    "@changesets/cli": "^2.31.0",
+    "@openagentpack/kit-chat-ui": "workspace:*",
+    "@openagentpack/kit-sdk": "workspace:*",
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.2",
+    "dependency-cruiser": "^17.4.3",
+    "esbuild": "0.25.12",
+    "react": "^19.3.0",
+    "turbo": "^2.11.7",
+    "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

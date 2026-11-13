@@ -1,0 +1,129 @@
+---
+title: SDK 与 Kit 数据接入
+description: Kit 的 Client、流处理、会话 Hooks 与上游 OpenAgentPack SDK 的职责和接入入口
+---
+
+组件依赖的目录、上传、发送编排、产物和用量恢复全部通过公开 SDK 使用，详见
+[组件交互与后端调用](/docs/sdk/experience)。体验页的 Kit Server 接入与自建后端使用同一套显式配置。
+
+import { Cards, Card } from "fumadocs-ui/components/card";
+
+Kit 已提供请求、流处理、消息状态和会话列表等前端数据接入能力，可以配合自有 UI 使用，
+无需依赖 `kit-chat-ui`。本栏目集中介绍这些能力及其与上游 SDK 的关系。
+
+仓库中的 **SDK 专指 `@openagentpack/sdk`**，负责服务端的 Provider 接入，并通过浏览器安全
+子入口提供百炼事件纯转换。Kit 的数据处理能力由 `@openagentpack/kit-sdk` 的功能子入口提供，
+例如对话使用 `/chat` 与 `/chat/hooks`，HTTP 使用 `/request`，Kit Context 使用 `/providers/kit/react`。
+各功能的 `hooks/` 都是 React hooks；通用 `/hooks` 只公开 `useIsMobile`，
+`/providers/kit/react` 公开 `KitProvider`、`useKitClient`、`useKitContext`。
+通用数据入口不依赖 React。旧根入口、`/adapters/react`、`/react`、`/request/stream`、`/bailian` 已移除，
+调用方直接改用对应功能路径。
+
+需要 coding agent 帮助接入时，使用英文 [use-kit-chat Skill](/docs/skill/use-kit-chat)
+处理页面状态与交互，使用 [kit-chat-provider Skill](/docs/skill/kit-chat-provider)
+适配自建百炼后端；它们引用与本站一致的公开 API。
+
+## 从哪里开始
+
+<Cards>
+  <Card title="Stream 流解析" description="独立读取 SSE 字节流、取消与资源释放" href="/docs/sdk/stream" />
+  <Card title="Request 请求" description="HTTP、动态身份头与原始流响应" href="/docs/sdk/request" />
+  <Card title="通用调用状态" description="查询取消、提交单飞与快照订阅" href="/docs/sdk/state" />
+  <Card title="Client 请求" description="运行时配置、身份、会话与文件 API" href="/docs/sdk/client" />
+  <Card title="组件调用流程" description="目录、上传、首次发送、产物与额度恢复" href="/docs/sdk/experience" />
+  <Card title="自建后端" description="接入自己的百炼后端，消费原始 SSE 或已转换事件" href="/docs/sdk/custom-backend" />
+  <Card title="useChat 对话" description="消息、执行阶段、发送与停止" href="/docs/sdk/use-chat" />
+  <Card title="useSessions 会话" description="会话列表、选择、新建与分页边界" href="/docs/sdk/use-sessions" />
+  <Card title="工具审批" description="审查工具参数，逐项批准或拒绝，恢复不确定结果" href="/docs/sdk/tool-approvals" />
+</Cards>
+
+Kit Server 和[自建后端](/docs/sdk/custom-backend) 均可使用显式 [Client](/docs/sdk/client) 与
+ChatProvider，再把它们传给公开 hooks；`KitProvider` 的已有调用方式保留兼容。
+需要自定义生命周期时使用
+[createChatController](/docs/sdk/use-chat/#无-react-的-chat-controller)。组件组合见[组件总览](/docs/components)。
+
+## 四层组织
+
+```text
+Stream：字节 → 原始 SSE 帧
+    ↑ Request：HTTP → Response / JSON / 原始 SSE 帧
+    ↑ Provider：后端接口与就绪/历史 → SessionEvent；定义消息转换策略
+    ↑ Chat：持有事件与消息，调用转换策略；重连、发送/停止/审批 → useChat 与 UI
+```
+
+每层可独立使用。默认 KitClient 组合 Request 和 Kit 协议适配；原始百炼 Provider 复用
+同一读取与请求能力，再调用 SDK 转换业务事件。Controller 属于 `chat`，React hooks 与对应功能就近放置，只绑定生命周期。
+Provider 的 `transformMessage` 负责 `SessionEvent → ChatMessage` 展示规则；Chat 从最新
+快照重建并调用它，持有最终消息。两个内置 Provider 均使用默认 `transformSessionEvent`。
+
+## 接入术语
+
+| 术语 | 含义 |
+| --- | --- |
+| Session | Provider 侧的一次运行会话，Kit 保存归属、标题、时间戳等本地索引，事件正文由 Provider 提供 |
+| Event / SessionEvent | SDK 定义的业务事件；同一 `event_id` 后续可以更新为新的累计快照，消息由事件快照转换得到 |
+| Turn | 一轮执行，从用户消息开始，到主会话正常完成、中断或失败；等待工具审批仍属于当前轮次 |
+| Thread | 同一 Session 中一次子 Agent 执行的资源，可有父线程；用于读取协作历史和展示执行记录 |
+| Artifact | 智能体交付的文件结果；默认由 Kit Server 代理下载，自建后端提供自己的下载接口 |
+| Attachment | 用户上传的输入文件；默认 Kit 链路随新建 Session 挂载，已有会话不能中途追加挂载 |
+
+事件的线程归属优先读取 `metadata.thread_id`，缺失时兼容 `metadata.session_thread_id`。
+`reset`、`ready`、`done`、`error`、`ping` 和 `operation` 属于 Kit 协议控制帧，与业务 Event 分开处理。
+连接状态与执行阶段分别判断，不能用断流或单条消息完成代表整个 Turn 结束。
+
+快照、游标和恢复见 [Client](/docs/sdk/client/#快照与游标)，文件接口见
+[Client](/docs/sdk/client/#上传与挂载附件)，等待人工决定的执行见[工具审批](/docs/sdk/tool-approvals)。
+身份、目录绑定、Project 与后台任务见[接口总览](/docs/server-api)。
+
+## 能力与职责
+
+以下源码位置均相对于 `packages/sdk/src/`，导入入口均以 `@openagentpack/kit-sdk` 为前缀。
+
+| 需要的能力 | 源码位置 | 导入入口与主要 API |
+| --- | --- | --- |
+| 字节解码与原始 SSE 分帧 | `stream/` | `/stream`：`createSseStream` |
+| HTTP 请求、动态身份头、自定义 fetch | `request/` | `/request`：`createRequest` |
+| 通用查询、提交与快照订阅 | `state.ts` | `/state`：`createQuery`、`createMutation`、`createObservable` |
+| 后端会话合同与请求映射 | `providers/` | `/providers`：`ChatProvider`、`BackendOperation` |
+| Kit Client、兼容适配与协议帧读取 | `providers/kit/` | `/providers/kit`：`createKitClient`、`createKitChatProvider`、`createTransport`、`streamProtocolFrames` |
+| 标准 SessionEvent 后端接入 | `providers/session-events/` | `/providers/session-events`：`createSessionEventChatProvider` |
+| 百炼原始 SSE、历史与就绪接入 | `providers/bailian/` | `/providers/bailian`：`createBailianChatProvider` |
+| SSE 文本切帧、共享事件与 DTO | `protocol/` | `/protocol`：`createSseParser`、`decodeFrame`、Schema 与类型 |
+| 事件到消息的纯展示转换 | `messages/` | `/messages`：`transformSessionEvent`、`ChatMessage` |
+| 聊天状态、重连、发送、审批与首次发送编排 | `chat/`、`chat/hooks/` | `/chat`：`createChatController`、`createSessionStore`、`createComposer`；`/chat/hooks`：`useChat`、`useComposer` |
+| 会话目录、分页、搜索、详情和操作 | `sessions/`、`sessions/hooks/` | `/sessions` 与 `/sessions/hooks` |
+| 附件上传、扫描与产物操作 | `files/`、`files/hooks/` | `/files` 与 `/files/hooks` |
+| Agent 目录、广场和资源查询 | `agents/hooks/` | `/agents/hooks`：`useAgentCatalog`、`usePlaza`、`useAgentResources` |
+| 用量、额度申请与恢复 | `usage/`、`usage/hooks/` | `/usage` 与 `/usage/hooks` |
+| 登录、身份隔离和登录态存储 | `auth/`、`auth/hooks/` | `/auth` 与 `/auth/hooks` |
+| 宿主配置与 API 基地址解析 | `config/` | `/config`：`resolveApiBaseUrl`、`detectHost` |
+| Kit Context 与 Client 获取 | `providers/kit/react/` | `/providers/kit/react`：`KitProvider`、`useKitClient`、`useKitContext` |
+| 屏幕判断 | `hooks/` | `/hooks`：仅 `useIsMobile`；订阅、生命周期和查询工具保持内部使用 |
+
+百炼原始事件规范化仍复用上游 `@openagentpack/sdk/session-events` 的
+`createBailianSessionEventNormalizer`；服务端 Gateway 通过上游 `@openagentpack/sdk` 的网络 API
+连接 Provider。它们与上述 Kit 功能入口分别维护，不复制事件转换实现。
+
+默认浏览器访问 Kit Server 的 `/api/kit/*`，由 Gateway 调用 SDK 连接百炼；自建模式访问
+调用方后端。两条链路都复用 SDK `SessionEvent`，Kit 将事件快照整理成可展示状态。
+自建后端透传原始 SSE 时，Kit 适配器调用 SDK 公开转换器，业务方无需重写增量归并。
+Provider 凭据始终留在后端；浏览器不导入 SDK 主入口或 `internal/*`。
+
+## 当前范围
+
+- 面向 Kit Server 与自建百炼后端的会话合同，不提供通用的 OpenAI / DeepSeek 多服务商插件。
+  原始流模式需要持续订阅、完整历史与上游就绪保证；单次发送 POST 返回一轮 SSE 不属于内置模式。
+- `useChat` 提供消息读取与执行动作；尚无公开的 `setMessages`、编辑历史、删除单条消息或
+  重新生成 API。`useSessions` 不内置跨会话消息缓存、活动会话状态或请求队列。
+- `@openagentpack/kit-sdk` 当前仍标记为 `private: true`。本栏目示例面向仓库 workspace
+  与源码集成，不代表这些包已经正式发布到 npm。
+
+仓库当前精确依赖 npm 正式发布的 `@openagentpack/sdk@0.10.0`，包内容由
+`pnpm-lock.yaml` integrity 锁定。
+其浏览器安全的 `session-events` 公开入口提供 `SessionEvent` 与
+`createBailianSessionEventNormalizer`，服务端公开接口提供 `listSessionThreads` 与
+`listSessionThreadEvents`。依赖升级后需核对这些公开导出，并运行仓库测试套件。
+正式版本可安装不代表已完成真实 Cloud 联调；实际验收结果以对应测试与联调证据为准。
+
+本栏目是公开 API 的使用指南；协议与后端操作的权威定义分别在仓库 `docs/protocol.md`、
+`docs/interfaces.md`，站内接口说明见[接口总览](/docs/server-api)。

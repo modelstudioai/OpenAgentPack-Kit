@@ -1,0 +1,291 @@
+[
+  {
+    "object": "message",
+    "status": "completed",
+    "id": "sevt_fixture1",
+    "created_at": "2026-10-28T12:00:00.000Z",
+    "sequence_number": null,
+    "type": "session_status",
+    "content": [
+      {
+        "type": "data",
+        "data": {
+          "session_status": "running"
+        }
+      }
+    ]
+  },
+  {
+    "object": "message",
+    "status": "completed",
+    "id": "sevt_fixture2",
+    "created_at": "2026-10-28T12:00:00.000Z",
+    "sequence_number": null,
+    "type": "message",
+    "role": "user",
+    "thread_id": "thrd_fixture3",
+    "content": [
+      {
+        "type": "text",
+        "text": "[redacted:46]"
+      }
+    ]
+  },
+  {
+    "object": "message",
+    "status": "completed",
+    "id": "msg_fixture4",
+    "created_at": "2026-10-28T12:00:00.000Z",
+    "sequence_number": null,
+    "type": "model_request_start",
+    "thread_id": "thrd_fixture3",
+    "content": [
+      {
+        "type": "data",
+        "data": {
+          "model": "[redacted:11]",
+          "request_id": "id_fixture5"
+        }
+      }
+    ]
+  },
+  {
+    "type": "event_start",
+    "event": {
+      "id": "msg_fixture6",
+      "type": "reasoning"
+    },
+    "object": "message",
+    "status": "in_progress"
+  },
+  {
+    "type": "event_delta",
+    "event_id": "msg_fixture6",
+    "delta": {
+      "type": "reasoning_delta",
+      "index": 0,
+      "reasoning": "[redacted:3]"
+    },
+    "object": "content",
+    "status": "in_progress"
+  },
+  {
+    "type": "event_delta",
+    "event_id": "msg_fixture6",
+    "delta": {
+      "type": "reasoning_delta",
+      "index": 0,
+      "reasoning": "[redacted:10]"
+    },
+    "object": "content",
+    "status": "in_progress"
+  },
+  {
+    "type": "event_delta",
+    "event_id": "msg_fixture6",
+    "delta": {
+      "type": "reasoning_delta",
+      "index": 0,
+      "reasoning": "[redacted:3]"
+    },
+    "object": "content",
+    "status": "in_progress"
+  },
+  {
+    "type": "event_delta",
+    "event_id": "msg_fixture6",
+    "delta": {
+      "type": "reasoning_delta",
+      "index": 0,
+      "reasoning": "[redacted:5]"
+    },
+    "object": "content",
+    "status": "in_progress"
+  },
+  {
+    "type": "event_delta",
+    "event_id": "msg_fixture6",
+    "delta": {
+      "type": "reasoning_delta",
+      "index": 0,
+      "reasoning": "[redacted:12]"
+    },
+    "object": "content",
+    "status": "in_progress"
+  },
+  {
+    "type": "event_delta",
+    "event_id": "msg_fixture6",
+    "delta": {
+      "type": "reasoning_delta",
+      "index": 0,
+      "reasoning": "[redacted:19]"
+    },
+    "object": "content",
+    "status": "in_progress"
+  },
+  {
+    "type": "event_delta",
+    "event_id": "msg_fixture6",
+    "delta": {
+      "type": "reasoning_delta",
+      "index": 0,
+      "reasoning": "[redacted:15]"
+    },
+    "object": "content",
+    "status": "in_progress"
+  },
+  {
+    "type": "event_delta",
+    "event_id": "msg_fixture6",
+    "delta": {
+      "type": "reasoning_delta",
+      "index": 0,
+      "reasoning": "[redacted:2]"
+    },
+    "object": "content",
+    "status": "in_progress"
+  },
+  {
+    "type": "event_delta",
+    "event_id": "msg_fixture6",
+    "delta": {
+      "type": "reasoning_delta",
+      "index": 0,
+      "reasoning": "[redacted:9]"
+    },
+    "object": "content",
+    "status": "in_progress"
+  },
+  {
+    "type": "event_delta",
+    "event_id": "msg_fixture6",
+    "delta": {
+      "type": "reasoning_delta",
+      "index": 0,
+      "reasoning": "[redacted:21]"
+    },
+    "object": "content",
+    "status": "in_progress"
+  },
+  {
+    "type": "event_delta",
+    "event_id": "msg_fixture6",
+    "delta": {
+      "type": "reasoning_delta",
+      "index": 0,
+      "reasoning": "[redacted:26]"
+    },
+    "object": "content",
+    "status": "in_progress"
+  },
+  {
+    "type": "event_delta",
+    "event_id": "msg_fixture6",
+    "delta": {
+      "type": "reasoning_delta",
+      "index": 0,
+      "reasoning": "[redacted:13]"
+    },
+    "object": "content",
+    "status": "in_progress"
+  },
+  {
+    "object": "message",
+    "status": "completed",
+    "id": "msg_fixture6",
+    "created_at": "2026-10-28T12:00:00.000Z",
+    "sequence_number": null,
+    "type": "reasoning",
+    "role": "assistant",
+    "thread_id": "thrd_fixture3",
+    "content": [
+      {
+        "type": "text",
+        "text": "[redacted:138]"
+      }
+    ]
+  },
+  {
+    "type": "event_start",
+    "event": {
+      "id": "msg_fixture7",
+      "type": "message"
+    },
+    "object": "message",
+    "status": "in_progress"
+  },
+  {
+    "type": "event_delta",
+    "event_id": "msg_fixture7",
+    "delta": {
+      "type": "content_delta",
+      "index": 0,
+      "content": {
+        "type": "text",
+        "text": "[redacted:6]"
+      }
+    },
+    "object": "content",
+    "status": "in_progress"
+  },
+  {
+    "object": "message",
+    "status": "completed",
+    "id": "msg_fixture8",
+    "created_at": "2026-10-28T12:00:00.000Z",
+    "sequence_number": null,
+    "type": "model_request_end",
+    "thread_id": "thrd_fixture3",
+    "content": [
+      {
+        "type": "data",
+        "data": {
+          "model_request_id": "id_fixture9",
+          "model": "[redacted:11]",
+          "is_error": false,
+          "output_tokens": 40,
+          "cache_creation_input_tokens": 0,
+          "request_id": "id_fixture5",
+          "input_tokens": 3792,
+          "cache_read_input_tokens": 3786
+        }
+      }
+    ]
+  },
+  {
+    "object": "message",
+    "status": "completed",
+    "id": "msg_fixture7",
+    "created_at": "2026-10-28T12:00:00.000Z",
+    "sequence_number": null,
+    "type": "message",
+    "role": "assistant",
+    "thread_id": "thrd_fixture3",
+    "content": [
+      {
+        "type": "text",
+        "text": "[redacted:6]"
+      }
+    ]
+  },
+  {
+    "object": "message",
+    "status": "completed",
+    "id": "sevt_fixture10",
+    "created_at": "2026-10-28T12:00:00.000Z",
+    "sequence_number": null,
+    "type": "session_status",
+    "content": [
+      {
+        "type": "data",
+        "data": {
+          "stop_reason": {
+            "type": "end_turn"
+          },
+          "session_status": "idle"
+        }
+      }
+    ]
+  }
+]

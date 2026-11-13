@@ -1,0 +1,104 @@
+---
+title: Suggestion 快捷指令
+description: 由输入内容触发的候选项、级联菜单与键盘选择
+---
+
+`Suggestion` 对应 Ant Design X「表达 → Suggestion」。它通过 render props 把触发器和键盘处理交给
+输入框，适合斜杠指令、提及和动态模板。组件只负责查询识别、过滤、弹层与选择；候选项的业务含义
+（例如插入技能 chip 还是填入一段文本）由调用方决定。
+
+## 交互预览
+
+输入 `/` 打开技能候选：上下键移动，Enter/Tab 选择，Esc 关闭；选择后会插入技能 chip，
+已选技能不会再次出现在候选里。选择只写入输入框，再按一次 Enter 才提交。
+
+<Showcase name="suggestion" />
+
+## 接入
+
+```bash
+pnpm kit:add suggestion
+```
+
+推荐让 Suggestion 直接读取受控 `value` 与光标 `caret`，无需在 `onChange` 里手动开关弹层：
+
+```tsx
+<Suggestion
+  block
+  items={skills.map((skill) => ({ label: skill.name, value: skill.name }))}
+  value={value}
+  caret={selection.end}
+  trigger="/"
+  filter={(item, query) => item.value.toLowerCase().startsWith(query.toLowerCase())}
+  onSelect={(_, item, context) => {
+    if (!context) return;
+    senderRef.current?.replaceRange(context.start, context.end, `/${item.value} `);
+  }}
+>
+  {({ onKeyDown, inputProps }) => (
+    <Sender
+      ref={senderRef}
+      value={value}
+      onChange={setValue}
+      onSelectionChange={setSelection}
+      skills={skills}
+      onKeyDown={onKeyDown}
+      inputProps={inputProps}
+      onSubmit={send}
+    />
+  )}
+</Suggestion>;
+```
+
+`trigger` 省略时保留手动模式：调用方通过 render props 的 `onTrigger(info?)` 打开、`onTrigger(false)`
+关闭。手动模式适合没有稳定文本光标语义的场景。
+
+## Props
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | `SuggestionItem[] \| (info?) => SuggestionItem[]` | `[]` | 静态或按触发信息动态生成的候选 |
+| `value` | `string` | — | 受控文本；自动触发时必填 |
+| `caret` | `number` | `value.length` | 光标在 `value` 中的 offset；自动触发时必填 |
+| `trigger` | `string \| (state) => ({ start, query } \| null)` | — | 触发规则；传字符串时 `/` 必须在词首，且与光标之间不能有空白 |
+| `filter` | `(item, query) => boolean` | 值/关键词前缀匹配 | 业务过滤；空查询下也会执行，可用于排除已选项 |
+| `open` | `boolean` | — | 受控打开状态 |
+| `onOpenChange` | `(open: boolean) => void` | — | 打开状态变化 |
+| `onSelect` | `(value, item, context?) => void` | — | 选择叶子项；`context` 含 `trigger / query / start / end` |
+| `block` | `boolean` | `false` | 根节点与弹层占满可用宽度 |
+| `children` | `(props: SuggestionRenderProps) => ReactNode` | 必填 | 渲染触发输入框 |
+| `className` | `string` | — | 根节点 class |
+| `classNames` | `Partial<Record<SuggestionSemantic, string>>` | — | `root / popup / list / item` |
+
+自动模式下，查询变化时高亮重置到首项；同一查询的候选更新时，高亮与键盘选择保持在有效范围。查询消失即关闭；Esc 关闭后同一次查询保持关闭，继续输入形成新查询会重新打开。
+受控 `open` 优先于自动状态。
+
+## Render props
+
+| 属性 | 说明 |
+| --- | --- |
+| `onTrigger(info?)` | 手动模式打开并把 `info` 交给函数形式的 `items`；`onTrigger(false)` 关闭 |
+| `onKeyDown(event)` | 交给 Sender；打开时接管方向键、Enter/Tab 与 Esc，并阻止 Enter 直接提交 |
+| `inputProps` | 交给 Sender 的同名属性；让读屏软件关联候选列表及当前高亮项 |
+| `query` | 当前触发查询；未激活时为 `undefined` |
+
+## SuggestionItem
+
+| 属性 | 类型 | 说明 |
+| --- | --- | --- |
+| `label` | `ReactNode` | 展示内容 |
+| `value` | `string` | 选择时回传值，也是 React key |
+| `description` | `ReactNode` | 名称后的说明；超长省略，字符串描述悬停显示全文 |
+| `icon` / `extra` | `ReactNode` | 前置与尾部内容 |
+| `children` | `SuggestionItem[]` | 下一级候选 |
+| `keywords` | `string[]` | 默认过滤额外匹配的词；`value` 始终参与匹配 |
+| `data` | `unknown` | 业务元数据，随选中项原样返回 |
+
+弹层打开时，焦点始终保留在输入框；鼠标点击候选不会抢走焦点。点击组件外部会关闭。
+
+## 与 Ant Design X 的差异
+
+- 弹层固定在触发器上方，不提供 `getPopupContainer / rootClassName`。
+- 支持级联子项和左右方向键。
+- 只提供通用触发/过滤/选择能力，不内置业务数据源；示例问题仍由 `Prompts` 负责。
+- 样式只用 Tailwind 与主题 token。

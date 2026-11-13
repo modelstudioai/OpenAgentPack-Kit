@@ -1,0 +1,4 @@
+interface:
+  display_name: "Use Kit Chat"
+  short_description: "Connect React chat state, sessions, and tool approvals"
+  default_prompt: "Use $use-kit-chat to connect a chat page to my existing Provider and handle sending, stopping, and tool approval."

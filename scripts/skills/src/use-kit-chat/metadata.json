@@ -1,0 +1,7 @@
+{
+  "name": "use-kit-chat",
+  "description": "Build React chat flows with OpenAgentPack Kit useChat, including session creation, sending, stopping, connection state, and tool approval. Use with Kit Server or an existing custom ChatProvider.",
+  "displayName": "Use Kit Chat",
+  "shortDescription": "Connect React chat state, sessions, and tool approvals",
+  "defaultPrompt": "Use $use-kit-chat to connect a chat page to my existing Provider and handle sending, stopping, and tool approval."
+}

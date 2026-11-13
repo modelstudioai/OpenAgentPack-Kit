@@ -1,0 +1,92 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@openagentpack/kit-chat-ui": [
+        "../../packages/chat-ui/src/index.ts"
+      ],
+      "@openagentpack/kit-sdk/chat": [
+        "../../packages/sdk/src/chat/index.ts"
+      ],
+      "@openagentpack/kit-sdk/sessions": [
+        "../../packages/sdk/src/sessions/index.ts"
+      ],
+      "@openagentpack/kit-sdk/files": [
+        "../../packages/sdk/src/files/index.ts"
+      ],
+      "@openagentpack/kit-sdk/usage": [
+        "../../packages/sdk/src/usage/index.ts"
+      ],
+      "@openagentpack/kit-sdk/auth": [
+        "../../packages/sdk/src/auth/index.ts"
+      ],
+      "@openagentpack/kit-sdk/messages": [
+        "../../packages/sdk/src/messages/index.ts"
+      ],
+      "@openagentpack/kit-sdk/config": [
+        "../../packages/sdk/src/config/index.ts"
+      ],
+      "@openagentpack/kit-sdk/state": [
+        "../../packages/sdk/src/state.ts"
+      ],
+      "@openagentpack/kit-sdk/request": [
+        "../../packages/sdk/src/request/index.ts"
+      ],
+      "@openagentpack/kit-sdk/stream": [
+        "../../packages/sdk/src/stream/index.ts"
+      ],
+      "@openagentpack/kit-sdk/providers": [
+        "../../packages/sdk/src/providers/index.ts"
+      ],
+      "@openagentpack/kit-sdk/providers/kit": [
+        "../../packages/sdk/src/providers/kit/index.ts"
+      ],
+      "@openagentpack/kit-sdk/providers/kit/react": [
+        "../../packages/sdk/src/providers/kit/react/index.ts"
+      ],
+      "@openagentpack/kit-sdk/providers/session-events": [
+        "../../packages/sdk/src/providers/session-events/index.ts"
+      ],
+      "@openagentpack/kit-sdk/providers/bailian": [
+        "../../packages/sdk/src/providers/bailian/index.ts"
+      ],
+      "@openagentpack/kit-sdk/protocol": [
+        "../../packages/sdk/src/protocol/index.ts"
+      ],
+      "@openagentpack/kit-sdk/hooks": [
+        "../../packages/sdk/src/hooks/index.ts"
+      ],
+      "@openagentpack/kit-sdk/chat/hooks": [
+        "../../packages/sdk/src/chat/hooks/index.ts"
+      ],
+      "@openagentpack/kit-sdk/sessions/hooks": [
+        "../../packages/sdk/src/sessions/hooks/index.ts"
+      ],
+      "@openagentpack/kit-sdk/files/hooks": [
+        "../../packages/sdk/src/files/hooks/index.ts"
+      ],
+      "@openagentpack/kit-sdk/agents/hooks": [
+        "../../packages/sdk/src/agents/hooks/index.ts"
+      ],
+      "@openagentpack/kit-sdk/usage/hooks": [
+        "../../packages/sdk/src/usage/hooks/index.ts"
+      ],
+      "@openagentpack/kit-sdk/auth/hooks": [
+        "../../packages/sdk/src/auth/hooks/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "src/**/examples/**/*.ts",
+    "src/**/examples/**/*.tsx",
+    "tests/fixtures/**/*.ts"
+  ]
+}

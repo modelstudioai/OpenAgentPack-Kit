@@ -1,0 +1,4 @@
+{
+  "title": "通用",
+  "pages": ["message", "message-list", "session-list", "agent-header", "sub-agent-panel", "session-sidebar"]
+}

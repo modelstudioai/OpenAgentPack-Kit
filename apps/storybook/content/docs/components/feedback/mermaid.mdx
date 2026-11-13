@@ -1,0 +1,92 @@
+---
+title: Mermaid 图表
+description: 图表与源码双视图；流式等待、失败恢复与安全降级
+---
+
+`Mermaid` 渲染 Agent 返回的流程图、时序图等 Mermaid 源码：图表与源码双视图、原文复制、流式等待与失败恢复。
+渲染由本地打包的 Mermaid 依赖完成，不请求外部渲染服务。
+
+```tsx
+import { Mermaid } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（复制后 import 改为项目内路径；组件按需加载 Mermaid，需自装两个依赖）：
+
+```bash
+pnpm kit:add mermaid
+pnpm add mermaid@^11.12.0 lowlight@^3.3.0
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 消息流内的 mermaid 围栏：[Markdown](/docs/components/message#markdown) 把 `mermaid` 代码块路由到本组件，
+  业务无需单独接入；Markdown 内追加消息或正文增长时保留用户选择的视图与图表实例。
+- 自定义渲染器或独立图表展示：直接传源码字符串，`streaming` 接 Turn 进行中状态。
+
+## 代码演示
+
+预览不请求外部渲染服务；图表从本地 Mermaid 依赖生成。
+
+### 图表与源码
+
+流程图与时序图默认渲染成图；卡头切换图表 / 源码视图，复制按钮回传原文。
+
+<Showcase name="mermaid" />
+
+### 流式生成中
+
+`streaming` 为 `true` 只展示源码；取消勾选模拟完整源码到达，自动渲染成图。
+
+<Showcase name="mermaid-streaming" />
+
+### 失败与资源降级
+
+语法错误给错误提示与「重新渲染」；图片 / 扩展节点等资源语法只展示源码。
+
+<Showcase name="mermaid-fallback" />
+
+## API
+
+### Mermaid
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `children` | Mermaid 原始源码 | `string` | — |
+| `header` | 卡头标题 | `ReactNode` | `Mermaid 图表` |
+| `defaultRenderType` | 初始视图；之后由卡头切换按钮控制 | `"image" \| "code"` | `"image"` |
+| `onRenderTypeChange` | 用户切换视图的通知 | `(value: "image" \| "code") => void` | — |
+| `streaming` | 生成中只展示源码；置回 `false` 自动渲染 | `boolean` | `false` |
+| `copyable` | 显示复制源码按钮 | `boolean` | `true` |
+| `className` | 追加到根节点的 Tailwind 工具类 | `string` | — |
+
+渲染与安全：首次渲染按需加载 Mermaid（保留「正在渲染图表…」占位），多图表串行渲染避免主题互相覆盖；
+固定 `securityLevel: "strict"` 并锁定全部配置项，源码中的 `init` 指令与 frontmatter 不能覆写；
+图片节点、扩展节点（`@{…}`）、HTML 嵌入及 `url()` / `@import` 等资源语法只展示源码，不请求外部地址；
+渲染结果以 SVG data-uri 作图片使用，不插入应用 DOM。
+
+失败恢复：解析失败显示错误与「重新渲染」按钮，修正 `children` 后自动恢复。
+
+主题响应：组件监听祖先的 `data-kit-theme` 等变化并重新渲染，亮暗主题与 workspace 外观实时跟随。
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-bg` | 卡片底色；图表背景与边注底色 | `#ffffff` | `#ffffff` |
+| `--kit-bg-subtle` | 卡头底色；节点主色 | `#f6f7fb` | `#f7f7f7` |
+| `--kit-border` | 卡片与卡头描边；节点描边 | `#e3e6ef` | `#e5e5e5` |
+| `--kit-fg` | 节点文字 | `#101322` | `#171717` |
+| `--kit-fg-muted` | 卡头标题、切换按钮；连线颜色 | `#5b6478` | `#737373` |
+| `--kit-user-bubble` | 次级节点色 | `#eef0ff` | `#efefef` |
+| `--kit-accent` | 选中视图文字、焦点环与「重新渲染」按钮 | `#4f46e5` | `#171717` |
+
+图表内部配色由组件把上表 token 映射进 Mermaid 的 `themeVariables`（background / primaryColor /
+primaryTextColor / primaryBorderColor / lineColor / secondaryColor 等），亮暗切换即换色板；
+切换按钮悬停与选中底色用 `--kit-bg`，卡片圆角 `--kit-radius-sm`。更多主题配置见
+[组件总览](/docs/components#主题)。

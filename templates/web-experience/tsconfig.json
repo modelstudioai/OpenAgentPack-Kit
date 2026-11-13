@@ -1,0 +1,103 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "types": [
+      "vite/client",
+      "node"
+    ],
+    "paths": {
+      "@openagentpack/kit-sdk/chat": [
+        "../../packages/sdk/dist/chat.d.ts"
+      ],
+      "@openagentpack/kit-sdk/sessions": [
+        "../../packages/sdk/dist/sessions.d.ts"
+      ],
+      "@openagentpack/kit-sdk/files": [
+        "../../packages/sdk/dist/files.d.ts"
+      ],
+      "@openagentpack/kit-sdk/usage": [
+        "../../packages/sdk/dist/usage.d.ts"
+      ],
+      "@openagentpack/kit-sdk/auth": [
+        "../../packages/sdk/dist/auth.d.ts"
+      ],
+      "@openagentpack/kit-sdk/messages": [
+        "../../packages/sdk/dist/messages.d.ts"
+      ],
+      "@openagentpack/kit-sdk/config": [
+        "../../packages/sdk/dist/config.d.ts"
+      ],
+      "@openagentpack/kit-sdk/state": [
+        "../../packages/sdk/dist/state.d.ts"
+      ],
+      "@openagentpack/kit-sdk/request": [
+        "../../packages/sdk/dist/request.d.ts"
+      ],
+      "@openagentpack/kit-sdk/stream": [
+        "../../packages/sdk/dist/stream.d.ts"
+      ],
+      "@openagentpack/kit-sdk/providers": [
+        "../../packages/sdk/dist/providers.d.ts"
+      ],
+      "@openagentpack/kit-sdk/providers/kit": [
+        "../../packages/sdk/dist/providers/kit.d.ts"
+      ],
+      "@openagentpack/kit-sdk/providers/kit/react": [
+        "../../packages/sdk/dist/providers/kit/react.d.ts"
+      ],
+      "@openagentpack/kit-sdk/providers/session-events": [
+        "../../packages/sdk/dist/providers/session-events.d.ts"
+      ],
+      "@openagentpack/kit-sdk/providers/bailian": [
+        "../../packages/sdk/dist/providers/bailian.d.ts"
+      ],
+      "@openagentpack/kit-sdk/protocol": [
+        "../../packages/sdk/dist/protocol.d.ts"
+      ],
+      "@openagentpack/kit-sdk/hooks": [
+        "../../packages/sdk/dist/hooks.d.ts"
+      ],
+      "@openagentpack/kit-sdk/chat/hooks": [
+        "../../packages/sdk/dist/chat/hooks.d.ts"
+      ],
+      "@openagentpack/kit-sdk/sessions/hooks": [
+        "../../packages/sdk/dist/sessions/hooks.d.ts"
+      ],
+      "@openagentpack/kit-sdk/files/hooks": [
+        "../../packages/sdk/dist/files/hooks.d.ts"
+      ],
+      "@openagentpack/kit-sdk/agents/hooks": [
+        "../../packages/sdk/dist/agents/hooks.d.ts"
+      ],
+      "@openagentpack/kit-sdk/usage/hooks": [
+        "../../packages/sdk/dist/usage/hooks.d.ts"
+      ],
+      "@openagentpack/kit-sdk/auth/hooks": [
+        "../../packages/sdk/dist/auth/hooks.d.ts"
+      ],
+      "@openagentpack/kit-chat-ui": [
+        "../../packages/chat-ui/dist/index.d.ts"
+      ],
+      "@openagentpack/kit-chat-ui/theme.css": [
+        "../../packages/chat-ui/src/theme.css"
+      ]
+    },
+    "baseUrl": "."
+  },
+  "include": [
+    "src",
+    "vite.config.ts"
+  ]
+}

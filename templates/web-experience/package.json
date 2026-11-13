@@ -1,0 +1,29 @@
+{
+  "name": "kit-web-experience",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenAgentPack Kit 体验页模板（pnpm kit:create 的产物；kit 包未发布期间经别名直连 kit 源码）",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
+    "kit:add": "node ../../scripts/kit/add-component.mjs"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.0.4",
+    "tailwindcss": "^4.1.14",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9",
+    "@types/node": "^24.10.0"
+  }
+}

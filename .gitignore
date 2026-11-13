@@ -1,0 +1,36 @@
+node_modules/
+.pnpm-store/
+dist/
+build/
+out/
+.turbo/
+.next/
+.source/
+apps/storybook/public/skills/
+# Skill 最终目录提交；离线 tgz 产物不入库
+assets/skills/dist/
+coverage/
+*.tsbuildinfo
+
+# 本地数据与凭据：绝不入库
+.env
+.env.*
+!.env.example
+.data/
+.openagentpack/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite3
+*.db
+
+# 临时探针、个人计划（见 AGENTS.md「文档与工作记录」）
+.scratch/
+
+.DS_Store
+.idea/
+*.log
+.vite/
+playwright-report/
+test-results/
+.data-e2e/

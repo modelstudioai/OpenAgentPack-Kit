@@ -1,0 +1,567 @@
+[
+	{
+		"name": "Actions",
+		"export": "Actions",
+		"description": "Compose response actions, nested menus, copy, and controlled feedback.",
+		"doc": "apps/storybook/content/docs/components/feedback/actions.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"Defaults: items=[], variant=\"borderless\".",
+			"Item callbacks run before the group onClick callback."
+		]
+	},
+	{
+		"name": "ActionsCopy",
+		"export": "ActionsCopy",
+		"description": "Named export of the asynchronous copy action.",
+		"doc": "apps/storybook/content/docs/components/feedback/actions.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"Same component as Actions.Copy.",
+			"Without onCopy, uses the browser clipboard; rejected copies show failure.",
+			"Empty text and pending copy disable the button."
+		]
+	},
+	{
+		"name": "ActionsFeedback",
+		"export": "ActionsFeedback",
+		"description": "Named export of controlled like/dislike feedback.",
+		"doc": "apps/storybook/content/docs/components/feedback/actions.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"Same component as Actions.Feedback.",
+			"Required value is default, like, or dislike; selecting the active choice resets it to default.",
+			"The caller persists feedback."
+		]
+	},
+	{
+		"name": "Actions.Copy",
+		"export": "Actions",
+		"member": "Copy",
+		"description": "Copy text with caller-supplied or browser clipboard behavior.",
+		"doc": "apps/storybook/content/docs/components/feedback/actions.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"Defaults: disabled=false, variant=\"borderless\".",
+			"onCopy must reject on failure rather than reporting a false success."
+		]
+	},
+	{
+		"name": "Actions.Feedback",
+		"export": "Actions",
+		"member": "Feedback",
+		"description": "Render mutually exclusive controlled positive and negative feedback.",
+		"doc": "apps/storybook/content/docs/components/feedback/actions.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"Defaults: disabled=false, variant=\"borderless\".",
+			"No backend write is performed by the component."
+		]
+	},
+	{
+		"name": "AttachmentFileCard",
+		"export": "AttachmentFileCard",
+		"description": "Named export of the single-attachment status and removal card.",
+		"doc": "apps/storybook/content/docs/components/express/attachments.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"Same component as Attachments.FileCard.",
+			"Uploading or disabled cards hide removal; missing percent uses indeterminate progress."
+		]
+	},
+	{
+		"name": "Attachments",
+		"export": "Attachments",
+		"description": "Select, drag, and display input files while the caller owns upload state.",
+		"doc": "apps/storybook/content/docs/components/express/attachments.mdx",
+		"example": "examples/attachment-sender.tsx",
+		"notes": [
+			"Defaults: items=[], multiple=true, disabled=false, overflow=\"wrap\".",
+			"onPick replaces the native picker; onSelectFiles is still required for drag/drop.",
+			"maxCount limits native selection/drop; enforce the same limit for pasted files.",
+			"Uploading does not mount a file into a session."
+		]
+	},
+	{
+		"name": "Attachments.FileCard",
+		"export": "Attachments",
+		"member": "FileCard",
+		"description": "Display one AttachmentItem without a file picker.",
+		"doc": "apps/storybook/content/docs/components/express/attachments.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"disabled defaults to false.",
+			"onRemove only notifies the caller; it does not delete a remote file."
+		]
+	},
+	{
+		"name": "Layout",
+		"export": "Layout",
+		"description": "Compose a desktop sidebar, mobile drawer, page header, and bounded content area without owning application state.",
+		"doc": "apps/storybook/content/docs/components/layout.mdx",
+		"example": "examples/layout.tsx",
+		"notes": [
+			"sidebar accepts content or a render callback receiving closeSidebar and closeButton; compose the rail frame (width, border, mobile hiding) yourself.",
+			"header receives the mobile menu toggle; without header, mobileTitle labels the mobile fallback header.",
+			"sidebarLabel defaults to the built-in navigation label; fitViewport defaults to true and can be disabled by a host that owns viewport sizing.",
+			"Keep route, identity, session, and pending-confirmation state in the caller; pass controlled dialogs through the dialogs slot.",
+			"Select the workspace theme explicitly and provide a bounded parent height."
+		]
+	},
+	{
+		"name": "Chat",
+		"export": "Chat",
+		"description": "Compose a message list with inline child Agent cards, a default Sender, and main Agent approvals.",
+		"doc": "apps/storybook/content/docs/components/chat.mdx",
+		"example": "examples/chat-runtime.tsx",
+		"notes": [
+			"Defaults: variant=default, turnRunning=false, canSend=true. Select workspace explicitly for the employee layout.",
+			"Pass useChat().multiAgent for child discovery, read-only history, pagination, retry, and preserved main drafts.",
+			"Children expand within the main message stream; Chat does not switch Agent tabs.",
+			"Pass skills to enable inline chips; adapt onSend(text, skills) to chat.send(text, { skills }).",
+			"Child status never completes the main turn; approvals belong to the main Agent and must be null when absent.",
+			"The default draft clears only after a successful send and only if unchanged.",
+			"A custom sender slot owns its send, stop, loading, and submit-disabled wiring.",
+			"scrollKey changes reset list following without remounting the input.",
+			"composerDisabled disables the default input while preserving stop; canSend only gates submission."
+		]
+	},
+	{
+		"name": "AgentHeader",
+		"export": "AgentHeader",
+		"description": "Display the selected agent and an application-owned action area.",
+		"doc": "apps/storybook/content/docs/components/general/agent-header.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"actions replaces the default new-session button; actions=null hides the area.",
+			"Session creation is a caller responsibility.",
+			"A non-empty agents list with onPickAgent enables a controlled title selector.",
+			"Icons accept image URLs, relative paths, and text such as emoji."
+		]
+	},
+	{
+		"name": "isIconImageSource",
+		"export": "isIconImageSource",
+		"kind": "helper",
+		"description": "Use the shared Agent icon rule when rendering an application-owned icon layout.",
+		"doc": "apps/storybook/content/docs/components/general/agent-header.mdx",
+		"example": "examples/agent-icon.tsx",
+		"notes": [
+			"Returns true only for values starting with http:, https:, data:, /, or ./.",
+			"Missing values and text such as emoji return false; the caller renders the text or a fallback.",
+			"This is a pure helper, not a React component; it does not fetch or validate image availability."
+		]
+	},
+	{
+		"name": "ConfirmDialog",
+		"export": "ConfirmDialog",
+		"description": "Display an explicit confirmation or cancellation choice.",
+		"doc": "apps/storybook/content/docs/components/chrome.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"danger defaults to true; the caller conditionally mounts the dialog.",
+			"Radix AlertDialog manages focus containment and restoration; busy disables confirmation, cancellation, and Escape.",
+			"The caller owns the actual plan, confirmation token, pending state, and close-on-success behavior."
+		]
+	},
+	{
+		"name": "EmptyState",
+		"export": "EmptyState",
+		"description": "Display a titled empty-state message with an optional hint.",
+		"doc": "apps/storybook/content/docs/components/chrome.mdx",
+		"example": "examples/general.tsx"
+	},
+	{
+		"name": "ErrorState",
+		"export": "ErrorState",
+		"description": "Display an accessible error message and optional retry action.",
+		"doc": "apps/storybook/content/docs/components/chrome.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"Retry is shown only when onRetry is supplied; the caller defines its effect."
+		]
+	},
+	{
+		"name": "SessionSidebar",
+		"export": "SessionSidebar",
+		"description": "Render the session directory area: agent groups with lazy per-group pagination, a recent section, search filtering, and caller-owned selection and row actions.",
+		"doc": "apps/storybook/content/docs/components/general/session-sidebar.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"Renders only the directory; the rail frame, brand header, new-chat entry, navigation, and account areas belong to the caller.",
+			"Groups and recent carry their own page state; onLoad fires when a group expands, and onRetry/onLoadMore back the retry card and load-more affordances.",
+			"onSelect reports the clicked session summary and section, so navigation can read agent_slug without re-lookup; activeSection attributes the active highlight to one section, and activeGroupId auto-expands the open session's group (open-only, never auto-closes).",
+			"Inline rename is controlled per section via editing {id, section}; the menu render prop receives (session, section) so rename stays scoped to the clicked section.",
+			"Clean stale index status out of sessions before passing them in; the component renders the data it receives.",
+			"Archive/delete callbacks do not bypass application confirmation."
+		]
+	},
+	{
+		"name": "StatusIndicator",
+		"export": "StatusIndicator",
+		"description": "Display transport connection and execution phase independently.",
+		"doc": "apps/storybook/content/docs/components/chrome.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"Required compatibility props are connected and turnRunning.",
+			"New integrations should also pass phase, connection, and streamError as error."
+		]
+	},
+	{
+		"name": "SubAgentPanel",
+		"export": "SubAgentPanel",
+		"description": "Aside resources section listing the session's sub-agents deduped by display name; expanding a name reveals its dispatches and a task row opens a dialog with that dispatch's event timeline.",
+		"doc": "apps/storybook/content/docs/components/general/sub-agent-panel.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"Pass the multiAgent snapshot from useChat; the section renders nothing until sub-agent threads exist.",
+			"The dialog loads the sub-thread's own event history, so it does not depend on main-stream message pagination."
+		]
+	},
+	{
+		"name": "ThreadPanel",
+		"export": "ThreadPanel",
+		"description": "Render projected child-thread messages with shared copy and download callbacks.",
+		"doc": "apps/storybook/content/docs/components/chrome.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"An empty threads record renders nothing.",
+			"This is a compatibility display for already projected messages; new conversation pages should pass multiAgent to Chat.",
+			"ThreadPanel does not discover threads, load history, or paginate. Child-thread state is not the main turn's completion signal."
+		]
+	},
+	{
+		"name": "CodeHighlighter",
+		"export": "CodeHighlighter",
+		"description": "Display syntax-highlighted code with optional line numbers and copying.",
+		"doc": "apps/storybook/content/docs/components/feedback/code-highlighter.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"Defaults: copyable=true, showLineNumbers=false; missing language uses text.",
+			"Unsupported languages and inputs over 50,000 characters retain full plain text.",
+			"header=false hides the header and its copy action."
+		]
+	},
+	{
+		"name": "FileCard",
+		"export": "FileCard",
+		"description": "Display file identity, thumbnail, metadata, and injected open/download actions.",
+		"doc": "apps/storybook/content/docs/components/feedback/file-card.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"Defaults: loading=false, disabled=false.",
+			"onClick is the primary action when present; otherwise onDownload is primary.",
+			"The caller supplies src and performs downloads."
+		]
+	},
+	{
+		"name": "Markdown",
+		"export": "Markdown",
+		"description": "Render sanitized GFM text, code blocks, and complete Mermaid fences.",
+		"doc": "apps/storybook/content/docs/components/message.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"children must be a string.",
+			"Keep rehype-sanitize when customizing untrusted message content.",
+			"Incomplete Mermaid fences remain source during streaming."
+		]
+	},
+	{
+		"name": "Mermaid",
+		"export": "Mermaid",
+		"description": "Display a Mermaid diagram or source with safe streaming fallback.",
+		"doc": "apps/storybook/content/docs/components/feedback/mermaid.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"Defaults: defaultRenderType=\"image\", copyable=true, streaming=false.",
+			"Streaming, invalid, or resource-loading syntax falls back to source.",
+			"SVG is rendered as an image under strict Mermaid security."
+		]
+	},
+	{
+		"name": "ArtifactCard",
+		"export": "ArtifactCard",
+		"description": "Adapt output artifact metadata to FileCard and injected preview and download actions.",
+		"doc": "apps/storybook/content/docs/components/message.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"Output artifacts are distinct from input attachments.",
+			"The caller provides filename and optional contentType, onOpen, and onDownload."
+		]
+	},
+	{
+		"name": "Message",
+		"export": "Message",
+		"description": "Render one projected ChatMessage with ordered rich parts and execution status.",
+		"doc": "apps/storybook/content/docs/components/general/message.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"Consumes core ChatMessage; does not parse provider SSE.",
+			"Only adjacent text/reasoning parts are combined, preserving tool and artifact order.",
+			"Copy is exposed for completed assistant messages with text."
+		]
+	},
+	{
+		"name": "MessageList",
+		"export": "MessageList",
+		"description": "Render a scrollable message sequence with empty-state and follow controls.",
+		"doc": "apps/storybook/content/docs/components/general/message-list.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"autoScroll defaults to true; the parent needs a bounded height.",
+			"Reading older messages pauses following; returning to the bottom restores it.",
+			"scrollKey changes or empty messages reset following; autoScroll=false still prevents scrolling."
+		]
+	},
+	{
+		"name": "MessageAnchorRail",
+		"export": "MessageAnchorRail",
+		"description": "Render the right-edge conversation anchor rail: evenly spaced ticks per user turn, hover tooltip with turn title and reply summary, active turn highlighted.",
+		"doc": "apps/storybook/content/docs/components/general/message-list.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"Renders nothing with fewer than two turns; hidden below the md breakpoint.",
+			"MessageList.anchorRail derives turns, syncs the active tick on scroll, and jumps by scrolling only its own container."
+		]
+	},
+	{
+		"name": "MessageListSkeleton",
+		"export": "MessageListSkeleton",
+		"description": "Render the session-loading skeleton: placeholder blocks mirroring the message layout (user bubbles right, assistant cards left) with a sweeping shimmer.",
+		"doc": "apps/storybook/content/docs/components/general/message-list.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"role=status with an aria-label keeps the loading state legible to assistive tech; the skeleton has no visible text.",
+			"Colors and sweep timing come from the --kit-skeleton-* tokens and --kit-animate-skeleton in theme.css; reduced motion degrades to static blocks."
+		]
+	},
+	{
+		"name": "ReasoningBlock",
+		"export": "ReasoningBlock",
+		"description": "Display collapsible reasoning text and its lifecycle state.",
+		"doc": "apps/storybook/content/docs/components/message.mdx",
+		"example": "examples/reasoning.tsx",
+		"notes": [
+			"Reasoning starts collapsed, including while streaming; status changes and text updates preserve manual disclosure choices.",
+			"Use the reasoning part's own status, not the overall message status. Missing status does not imply completion.",
+			"contentMaxHeight replaces the default max-h-80 class for the expanded content area."
+		]
+	},
+	{
+		"name": "ToolCallCard",
+		"export": "ToolCallCard",
+		"description": "Display a projected tool call, structured parameters, output, and status.",
+		"doc": "apps/storybook/content/docs/components/message.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"part must be the tool variant of MessagePart.",
+			"The component neither executes tools nor requests approval."
+		]
+	},
+	{
+		"name": "Prompts",
+		"export": "Prompts",
+		"description": "Offer starter questions or grouped shortcuts without sending automatically.",
+		"doc": "apps/storybook/content/docs/components/wake/prompts.mdx",
+		"example": "examples/prompts-suggestion.tsx",
+		"notes": [
+			"Defaults: items=[], vertical=false, wrap=false, fadeIn=false, fadeInLeft=false.",
+			"Empty items render nothing; grouped parent cards are not selectable.",
+			"The caller chooses draft insertion or submission."
+		]
+	},
+	{
+		"name": "Sender",
+		"export": "Sender",
+		"description": "Compose text, submit, stop, and integrate caller-owned attachments or suggestions.",
+		"doc": "apps/storybook/content/docs/components/express/sender.mdx",
+		"example": "examples/attachment-sender.tsx",
+		"notes": [
+			"Defaults: defaultValue=\"\", submitType=\"enter\", loading=false, submitDisabled=false, disabled=false, readOnly=false.",
+			"Default autoSize is one to six rows.",
+			"variant=workspace places editing above a toolbar, with prefix on the left and send/stop on the right; the default variant keeps the inline layout.",
+			"onSubmit does not clear text; submitDisabled preserves editing.",
+			"skills only projects known /name markers as atomic chips; the slash picker is composed with Suggestion.",
+			"File upload and session mounting belong to the caller."
+		]
+	},
+	{
+		"name": "SenderHeader",
+		"export": "SenderHeader",
+		"description": "Named export of the optional Sender header panel.",
+		"doc": "apps/storybook/content/docs/components/express/sender.mdx",
+		"example": "examples/content.tsx",
+		"notes": [
+			"Same component as Sender.Header; defaults: open=false, closable=true."
+		]
+	},
+	{
+		"name": "Sender.Header",
+		"export": "Sender",
+		"member": "Header",
+		"description": "Show a controlled expandable header above the text input.",
+		"doc": "apps/storybook/content/docs/components/express/sender.mdx",
+		"example": "examples/attachment-sender.tsx",
+		"notes": [
+			"Defaults: open=false, closable=true.",
+			"Closing the panel does not remove attachments or clear input."
+		]
+	},
+	{
+		"name": "SessionList",
+		"export": "SessionList",
+		"description": "Render controlled session selection with status marks and a business-owned row menu slot.",
+		"doc": "apps/storybook/content/docs/components/general/session-list.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"sessions, activeId, and onSelect are required.",
+			"menu is a render prop: called per row as menu(session) and the returned element closes over that session; the trigger, menu surface, and items are rendered by the caller, whose onClick handlers read that session directly.",
+			"Inline rename is controlled: set editingId to enter edit mode; onEdited reports the trimmed title truncated to 120 chars (empty or unchanged skips), onEditEnd fires on commit or Escape and the caller clears editingId.",
+			"The component owns the action slot visibility (hover reveal, hidden while editing); callers own containers, destructive-action confirmation, and backend requests."
+		]
+	},
+	{
+		"name": "Tooltip",
+		"export": "Tooltip",
+		"description": "Show a hover/focus tooltip bubble above, below, or beside a trigger.",
+		"doc": "apps/storybook/content/docs/components/basic/tooltip.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"Trigger renders inline; the caller className carries truncation and layout classes.",
+			"overflowOnly shows the bubble only when the trigger content is actually clipped.",
+			"The bubble is hoverable, hides on outside scroll and resize, scrolls internally past a max height, and never renders during SSR."
+		]
+	},
+	{
+		"name": "Menu",
+		"export": "Menu",
+		"description": "Open a keyboard-accessible command menu anchored to a trigger.",
+		"doc": "apps/storybook/content/docs/components/basic/menu.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"Thin wrapper over the Radix DropdownMenu root; pass open/onOpenChange for controlled usage."
+		]
+	},
+	{
+		"name": "MenuTrigger",
+		"export": "MenuTrigger",
+		"description": "Mark the element that toggles the attached menu.",
+		"doc": "apps/storybook/content/docs/components/basic/menu.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"Use asChild to keep your own button styling; Radix adds aria-haspopup and aria-expanded."
+		]
+	},
+	{
+		"name": "MenuContent",
+		"export": "MenuContent",
+		"description": "Render the themed floating menu surface (border, shadow, entrance motion) in a portal.",
+		"doc": "apps/storybook/content/docs/components/basic/menu.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"Defaults: align=start, sideOffset=6; Radix flips the side when viewport space runs out."
+		]
+	},
+	{
+		"name": "MenuItem",
+		"export": "MenuItem",
+		"description": "Render one selectable menu row with shared hover and keyboard highlight.",
+		"doc": "apps/storybook/content/docs/components/basic/menu.mdx",
+		"example": "examples/general.tsx",
+		"notes": [
+			"Put icons and labels directly in children; onSelect fires on click and Enter."
+		]
+	},
+	{
+		"name": "Suggestion",
+		"export": "Suggestion",
+		"description": "Compose a keyboard-accessible command menu with a controlled text input.",
+		"doc": "apps/storybook/content/docs/components/express/suggestion.mdx",
+		"example": "examples/prompts-suggestion.tsx",
+		"notes": [
+			"Defaults: items=[], block=false; with trigger omitted the popup stays closed until onTrigger.",
+			"Automatic mode takes controlled value/caret plus trigger; Escape dismisses the current query until it changes.",
+			"Forward both onKeyDown and inputProps to Sender so Enter/Tab selects without sending.",
+			"The caller defines filter and insertion behavior through onSelect(value, item, context)."
+		]
+	},
+	{
+		"name": "ToolApprovalCard",
+		"export": "ToolApprovalCard",
+		"description": "Review actual tool parameters and explicitly approve or deny one pending call.",
+		"doc": "apps/storybook/content/docs/components/feedback/tool-approval.mdx",
+		"example": "examples/approval-card.tsx",
+		"notes": [
+			"Only actionable pending requests permit decisions.",
+			"Allow and deny submit directly without a confirmation dialog; the server re-validates against Provider state.",
+			"Uncertain outcomes require refresh; submitted does not mean execution completed.",
+			"The caller supplies submitApproval, refreshApprovals, and optionally stop."
+		]
+	},
+	{
+		"name": "ToolApprovalGroup",
+		"export": "ToolApprovalGroup",
+		"description": "Page horizontally through multiple pending tool approvals, one card at a time.",
+		"doc": "apps/storybook/content/docs/components/feedback/tool-approval.mdx",
+		"example": "examples/approvals.tsx",
+		"notes": [
+			"Renders only the current approval with a 1/N pager; decided items auto-advance to the next pending request.",
+			"Manual pager selection is preserved while the item stays in the list.",
+			"Renders nothing when approvals is empty; accepts the same callbacks as ToolApprovalCard."
+		]
+	},
+	{
+		"name": "PlazaCard",
+		"export": "PlazaCard",
+		"description": "Display one discovery entry and notify the caller when its agent is opened.",
+		"doc": "apps/storybook/content/docs/components/plaza.mdx",
+		"example": "examples/discovery-usage.tsx",
+		"notes": [
+			"onOpen receives the entry slug; navigation and Session selection belong to the caller."
+		]
+	},
+	{
+		"name": "CategoryTabs",
+		"export": "CategoryTabs",
+		"description": "Select a controlled discovery category or the featured tab.",
+		"doc": "apps/storybook/content/docs/components/plaza.mdx",
+		"example": "examples/discovery-usage.tsx",
+		"notes": [
+			"Prepends featured to the supplied categories.",
+			"Category counts are accepted but not displayed."
+		]
+	},
+	{
+		"name": "MeterBar",
+		"export": "MeterBar",
+		"description": "Render quota usage as a bounded fill or an unlimited track.",
+		"doc": "apps/storybook/content/docs/components/plaza.mdx",
+		"example": "examples/discovery-usage.tsx",
+		"notes": [
+			"Defaults: unlimited=false, className=\"\".",
+			"Visual fill is clamped to zero through 100 percent; nonpositive max has no fill."
+		]
+	},
+	{
+		"name": "ActivityHeatmap",
+		"export": "ActivityHeatmap",
+		"description": "Render caller-supplied daily activity with relative intensity.",
+		"doc": "apps/storybook/content/docs/components/plaza.mdx",
+		"example": "examples/discovery-usage.tsx",
+		"notes": [
+			"Preserves input order; day strings must be unique.",
+			"Does not fetch, sort, or fill missing dates."
+		]
+	},
+	{
+		"name": "SkillGlyph",
+		"export": "SkillGlyph",
+		"description": "Render the shared book glyph used by skill chips and suggestion items.",
+		"doc": "apps/storybook/content/docs/components/express/suggestion.mdx",
+		"example": "examples/prompts-suggestion.tsx",
+		"notes": [
+			"Decorative SVG with aria-hidden=true; size and color come from className.",
+			"Use it in Suggestion item icons so custom skill pickers match Sender chips."
+		]
+	}
+]

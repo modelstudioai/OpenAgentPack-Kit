@@ -1,0 +1,291 @@
+---
+title: kit-components
+description: 覆盖全部公开组件的英文 Skill，包含 Props、子组件、组合示例和调用方责任
+---
+
+`kit-components` 指导 coding agent 使用 `@openagentpack/kit-chat-ui` 搭建页面。
+覆盖范围以包的公开导出为准，包含所有已实现组件、静态子组件与兼容别名，不只覆盖
+copy-in registry 的顶层条目。内部实现组件不作为独立公开 API。
+
+[下载 Skill](/skills/kit-components.tgz) ·
+[阅读英文入口](/skills/kit-components/SKILL.md) ·
+[英文 API 参考](/skills/kit-components/references/api.md)
+
+## 覆盖范围
+
+| 分类 | 已覆盖的公开组件 |
+| --- | --- |
+| 通用 | `Message`、`MessageList`、`SessionList`、`AgentHeader` |
+| 唤醒 | `Prompts` |
+| 表达 | `Sender`、`Sender.Header`、`SenderHeader`、`Attachments`、`Attachments.FileCard`、`AttachmentFileCard`、`Suggestion` |
+| 反馈 | `Actions`、`Actions.Copy`、`ActionsCopy`、`Actions.Feedback`、`ActionsFeedback`、`FileCard`、`CodeHighlighter`、`Mermaid` |
+| 富内容与审批 | `Markdown`、`ReasoningBlock`、`ToolCallCard`、`ArtifactCard`、`ToolApprovalCard` |
+| 页面组合与辅助交互 | `Layout`、`Chat`、`SessionSidebar`、`StatusIndicator`、`EmptyState`、`ErrorState`、`ConfirmDialog`、`ThreadPanel` |
+| 广场与用量 | `PlazaCard`、`CategoryTabs`、`MeterBar`、`ActivityHeatmap` |
+
+英文参考为每个组件说明用途、导入方式、Props / Ref、最小示例与组合位置。静态子组件和
+独立导出别名会指向同一份 API，避免两套说明漂移。生成检查同时核对公开导出与索引；
+新增组件漏接入或已删除组件残留在参考中都会报错。
+
+## Skill 会指导什么
+
+- 根据需求选择现有组件，按 registry 依赖复制源码，并接入 Tailwind 与 `theme.css`。
+- 组合 `Sender` 和 `Attachments` 处理文件选择、粘贴、上传状态与删除；上传逻辑由调用方传入。
+- 使用 `MessageList` 展示 `ChatMessage`，按稳定分片 id 渲染累计快照更新，处理思考、工具与文件。
+- 通过 `Actions`、`FileCard`、`CodeHighlighter`、`Mermaid` 提供回答反馈和富内容展示。
+- 组合会话列表、页头、线程面板与确认弹窗；通过回调接入实际业务行为。
+
+消息转换规则由 Provider 定义，Chat 保存重建后的消息，组件只消费 props。只使用 UI 时也能
+传入调用方构造的 `ChatMessage`；消息更新、身份和执行状态由调用方负责，不要求调用 SDK。
+- 组合广场分类、Agent 卡片、配额进度与活跃热力图；请求与跳转由调用方负责。
+
+组件提供交互与展示。会话订阅和发送由 [use-kit-chat](/docs/skill/use-kit-chat) 指导接入；
+下载与上传请求留在调用方，上传成功也不等于文件已经挂载到 Session。
+默认 Kit Server 的附件挂载时机见 [Attachments](/docs/components/express/attachments)。
+
+## 组合示例
+
+下面的示例由 Skill 的同一份源文件同步生成，英文代码可以直接交给 coding agent 参考。
+
+{/* skill-example: kit-components/examples/attachment-sender.tsx */}
+
+```tsx
+import {
+	type AttachmentItem,
+	Attachments,
+	type AttachmentsRef,
+	Sender,
+	type SenderRef,
+	type SenderSelection,
+	type SenderSkill,
+	SkillGlyph,
+	Suggestion,
+} from "@openagentpack/kit-chat-ui";
+import { skillInputTokens } from "@openagentpack/kit-sdk/protocol";
+import { useEffect, useRef, useState } from "react";
+
+interface UploadedAttachment extends AttachmentItem {
+	fileId?: string;
+}
+
+export interface AttachmentSenderProps {
+	uploadFile: (file: File) => Promise<{ file_id: string }>;
+	// Application callback: upload does not itself mount files into a session.
+	onSubmit: (text: string, fileIds: string[], skills?: string[]) => Promise<void>;
+	skills?: SenderSkill[];
+	onStop: () => void;
+	canSend: boolean;
+	turnRunning: boolean;
+}
+
+const maxCount = 8;
+
+export function AttachmentSender({
+	uploadFile,
+	onSubmit,
+	onStop,
+	canSend,
+	turnRunning,
+	skills,
+}: AttachmentSenderProps) {
+	const [draft, setDraft] = useState("");
+	const [selection, setSelection] = useState<SenderSelection>({ start: 0, end: 0 });
+	const sender = useRef<SenderRef>(null);
+	const [files, setFiles] = useState<UploadedAttachment[]>([]);
+	const [open, setOpen] = useState(false);
+	const [submitting, setSubmitting] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const attachments = useRef<AttachmentsRef>(null);
+	const currentFiles = useRef(files);
+	const mounted = useRef(false);
+	const sending = useRef(false);
+
+	useEffect(() => {
+		mounted.current = true;
+		return () => {
+			mounted.current = false;
+		};
+	}, []);
+
+	const updateFiles = (update: (previous: UploadedAttachment[]) => UploadedAttachment[]) => {
+		if (!mounted.current) return;
+		currentFiles.current = update(currentFiles.current);
+		setFiles(currentFiles.current);
+	};
+
+	const selectFiles = (selected: File[]) => {
+		if (turnRunning || sending.current) return;
+		const accepted = selected.slice(0, Math.max(0, maxCount - currentFiles.current.length));
+		const uploads = accepted.map((file) => ({
+			file,
+			item: {
+				uid: crypto.randomUUID(),
+				name: file.name,
+				size: file.size,
+				type: file.type,
+				status: "uploading" as const,
+			},
+		}));
+		updateFiles((previous) => [...previous, ...uploads.map(({ item }) => item)]);
+		setOpen(true);
+		setError(null);
+		for (const { file, item } of uploads) {
+			// Wrapping also handles a synchronous exception in a supplied uploader.
+			void Promise.resolve()
+				.then(() => uploadFile(file))
+				.then(
+					(result) =>
+						updateFiles((previous) =>
+							previous.map((entry) =>
+								entry.uid === item.uid
+									? { ...entry, fileId: result.file_id, status: "done", description: "Ready" }
+									: entry,
+							),
+						),
+					() =>
+						updateFiles((previous) =>
+							previous.map((entry) =>
+								entry.uid === item.uid
+									? { ...entry, status: "error", description: "Upload failed. Remove and select again." }
+									: entry,
+							),
+						),
+				);
+		}
+	};
+
+	const submit = async (text: string, selectedSkills?: string[]) => {
+		const selected = currentFiles.current;
+		if (
+			!canSend ||
+			turnRunning ||
+			sending.current ||
+			!text.trim() ||
+			selected.some((file) => file.status !== "done" || !file.fileId)
+		) {
+			return;
+		}
+		sending.current = true;
+		setSubmitting(true);
+		setError(null);
+		try {
+			await onSubmit(
+				text.trim(),
+				selected.flatMap((file) => (file.fileId ? [file.fileId] : [])),
+				selectedSkills,
+			);
+			if (!mounted.current) return;
+			setDraft((current) => (current === text ? "" : current));
+			const submitted = new Set(selected.map((file) => file.uid));
+			updateFiles((previous) => previous.filter((file) => !submitted.has(file.uid)));
+		} catch {
+			if (mounted.current) setError("Send failed. Your draft and files are preserved.");
+		} finally {
+			sending.current = false;
+			if (mounted.current) setSubmitting(false);
+		}
+	};
+
+	const filesBlocked = files.some((file) => file.status !== "done" || !file.fileId);
+	const skillNames = skills?.map((skill) => skill.name) ?? [];
+
+	return (
+		<div className="flex flex-col gap-2" data-kit-appearance="workspace">
+			<Suggestion
+				block
+				items={(skills ?? []).map((skill) => ({
+					value: skill.name,
+					label: skill.name,
+					description: skill.description,
+					icon: <SkillGlyph className="size-4" />,
+				}))}
+				value={draft}
+				caret={selection.end}
+				trigger="/"
+				filter={(item, query) =>
+					item.value.toLowerCase().startsWith(query.toLowerCase()) &&
+					!skillInputTokens(draft, skillNames).includes(item.value)
+				}
+				onSelect={(_, item, context) => {
+					if (!context) return;
+					const end = draft[context.end] === " " ? context.end + 1 : context.end;
+					sender.current?.replaceRange(context.start, end, `/${item.value} `);
+				}}
+			>
+				{({ onKeyDown, inputProps }) => (
+					<Sender
+						ref={sender}
+						onSelectionChange={setSelection}
+						onKeyDown={onKeyDown}
+						inputProps={inputProps}
+						variant="workspace"
+						value={draft}
+						skills={skills}
+						onChange={setDraft}
+						placeholder="Write a message or paste files"
+						loading={turnRunning}
+						submitDisabled={!canSend || submitting || filesBlocked}
+						onSubmit={(text, selectedSkills) => void submit(text, selectedSkills)}
+						onCancel={onStop}
+						onPasteFile={selectFiles}
+						header={
+							<Sender.Header title="Attachments" open={open} onOpenChange={setOpen}>
+								<Attachments
+									ref={attachments}
+									items={files}
+									maxCount={maxCount}
+									disabled={turnRunning || submitting}
+									onSelectFiles={selectFiles}
+									onRemove={(item) => updateFiles((previous) => previous.filter((file) => file.uid !== item.uid))}
+									placeholder={(type) => ({
+										title: type === "drop" ? "Drop files to add them" : "Choose files",
+										description: type === "inline" ? "Select, paste, or drag files here" : undefined,
+									})}
+								/>
+							</Sender.Header>
+						}
+						prefix={
+							<button
+								type="button"
+								disabled={turnRunning || submitting}
+								onClick={() => {
+									if (open) attachments.current?.select();
+									else setOpen(true);
+								}}
+							>
+								Attach files
+							</button>
+						}
+						suffix={(_origin, { components }) =>
+							turnRunning ? (
+								<components.LoadingButton>Stop</components.LoadingButton>
+							) : (
+								<components.SendButton>{submitting ? "Sending" : "Send"}</components.SendButton>
+							)
+						}
+						footer={({ components }) => <components.ClearButton>Clear text</components.ClearButton>}
+					/>
+				)}
+			</Suggestion>
+			{error ? <p role="alert">{error}</p> : null}
+		</div>
+	);
+}
+```
+
+{/* /skill-example */}
+
+其他可编译示例覆盖[通用与页面组合](/skills/kit-components/examples/general.tsx)、
+[富内容与反馈](/skills/kit-components/examples/content.tsx)、
+[提示集与快捷指令](/skills/kit-components/examples/prompts-suggestion.tsx)以及
+[工具审批](/skills/kit-components/examples/approvals.tsx)。
+
+## 示例任务
+
+```text
+Use kit-components to compose a chat page with MessageList, Sender, and Attachments.
+Use caller-provided upload and download callbacks, show tool approval requests,
+and preserve stable fragment IDs when snapshots change.
+```
+
+组件的交互预览、copy-in 命令与中文 API 说明见[组件总览](/docs/components)。

@@ -1,0 +1,178 @@
+---
+title: Layout 整页布局
+description: 可复用的桌面侧栏、移动抽屉、页头、资源面板与内容区
+---
+
+`Layout` 负责整页结构与响应式交互：桌面常驻侧栏，小于 768px 时改为模态抽屉，右侧可挂资源面板。
+组件不请求数据、不处理认证或路由，也不创建 Session。
+
+```tsx
+import { Layout } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（组合示例还需 `session-sidebar` / `agent-header`；不自动安装 npm 依赖，需自装
+`@openagentpack/kit-sdk/hooks`、`@radix-ui/react-dialog`，导入共享 `theme.css`，外层给明确高度如 `h-dvh`，
+员工端外观经 `data-kit-appearance="workspace"` 启用）：
+
+```bash
+pnpm kit:add layout
+pnpm kit:add session-sidebar
+pnpm kit:add agent-header
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。完整组合示例同步进 skill，路由、身份与会话状态归调用方：
+
+{/* skill-example: kit-components/examples/layout.tsx */}
+
+```tsx
+import { AgentHeader, Layout, SessionSidebar } from "@openagentpack/kit-chat-ui";
+import type { AgentSummary, SessionSummary } from "@openagentpack/kit-sdk/protocol";
+import { type ReactNode, useState } from "react";
+
+export interface WorkspaceLayoutProps {
+	agent: AgentSummary | null;
+	sessions: SessionSummary[];
+	sessionId: string | null;
+	onSelect: (sessionId: string) => void;
+	onCreate: () => void;
+	onOpenUsage: () => void;
+	account?: ReactNode;
+	dialogs?: ReactNode;
+	children: ReactNode;
+}
+
+// Routing, identity, session state, and confirmation plans belong to the caller.
+// The rail (brand, new-chat, directory, navigation, account) is caller-owned;
+// SessionSidebar only renders the session directory area.
+export function WorkspaceLayout(props: WorkspaceLayoutProps) {
+	const [searchInput, setSearchInput] = useState("");
+	return (
+		<div className="h-dvh" data-kit-appearance="workspace">
+			<Layout
+				mobileTitle="Workspace"
+				sidebarLabel="Navigation"
+				header={(menuToggle) => <AgentHeader compact agent={props.agent} leading={menuToggle} actions={null} />}
+				sidebar={({ closeSidebar, closeButton }) => (
+					<aside className="flex min-h-0 w-64 shrink-0 flex-col border-r border-[var(--kit-border-subtle)] bg-[var(--kit-bg-subtle)]">
+						<div className="flex min-h-16 shrink-0 items-center gap-3 px-5 py-3">
+							<span className="min-w-0 flex-1 truncate font-semibold">Managed Agent</span>
+							{closeButton}
+						</div>
+						<button
+							type="button"
+							onClick={() => {
+								closeSidebar();
+								props.onCreate();
+							}}
+							className="mx-3 mb-1 min-h-10 shrink-0 rounded-[var(--kit-radius-sm)] border border-dashed border-[var(--kit-border)] px-3 text-sm text-[var(--kit-fg-muted)] transition-colors duration-[var(--kit-duration-fast)] ease-[var(--kit-ease-out)] motion-reduce:transition-none hover:border-[var(--kit-border)] hover:text-[var(--kit-fg)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--kit-focus)]"
+						>
+							New chat
+						</button>
+						<SessionSidebar
+							groups={
+								props.agent
+									? [
+											{
+												id: props.agent.slug,
+												name: props.agent.display_name,
+												sessions: props.sessions,
+												initialized: true,
+											},
+										]
+									: []
+							}
+							recent={{ sessions: props.sessions, initialized: true }}
+							activeId={props.sessionId}
+							searchInput={searchInput}
+							onSearchInput={setSearchInput}
+							onSelect={(session) => {
+								closeSidebar();
+								props.onSelect(session.session_id);
+							}}
+						/>
+						<nav aria-label="Workspace navigation" className="shrink-0 px-3 py-1">
+							<button
+								type="button"
+								onClick={() => {
+									closeSidebar();
+									props.onOpenUsage();
+								}}
+								className="min-h-10 w-full rounded-[var(--kit-radius-sm)] px-3 py-2 text-left hover:bg-[var(--kit-surface)] focus-visible:outline-2 focus-visible:outline-[var(--kit-focus)]"
+							>
+								My usage
+							</button>
+						</nav>
+						{props.account}
+					</aside>
+				)}
+				dialogs={props.dialogs}
+			>
+				{props.children}
+			</Layout>
+		</div>
+	);
+}
+```
+
+{/* /skill-example */}
+
+## 何时使用
+
+- 员工端整页骨架：广场、用量、聊天页共用同一外壳与断点行为。
+- 需要移动抽屉的模态焦点、Escape 关闭与可视视口适配，不想自写。
+- 右侧资源面板：桌面停靠右列、移动全屏覆盖层，同一插槽两种形态。
+
+## 代码演示
+
+### 整页骨架
+
+桌面常驻侧栏；手机预览经页头入口打开抽屉，可试会话导航、归档 / 删除确认与用量页。
+
+<Showcase name="layout" />
+
+侧栏开合不重建正文，输入草稿保持；确认弹窗经 `dialogs` 插槽渲染，抽屉打开时也在其焦点范围内。
+
+## API
+
+### Layout
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `sidebar` | 桌面侧栏与移动抽屉共用的内容，同一时刻只挂载一份；缺省或 `null` 为纯内容布局 | `ReactNode \| (controls: LayoutSidebarControls) => ReactNode` | — |
+| `header` | 自定义页头，把 `menuToggle` 接进页头操作位（如 `AgentHeader.leading`）；通栏盖住内容区（含资源面板上方） | `(menuToggle: ReactNode) => ReactNode` | — |
+| `mobileTitle` | 未提供 `header` 时移动端默认页头的标题 | `ReactNode` | — |
+| `sidebarLabel` | 抽屉的无障碍名称，同时用于打开 / 关闭入口文案 | `string` | `"导航菜单"` |
+| `dialogs` | 调用方持有的受控确认弹窗；抽屉打开时进入其焦点范围，跨断点仍可见，待确认状态不要只放进侧栏内部 | `ReactNode` | — |
+| `aside` | 右侧资源面板；桌面为页头之下的停靠右列（与正文同面白色），移动端为全屏覆盖层 | `ReactNode \| (controls: LayoutAsideControls) => ReactNode` | — |
+| `asideOpen` | 面板受控开合；桌面收起时列宽过渡到 0，内容保持挂载并置 `inert` | `boolean` | `true` |
+| `asideLabel` | 面板的无障碍名称，用于覆盖层标题与关闭按钮 | `string` | `"资源面板"` |
+| `onAsideOpenChange` | 面板关闭（Esc / 移动端关闭按钮 / 跨到移动断点）时回传；打开由调用方置位 | `(open: boolean) => void` | — |
+| `fitViewport` | 移动端随可视视口限高，软键盘弹出后收缩；宿主自管高度时关闭 | `boolean` | `true` |
+| `children` | 主内容区（Chat、广场、用量页等） | `ReactNode` | 必填 |
+
+还接受标准 `div` 属性（`className`、`data-*` 等）。
+
+render props 控件：`sidebar` 拿到 `closeSidebar()`（选择会话 / 新建 / 切页后先调用再执行业务动作）
+与 `closeButton`（仅移动端，放进侧栏品牌区，不要嵌进其他按钮）；`aside` 拿到 `closeButton`
+（仅移动端覆盖层注入，桌面开合只经页头的面板开关）。
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-aside-width` | 右侧面板停靠列宽，桌面开合宽度过渡的起点 | `clamp(15rem, 22vw, 25rem)` | `clamp(15rem, 22vw, 25rem)` |
+| `--kit-bg` | 外壳与移动面板底色（面板与正文同面白色） | `#ffffff` | `#ffffff` |
+| `--kit-bg-subtle` | 侧栏与抽屉底色 | `#f6f7fb` | `#f7f7f7` |
+| `--kit-border` | 缺省移动页头描边 | `#e3e6ef` | `#e5e5e5` |
+| `--kit-overlay` | 抽屉遮罩 | `rgb(0 0 0 / 40%)` | `rgb(23 23 23 / 32%)` |
+| `--kit-shadow` | 抽屉与移动面板投影 | `0 8px 28px rgb(16 19 34 / 8%)` | `0 4px 20px rgb(23 23 23 / 6%), 0 1px 4px rgb(23 23 23 / 4%)` |
+| `--kit-nav-active` | 侧栏导航选中底色（本页演示 rail 使用） | `--kit-user-bubble`（`#eef0ff`） | `#ececec` |
+
+断点 768px 冻结在 `useIsMobile`；面板开合与入场消费 `--kit-duration-base` / `--kit-ease-out` /
+`--kit-animate-panel-in`；`fitViewport` 运行时注入 `--kit-viewport-height`（缺省 `100dvh`），
+[Sender](/docs/components/express/sender) 等组件消费同一变量。宿主可在自己的层级覆盖
+`--kit-aside-width`。更多主题配置见 [组件总览](/docs/components#主题)。

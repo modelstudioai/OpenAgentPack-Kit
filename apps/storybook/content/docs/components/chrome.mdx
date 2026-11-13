@@ -1,0 +1,145 @@
+---
+title: 页面组合与辅助交互
+description: 侧栏与页头组合、状态灯、子线程、空错态与确认弹窗
+---
+
+`pnpm kit:add chrome` 复制页面组合与辅助交互组件，并带出所依赖的
+[AgentHeader](/docs/components/general/agent-header)、[Message](/docs/components/general/message)
+与 EmptyState / ErrorState；会话目录 [SessionSidebar](/docs/components/general/session-sidebar) 按独立条目复制。
+完整骨架还组合 Layout 与 Chat，示例问题使用 [Prompts](/docs/components/wake/prompts)：
+
+```bash
+pnpm kit:add layout
+pnpm kit:add chrome
+pnpm kit:add chat
+pnpm kit:add prompts
+```
+
+## 何时使用
+
+- 按 antdx 骨架组装完整页面：会话目录、紧凑页头与聊天区一次到位。
+- 页面里有删除 / 归档等破坏性动作，需要确认弹窗与服务端一次性确认令牌。
+- 空目录、请求失败等占位态需要统一视觉，不散写占位文案。
+
+## 代码演示
+
+### 页面骨架（含破坏性动作确认）
+
+选中会话、新建会话，经行尾「更多操作」菜单触发归档 / 删除确认弹窗。
+
+<Showcase name="chrome" />
+
+两条硬约束：
+
+1. 破坏性动作必须 `ConfirmDialog`（`role="alertdialog"`）语义，服务端再校验一次性确认令牌
+   （`POST .../plan` → 带 `confirm_token` 执行，缺令牌 400 / 重放 428）。
+2. 行内操作**不能按钮嵌按钮**：真实点击归最外层元素，内层按钮点不动（合成 `el.click()` 能触发，
+   只有真机抓得到）；`SessionList` 行容器是 `div`，标题按钮与 `menu` 触发器是并列 `button`，
+   动作在 [Menu](/docs/components/basic/menu) 弹层内。
+
+### 状态灯
+
+`phase` 与 `connection` 组合区分已连接、生成中、等待审批、正在停止、已中断、重连中与错误。
+
+<Showcase name="status" />
+
+新接入传 `phase={chat.phase}`、`connection={chat.connection}`、`error={chat.streamError}`；
+`variant="badge"` 适合页头，长错误截断显示，完整内容保留在 `role="status"` 文本中。
+
+### 子线程兼容面板
+
+面向既有 [`threads: Record<string, ChatMessage[]>`](/docs/components/general/message#chatmessage)
+投影的只读兼容组件。
+
+<Showcase name="threads" />
+
+复用 Message 渲染各分片，可传 `onArtifactDownload` / `onCopy`；不发现 Agent、不查历史、不分页。
+新对话页用 [Chat 的 multiAgent](/docs/components/chat#多-agent-对话)，不要塞进审批插槽。
+
+### 欢迎、加载与错误态
+
+目录为空、请求失败、agent 未上架都走这两个组件。
+
+<Showcase name="states" />
+
+聊天欢迎态把 `EmptyState` 与 [Prompts](/docs/components/wake/prompts) 放同一容器整体居中，
+输入框保持挂载；`ErrorState` 传 `onRetry` 显示重试按钮。
+
+## API
+
+### StatusIndicator
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `connected` | 是否已建立连接；旧接入 props，新接入改传 `connection` | `boolean` | — |
+| `turnRunning` | 当前 Turn 是否在生成；与 `phase` 并存的旧 props | `boolean` | — |
+| `phase` | Turn 阶段，优先于由 `turnRunning` 推导 | `"idle" \| "running" \| "requires_action" \| "stopping" \| "failed" \| "interrupted"` | — |
+| `connection` | 连接状态；`connecting` / `reconnecting` 提示覆盖暂存错误 | `"disconnected" \| "connecting" \| "connected" \| "reconnecting"` | — |
+| `error` | 流错误，与[错误模型](/docs/server-api)同一套 code | `{ code: string; message: string } \| null` | — |
+| `variant` | `badge` 在保留状态文本的同时提供紧凑徽标，适合空间受限的页头 | `"default" \| "badge"` | `"default"` |
+
+状态优先级：`phase`（缺省时由 `turnRunning` 推导）决定基础状态；`connecting` /
+`reconnecting` 覆盖显示重连提示；其余错误在非重连时优先显示。
+
+### ThreadPanel
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `threads` | 线程 id 到消息数组的映射；空记录整体不渲染 | `Record<string, ChatMessage[]>` | — |
+| `onArtifactDownload` | 透传给 Message 的产物下载回调 | `(fileId: string) => void` | — |
+| `onCopy` | 透传给 Message 的复制回调 | `(text: string) => void \| Promise<void>` | — |
+
+### ConfirmDialog
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `title` | 操作标题 | `string` | — |
+| `body` | 弹窗正文，通常放真实 plan diff | `string` | — |
+| `confirmLabel` | 确认按钮文案 | `string` | `"确认"` |
+| `cancelLabel` | 取消按钮文案 | `string` | `"取消"` |
+| `danger` | 危险语义的确认按钮 | `boolean` | `true` |
+| `busy` | 执行中禁用确认、取消和 Escape | `boolean` | `false` |
+| `onConfirm` | 实际执行；成功后由调用方关闭弹窗 | `() => void` | — |
+| `onCancel` | 取消回调 | `() => void` | — |
+
+移动抽屉内发起的确认经 [Layout 的 dialogs 插槽](/docs/components/layout) 渲染，待确认状态归调用方所有。
+
+### EmptyState
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `title` | 状态标题或开场文案 | `string` | — |
+| `hint` | 补充说明 | `string` | — |
+| `loading` | 显示低强调进度标记，并用 `role="status"` 表达加载状态 | `boolean` | `false` |
+
+### ErrorState
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `message` | 完整错误说明，支持换行 | `string` | — |
+| `onRetry` | 由调用方重新加载或恢复 | `() => void` | — |
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-accent` | 生成中、连接中与重连中的状态色；中性确认按钮底色 | `#4f46e5` | `#171717` |
+| `--kit-danger` | 失败、中断与错误状态色；危险确认按钮底色；ErrorState 图标与标题 | `#dc2626` | `#ad372f` |
+| `--kit-accent-fg` / `--kit-danger-fg` | 确认按钮文字 | `#ffffff` | `#ffffff` |
+| `--kit-warning-fg` | 等待审批状态色 | `#b45309` | `#805917` |
+| `--kit-fg-muted` | 空闲与停止状态色；说明文字与弹窗正文 | `#5b6478` | `#737373` |
+| `--kit-bg-subtle` | badge 与 ThreadPanel 底色；EmptyState 加载标记底 | `#f6f7fb` | `#f7f7f7` |
+| `--kit-border` | ThreadPanel 与弹窗描边；取消按钮描边 | `#e3e6ef` | `#e5e5e5` |
+| `--kit-border-subtle` | badge 描边；ErrorState 描边；默认主题下等于 `--kit-border` | `#e3e6ef` | `#ececec` |
+| `--kit-surface` | 弹窗与重试按钮底色 | `#ffffff` | `#ffffff` |
+| `--kit-overlay` | 弹窗遮罩 | `rgb(0 0 0 / 40%)` | `rgb(23 23 23 / 32%)` |
+| `--kit-shadow` | 弹窗投影 | `0 8px 28px rgb(16 19 34 / 8%)` | `0 4px 20px rgb(23 23 23 / 6%), 0 1px 4px rgb(23 23 23 / 4%)` |
+
+badge 圆点闪动消费 Tailwind 内建 `motion-safe:animate-pulse`，遵循系统减少动画偏好；
+焦点环走 `--kit-focus`（默认等于 `--kit-accent`）；标题与说明使用 `--kit-text-title` /
+`--kit-text-heading` / `--kit-text-label` / `--kit-text-caption` 文字档位，弹窗与
+ThreadPanel 圆角为 `--kit-radius` / `--kit-radius-sm`。更多主题配置见
+[组件总览](/docs/components#主题)。

@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@import "@openagentpack/kit-chat-ui/theme.css";
+
+/*
+ * monorepo 显式扫描源：workspace 包经 node_modules 软链引入，Tailwind v4 的自动源探测会跳过
+ * node_modules，导致 kit-chat-ui 里的工具类（例如侧栏 `max-md:hidden`）根本不生成、H5 断点失效。
+ * 路径相对本文件；新增跨包组件目录时同步补一行。
+ */
+@source "../index.html";
+@source "./**/*.{ts,tsx}";
+@source "../../../packages/chat-ui/src/**/*.{ts,tsx}";
+
+html,
+body,
+#root {
+	height: 100%;
+}
+body {
+	margin: 0;
+	background: var(--kit-bg);
+	color: var(--kit-fg);
+	font-family:
+		-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+		"Noto Sans CJK SC", sans-serif;
+	-webkit-font-smoothing: antialiased;
+}

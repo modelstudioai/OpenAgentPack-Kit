@@ -1,0 +1,330 @@
+---
+title: kit-chat-provider
+description: 使用英文 Skill 将默认 Kit Server 或自建百炼后端接入 ChatProvider
+---
+
+`kit-chat-provider` 指导 coding agent 实现前端与业务后端之间的接入层。
+它主要面向自建百炼 Managed Agent 后端，保留默认 Kit Server 入口；不会在浏览器
+直接接入百炼凭据，也不会创建第二套事件模型。
+
+[下载 Skill](/skills/kit-chat-provider.tgz) ·
+[阅读英文入口](/skills/kit-chat-provider/SKILL.md) ·
+[英文 API 参考](/skills/kit-chat-provider/references/api.md)
+
+## 先判断后端返回什么
+
+| 后端能力 | 使用方式 |
+| --- | --- |
+| 标准 `SessionEvent` 与控制帧（含示例 Kit Server） | 配置公开 `createSessionEventChatProvider`，显式交给 `useChat` |
+| 标准事件但使用其他流封装 | 实现 `ChatProvider` 五方法并映射生命周期回调 |
+| 百炼原始 SSE 与完整原始事件历史 | 使用 `@openagentpack/kit-sdk/providers/bailian` 的 `createBailianChatProvider` |
+
+体验页与自建标准事件后端使用同一工厂；已有 KitClient 应用仍可保留
+`createKitChatProvider(client)` 与默认 Context 接入。
+
+五个方法是 `stream`、`sendMessage`、`interrupt`、`toolApprovals` 和
+`submitToolApproval`。原始流工厂使用 `openStream` 与 `listEvents` 合作实现 `stream`，
+因此配置 RequestClient 和六项 `buildRequest` / `mapResponse` 操作。HTTP 由 Provider
+统一执行；地址、参数、应用身份和响应包装仍由业务后端决定。
+另有可选 `transformMessage` 定义 `SessionEvent → ChatMessage` 的展示规则；内置工厂
+均使用 `transformSessionEvent`。Chat 调用规则并保存结果，Provider 不缓存跨会话消息。
+
+## Skill 会指导什么
+
+- 区分 Stream、Request、Provider、Chat 四层，选择独立流/请求 API 或完整会话入口。
+- 区分 Kit 默认协议、已转换事件与原始流，选择对应公开入口。
+- 把 `AbortSignal` 传到底层订阅与历史请求，取消后停止交付旧事件。
+- 确保上游真实订阅就绪，再合并完整升序历史与实时缓冲，最后开放发送。
+- 让 Controller 统一负责重连；消息和审批请求只发送一次，断流不自动重发。
+- 保留同 ID 更新、执行状态、工具审批及关联字段，使用 SDK 的浏览器安全入口转换原始事件。
+- 复用或包装默认消息转换，保留稳定消息与分片 ID，支持快照替换/清空；状态和重连仍由 Chat 持有。
+
+原始模式需要持久订阅、完整历史与可靠的 ready 信号。HTTP 200 或第一条业务消息不能
+单独充当通用就绪证明。只有后端明确保证响应头在上游订阅成功后发送，才能把该响应
+作为就绪依据。单次发送 POST 自身返回一轮 SSE 不属于当前工厂的内置模式。
+
+## 独立流与请求
+
+只解析已有字节流时使用 [Stream](/docs/sdk/stream)，需要发起 HTTP 时使用
+[Request](/docs/sdk/request)。Skill 同时提供独立可编译示例；它们不要求 Kit Server，
+也不推断历史、ready 或 Agent 执行状态。
+
+## 原始 SSE 接入示例
+
+下面是可替换的**示例业务后端合同**，路径和包装字段不是百炼固定接口。示例中的鉴权
+属于应用用户登录，Provider 凭据始终由后端持有。
+
+先配置共享 RequestClient 和写入/审批操作。两个 Provider 示例都导入此文件；复制示例时一并保留。
+
+{/* skill-example: kit-chat-provider/examples/backend-http.ts */}
+
+```ts
+import { KitError, SendMessageResponseSchema, ToolApprovalsResponseSchema } from "@openagentpack/kit-sdk/protocol";
+import type { SessionEventChatProviderOptions } from "@openagentpack/kit-sdk/providers/session-events";
+import { createRequest } from "@openagentpack/kit-sdk/request";
+
+export interface BackendConfig {
+	// Explicit runtime configuration; may be cross-origin.
+	baseUrl: string;
+	// Application identity only. Never supply a provider credential.
+	getAppToken: () => Promise<string>;
+}
+
+export function record(value: unknown): Record<string, unknown> {
+	if (!value || typeof value !== "object" || Array.isArray(value))
+		throw new KitError("provider_error", "The backend returned an invalid object.");
+	return value as Record<string, unknown>;
+}
+
+export async function readJson(response: Response): Promise<unknown> {
+	try {
+		return await response.json();
+	} catch {
+		throw new KitError("provider_error", "The backend returned invalid JSON.");
+	}
+}
+
+async function result(response: Response): Promise<unknown> {
+	const envelope = record(await readJson(response));
+	if (!("result" in envelope)) throw new KitError("provider_error", "The backend response has no result.");
+	return envelope.result;
+}
+
+// These routes and the { result } wrapper belong to this sample business backend.
+export function createBackendHttp(config: BackendConfig) {
+	const request = createRequest({
+		baseUrl: config.baseUrl,
+		headers: async () => ({ Authorization: `Bearer ${await config.getAppToken()}` }),
+	});
+	const sessionPath = (id: string) => `/sessions/${encodeURIComponent(id)}`;
+	const operations: Pick<
+		SessionEventChatProviderOptions,
+		"sendMessage" | "interrupt" | "toolApprovals" | "submitToolApproval"
+	> = {
+		sendMessage: {
+			buildRequest({ sessionId, body }) {
+				if (body.attachments?.length)
+					throw new KitError("invalid_request", "Mount uploaded files when creating a session.");
+				return {
+					path: `${sessionPath(sessionId)}/messages`,
+					init: {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({ input: body.text, request_id: body.client_message_id }),
+					},
+				};
+			},
+			async mapResponse(response) {
+				const parsed = SendMessageResponseSchema.safeParse(await result(response));
+				if (!parsed.success) throw new KitError("provider_error", "The backend returned an invalid send result.");
+				return parsed.data;
+			},
+		},
+		interrupt: {
+			buildRequest: ({ sessionId }) => ({ path: `${sessionPath(sessionId)}/interrupt`, init: { method: "POST" } }),
+			async mapResponse(response) {
+				const value = record(await result(response));
+				if (typeof value.interrupted !== "boolean")
+					throw new KitError("provider_error", "The backend returned an invalid interruption result.");
+				return { interrupted: value.interrupted };
+			},
+		},
+		toolApprovals: {
+			buildRequest: ({ sessionId }) => ({ path: `${sessionPath(sessionId)}/approvals` }),
+			async mapResponse(response) {
+				const parsed = ToolApprovalsResponseSchema.safeParse(await result(response));
+				if (!parsed.success) throw new KitError("provider_error", "The backend returned invalid tool approvals.");
+				return parsed.data;
+			},
+		},
+		submitToolApproval: {
+			buildRequest: ({ sessionId, decision }) => ({
+				path: `${sessionPath(sessionId)}/approvals`,
+				init: { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(decision) },
+			}),
+			async mapResponse(response) {
+				const parsed = SendMessageResponseSchema.safeParse(await result(response));
+				if (!parsed.success) throw new KitError("provider_error", "The backend returned an invalid approval result.");
+				return parsed.data;
+			},
+		},
+	};
+
+	return { request, sessionPath, operations };
+}
+```
+
+{/* /skill-example */}
+
+再组合原始流与历史请求：
+
+{/* skill-example: kit-chat-provider/examples/raw-bailian-provider.ts */}
+
+```ts
+import { KitError } from "@openagentpack/kit-sdk/protocol";
+import { createBailianChatProvider } from "@openagentpack/kit-sdk/providers/bailian";
+import { type BackendConfig, createBackendHttp, readJson, record } from "./backend-http.ts";
+
+export function createRawBailianProvider(config: BackendConfig) {
+	const backend = createBackendHttp(config);
+	return createBailianChatProvider({
+		request: backend.request,
+		...backend.operations,
+		openStream: {
+			buildRequest: ({ sessionId }) => ({
+				path: `${backend.sessionPath(sessionId)}/stream`,
+				init: { headers: { Accept: "text/event-stream" } },
+			}),
+			mapResponse(response) {
+				// Backend contract: subscribe upstream FIRST, then flush this header.
+				// Cross-origin backends must expose it through Access-Control-Expose-Headers.
+				if (response.headers.get("x-upstream-ready") !== "true")
+					throw new KitError("conflict", "The backend did not confirm upstream subscription readiness.");
+				// Do not consume body or await a separate readiness promise here.
+				return { response, ready: Promise.resolve() };
+			},
+		},
+		listEvents: {
+			buildRequest({ sessionId, pageToken }) {
+				const query = new URLSearchParams({ order: "asc" });
+				if (pageToken) query.set("page_token", pageToken);
+				return { path: `${backend.sessionPath(sessionId)}/events?${query}` };
+			},
+			async mapResponse(response) {
+				const page = record(await readJson(response));
+				if (!Array.isArray(page.data))
+					throw new KitError("provider_error", "The backend returned an invalid history page.");
+				const next = page.next_page_token;
+				if (next !== undefined && next !== null && typeof next !== "string")
+					throw new KitError("provider_error", "The backend returned an invalid history cursor.");
+				return {
+					// Keep complete raw objects, including identity and execution state.
+					events: page.data.map(record),
+					nextPageToken: next,
+				};
+			},
+		},
+	});
+}
+```
+
+{/* /skill-example */}
+
+原始事件累计由 SDK 的 `@openagentpack/sdk/session-events` 公开子入口完成。
+Kit 处理订阅、历史与状态投影，不复制 SDK 内部累加器。仓库精确依赖 npm 正式发布的
+`@openagentpack/sdk@0.10.0`，并由 `pnpm-lock.yaml` integrity 锁定包内容。
+该浏览器入口提供 `SessionEvent` 与 `createBailianSessionEventNormalizer`；该版本也提供
+服务端线程查询接口 `listSessionThreads` 与 `listSessionThreadEvents`。
+正式版本可安装不代表真实 Cloud 联调通过；依赖升级后仍需核对公开导出并运行
+安装、浏览器构建与相关合同测试，实际结果以对应验收证据为准。
+
+## 消息展示转换
+
+Skill 包含独立的 [英文转换合同](/skills/kit-chat-provider/references/message-transform.md)
+和可编译示例。下面在默认策略上做幂等的展示替换，保留消息、分片和产物身份。Chat 每次从
+最新快照重建并调用策略，因此 Provider 不得缓存前一次重建或其他会话的消息。
+
+{/* skill-example: kit-chat-provider/examples/message-transform.ts */}
+
+```ts
+import { type MessageTransformer, transformSessionEvent } from "@openagentpack/kit-sdk/messages";
+import type { ChatProvider } from "@openagentpack/kit-sdk/providers";
+
+// A display-only label replacement. Reapplying it is safe when later events
+// rebuild the same thread. The original SessionEvent and lifecycle stay intact.
+const replaceDisplayLabel: MessageTransformer = (input) => {
+	const result = transformSessionEvent(input);
+	return {
+		...result,
+		messages: result.messages.map((message) => ({
+			...message,
+			parts: message.parts.map((part) =>
+				part.type === "text" ? { ...part, text: part.text.replaceAll("[[agent-name]]", "Support assistant") } : part,
+			),
+		})),
+	};
+};
+
+// Construct this wrapper once with the backend binding, not on every render.
+// Chat owns returned messages; this shared Provider stores no Session messages.
+export function withDisplayLabel(provider: ChatProvider): ChatProvider {
+	// Forward calls on the original instance, including class prototype methods.
+	return {
+		transformMessage: replaceDisplayLabel,
+		stream: (sessionId, options) => provider.stream(sessionId, options),
+		sendMessage: (sessionId, body) => provider.sendMessage(sessionId, body),
+		interrupt: (sessionId) => provider.interrupt(sessionId),
+		toolApprovals: (sessionId) => provider.toolApprovals(sessionId),
+		submitToolApproval: (sessionId, decision) => provider.submitToolApproval(sessionId, decision),
+	};
+}
+```
+
+{/* /skill-example */}
+
+这项策略只改变 `ChatMessage` 展示，执行状态、工具审批、乐观对账与重连仍由 Chat 管理。
+后端 API、SDK 原始事件转换与组件 props 均无需修改；旧 Provider 省略策略时使用默认规则。
+
+## 已转换事件
+
+后端已返回 SDK `SessionEvent` 且采用标准控制帧时，配置公开
+`createSessionEventChatProvider`。工厂每次负责一次连接，按恢复阶段交付
+`onReset`、`onEvent`、`onReady`，并遵守取消和错误合同。
+不要把传输结束当作 Agent 执行完成，也不要把业务 `event_id` 当作未经约定的续传游标。
+
+下面的示例进一步约定：业务后端在自定义路径上采用 Kit 的 SSE 控制帧与错误响应格式，
+并显式接受示例配置中的 `x-kit-protocol-version` 请求头；工厂本身不添加协议头。
+仅返回 `SessionEvent` 并不自动满足这些传输约定；使用其他包装格式时，需要按该格式解帧
+并映射到相同回调，不能直接套用这段传输代码。
+工厂默认使用 `transformSessionEvent` 消息展示规则。体验页以同一工厂配置 Kit Server 的
+实际路径和响应映射；已有 Client 应用可继续使用兼容入口。
+
+{/* skill-example: kit-chat-provider/examples/normalized-provider.ts */}
+
+```ts
+import { PROTOCOL_VERSION, PROTOCOL_VERSION_HEADER } from "@openagentpack/kit-sdk/protocol";
+import type { ChatProvider } from "@openagentpack/kit-sdk/providers";
+import { createSessionEventChatProvider } from "@openagentpack/kit-sdk/providers/session-events";
+import { type BackendConfig, createBackendHttp } from "./backend-http.ts";
+
+// The Web app uses the same public factory with its own paths and { data } mapping.
+// This independent backend instead uses /sessions, { result } and application auth.
+// It adopts the documented SessionEvent/control-frame wire contract.
+export function createNormalizedProvider(config: BackendConfig): ChatProvider {
+	const backend = createBackendHttp(config);
+	return createSessionEventChatProvider({
+		request: backend.request,
+		...backend.operations,
+		stream: {
+			buildRequest({ sessionId, after }) {
+				const query = new URLSearchParams();
+				if (after) query.set("after", after);
+				const suffix = query.size ? `?${query}` : "";
+				return {
+					path: `${backend.sessionPath(sessionId)}/events/stream${suffix}`,
+					init: {
+						headers: {
+							Accept: "text/event-stream",
+							[PROTOCOL_VERSION_HEADER]: PROTOCOL_VERSION,
+						},
+					},
+				};
+			},
+		},
+	});
+}
+```
+
+{/* /skill-example */}
+
+## 示例任务
+
+```text
+Use kit-chat-provider to adapt our Bailian backend's raw SSE and paginated history.
+Verify upstream readiness before enabling sends, keep subscription retries separate
+from message writes, and support allow and deny with server-side approval validation.
+```
+
+详细操作配置、恢复限制与依赖交付状态见[自建后端](/docs/sdk/custom-backend)。
+Provider 完成后，用 [use-kit-chat](/docs/skill/use-kit-chat)接入页面，
+用 [kit-components](/docs/skill/kit-components)组合展示。

@@ -1,0 +1,191 @@
+---
+title: Message 对话气泡
+description: 展示用户与 Agent 的消息，支持流式状态、执行过程、文件和技能标签
+---
+
+用于展示单条用户或 Agent 消息。用户正文按纯文本展示，Agent 正文支持 Markdown，
+思考过程、工具调用和交付文件按消息分片渲染。
+
+```tsx
+import { Message } from "@openagentpack/kit-chat-ui";
+```
+
+使用 copy-in 接入时执行：
+
+```bash
+pnpm kit:add message
+```
+
+该命令复制源码及依赖组件，不自动安装 npm 包；渲染依赖的安装见
+[Markdown 接入](/docs/components/message#markdown)，主题接入见[组件总览](/docs/components#主题)。
+以下示例使用 workspace 包导入；copy-in 后改为项目中的组件路径。
+
+## 何时使用
+
+- 在已有页面或面板中展示一条消息，并由调用方提供消息内容和状态。
+- 展示包含思考过程、工具调用、文件或技能标签的 Agent 对话。
+- 多条消息的排列、滚动与历史跟随使用 [MessageList](/docs/components/general/message-list)；
+  同时需要输入框时使用 [Chat](/docs/components/chat)。
+
+## 代码演示
+
+每个演示都可查看源码、复制接入命令，并切换桌面或手机视口。预览直接渲染当前
+`kit-chat-ui` 组件，使用本地消息数据，不连接 Kit server 或 Cloud。
+
+### 基本用法
+
+通过 `message` 传入一条 `ChatMessage`。`role="user"` 靠右，`role="assistant"` 靠左；
+用户输入中的 Markdown 标记保留原文，Agent 回答中的 Markdown 正常排版。
+
+<Showcase name="message-bubble" />
+
+### 工作区样式
+
+`variant="workspace"` 使用体验页当前的消息布局：用户保留右侧气泡，Agent 正文使用无外框布局。
+切换布局可比较同一组消息；`variant` 默认仍为 `"default"`。
+
+<Showcase name="message-workspace" />
+
+`data-kit-appearance="workspace"` 选择工作区色板，`variant="workspace"` 选择组件布局，
+两者分别设置。工作区用户气泡在窄屏最多占消息行宽度的 85%，`sm` 及以上为 75%；
+阅读列宽度由外层容器提供，`MessageList` 和 `Chat` 使用 `--kit-chat-width` 居中限制宽度。
+
+### 消息状态与流式更新
+
+切换角色和消息状态，观察发送、生成失败与中断提示。Agent 处于 `streaming` 时，
+正文末尾显示“生成中…”，点击“追加内容”模拟同一条消息的累计快照更新。
+
+<Showcase name="message-status" />
+
+更新时保持消息和分片的 `id` 稳定；组件不会自行发送请求、计时生成文本或根据连接状态推断完成。
+消息尚未出现时的等待提示由 [MessageList.pending](/docs/components/general/message-list#api) 提供。
+
+### 富内容与执行过程
+
+连续的 `reasoning`、`tool` 分片组成可折叠的执行过程；正文、文件等其他分片打断分组。
+展开“执行过程”，再展开对应步骤，可查看思考原文、输入参数和执行结果。
+
+<Showcase name="message-parts" />
+
+运行中的执行组保持展开，正文到达或消息完成后收起；组内思考与工具步骤默认收起，可手动展开。
+相同分片的内容更新保留用户手动开合。思考状态来自分片自己的 `status`，不由整条消息状态推断。
+未知内容保留为可展开的安全文本。
+
+更多工具状态、Markdown、代码和图表用法见[富内容分片](/docs/components/message)。
+子 Agent 的内嵌卡片通过 `multiAgent` 接入，见 [Chat 多 Agent 对话](/docs/components/chat#多-agent-对话)。
+
+### 文件与操作回调
+
+用户上传的 `attachment` 与 Agent 交付的 `artifact` 都复用 [FileCard](/docs/components/feedback/file-card)。
+工作区布局将用户附件独立放在正文气泡上方；上传附件只展示文件信息。
+
+<Showcase name="message-files" />
+
+交付文件的名称触发 `onArtifactOpen`，独立下载按钮触发 `onArtifactDownload`。
+只提供下载回调时，文件名触发下载；都不提供时只展示信息。
+已完成且有正文的 Agent 消息显示复制入口，`onCopy` 收到 Markdown 原文和原始换行。
+此演示仅显示回调参数，实际预览、下载和宿主复制由业务方实现；省略 `onCopy` 时使用浏览器剪贴板。
+
+### 技能标签
+
+传入当前 Agent 的技能名，将用户消息中的已知协议 token 原位还原为技能标签。
+取消勾选可查看未提供名单时的原文；未知技能始终保留原文。
+
+<Showcase name="message-skills" />
+
+`Message` 只还原消息展示，不执行技能。输入框的选择与提交见
+[Sender](/docs/components/express/sender) 和 [Chat](/docs/components/chat)。
+
+## API
+
+### Message
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `message` | 必填，单条消息的展示模型，见下表 | `ChatMessage` | — |
+| `variant` | 消息布局；工作区下用户为气泡，Agent 正文无外框 | `"default" \| "workspace"` | `"default"` |
+| `onArtifactOpen` | 点击交付文件名称时打开预览，与下载回调独立 | `(fileId: string, contentType?: string) => void` | — |
+| `onArtifactDownload` | 交付文件下载，由调用方通过 Kit server 或自有后端完成 | `(fileId: string) => void` | — |
+| `onCopy` | Agent 回答原文复制；成功后 resolve，失败时抛出异常 | `(text: string) => void \| Promise<void>` | 浏览器剪贴板 |
+| `skills` | 当前 Agent 的技能名，用于还原用户正文中的已知技能 token | `string[]` | — |
+| `multiAgent` | 子 Agent 状态、历史查询与重试能力，来自 `useChat().multiAgent`；省略时不显示子 Agent 卡片 | `ChatMultiAgent` | — |
+
+组件只消费展示模型与回调，不解析 Provider SSE，也不直接请求文件。真实接入由
+[useChat](/docs/sdk/use-chat) 提供 `messages` 和 `multiAgent`。组件内部的气泡、内容和状态容器不单独导出。
+
+### ChatMessage
+
+从 `@openagentpack/kit-sdk/messages` 导入类型；消息内容和状态通常由运行时生成。
+
+| 属性 | 说明 | 类型 | 必填 |
+| --- | --- | --- | --- |
+| `id` | 稳定的消息标识；累计快照更新时保持不变 | `string` | 是 |
+| `role` | 消息角色，决定对齐方式和正文渲染 | `"user" \| "assistant"` | 是 |
+| `parts` | 按展示顺序排列的内容分片，见下表 | `MessagePart[]` | 是 |
+| `status` | 消息状态，见下方状态说明 | `MessageStatus` | 是 |
+| `threadId` | 消息所属线程的标识 | `string` | 否 |
+| `createdAt` | 消息创建时间；缺少分片开始时间时作为执行耗时的起点 | `string` | 否 |
+| `clientMessageId` | 乐观消息与服务端回显关联使用的标识 | `string` | 否 |
+
+### MessagePart
+
+每个分片都有可选的 `id: string`。真实消息沿用 core 提供的稳定分片 id，避免累计快照更新时
+重挂内容、丢失展开状态或重复播放入场动效。只合并相邻的文本或思考分片，保留正文、工具、
+交付文件和状态的相对顺序；工作区用户附件按上面的独立布局展示。
+
+| `type` | 内容字段 | 展示行为 |
+| --- | --- | --- |
+| `text` | `text: string` | 用户正文为纯文本，Agent 正文为 Markdown |
+| `reasoning` | `text: string`、可选 `status`、`startedAt` | 折叠的思考步骤；状态为 `streaming / done / failed / interrupted`，缺省不代表完成 |
+| `tool` | `toolId`、`name`、`status`、可选 `input`、`output`、`startedAt`、`endedAt` | 工具步骤；状态为 `running / done / error`，参数和结果按数据展示 |
+| `artifact` | `artifact: { file_id, filename?, content_type?, size? }` | Agent 交付文件，可接预览与下载 |
+| `attachment` | `file: { file_id, filename?, mount_path?, size? }` | 用户上传文件，只展示信息 |
+| `status` | `text: string` | 内容流中的状态文字，与整条消息的 `status` 不同 |
+| `sub-agent` | `threadId: string` | 配合 `multiAgent` 在派发位置展示只读子 Agent 卡片 |
+| `unknown` | `label: string`、`value: unknown` | 安全的可展开文本，不执行 HTML |
+
+### MessageStatus
+
+| 值 | 用户消息 | Agent 消息 |
+| --- | --- | --- |
+| `pending` | 发送中… | 发送中… |
+| `streaming` | 不显示额外状态标签 | 正文末尾显示“生成中…”，完成后消失 |
+| `done` | 不显示状态标签 | 不显示状态标签；有正文时展示复制入口 |
+| `failed` | 发送失败 | 生成失败 |
+| `interrupted` | 已中断 | 已中断 |
+
+单条消息完成不等于整个 Agent 回合结束；执行与连接状态的区分见
+[SDK 接入术语](/docs/sdk#接入术语)。
+
+## 语义结构
+
+| 区域 | 当前结构与交互 |
+| --- | --- |
+| 消息正文 | 用户为保留换行的文本；Agent 使用 Markdown 的标题、列表、链接等语义标签 |
+| 执行过程 | 原生 `details / summary`；展开组后可继续展开思考或工具步骤 |
+| 文件操作 | 文件名与下载使用独立按钮，键盘可分别触发；用户附件没有操作入口 |
+| 回答操作 | 完成态的复制按钮及可读的成功、失败反馈 |
+| 未知内容 | 原生 `details / summary`，内容以文本展示 |
+
+组件当前没有 `classNames`、`styles` 或任意属性透传接口。布局通过外层容器和 `variant` 调整，
+色板与排版通过主题 token 统一管理。
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板；工作区色板在父容器启用。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-user-bubble` | 用户气泡背景 | `#eef0ff` | `#efefef` |
+| `--kit-assistant-bubble` | 默认布局的 Agent 气泡背景；工作区布局不使用外层气泡 | `#f6f7fb` | `#f7f7f7` |
+| `--kit-fg` | 正文颜色 | `#101322` | `#171717` |
+| `--kit-fg-muted` | 状态与次要文字 | `#5b6478` | `#737373` |
+| `--kit-border` | 默认布局的气泡边框 | `#e3e6ef` | `#e5e5e5` |
+| `--kit-radius` | 气泡圆角 | `14px` | `16px` |
+| `--kit-text-body` | 正文字号 | `15px` | `15px` |
+| `--kit-leading-body` | 正文行高 | `1.625` | `1.7` |
+
+分片入场消费 `--kit-animate-overlay-in`，执行过程使用冻结的展开与过渡 token；
+`prefers-reduced-motion` 下关闭动画。同一稳定分片的快照更新不重放入场动画。
+更多主题配置见[组件总览](/docs/components#主题)。

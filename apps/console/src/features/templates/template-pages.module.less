@@ -1,0 +1,522 @@
+// 「智能体资产」页面家族聚合样式（CSS Modules / Less）：模版列表/详情/编辑器、
+// 版本历史、发布与保存动作、调试预览等共用本文件。颜色一律消费 --kit-* / --ant-*
+// 变量，不写死色值；断点与 Tailwind 同口径（sm 640px / md 768px / xl 1280px）。
+
+/* ============ 页面家族通用层 ============ */
+
+.metaText {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+.sectionTitle {
+	font-size: 16px;
+	font-weight: 600;
+	margin-bottom: 24px;
+}
+
+.pageTitle {
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.pageStack {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.blockStack {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.rowBetween {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.rowWrap {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+}
+
+.rowStart {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	gap: 12px;
+}
+
+.fullControl {
+	width: 100%;
+}
+
+.requiredStar {
+	margin-left: 4px;
+	color: var(--ant-color-error);
+}
+
+.errorText {
+	font-size: 13px;
+	color: var(--ant-color-error);
+}
+
+/* 13px 辅助说明 */
+.formNote {
+	font-size: 13px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 靠右操作行（弹窗 footer，间距 8px） */
+.formActions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.srOnly {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}
+
+.drawerTitle {
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.drawerFooter {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+}
+
+/* 保存弹窗表单：字段 + 错误提示纵排 */
+.saveForm {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding-top: 16px;
+}
+
+/* 弹窗确认文案（删除/上下架，原 .message） */
+.dialogMessage {
+	white-space: pre-wrap;
+	font-size: 13px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 应用此版本操作块（template-apply-version-action） */
+.actionRoot {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.actionError {
+	max-width: 384px;
+	font-size: var(--kit-text-label);
+	color: var(--kit-danger);
+	overflow-wrap: anywhere;
+}
+
+/* 调试会话清理通知（template-debug-cleanup-notice） */
+.noticeRoot {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.cleaningText {
+	font-size: 13px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* ============ 智能体详情抽屉与选择按钮（template-agent-detail-drawer） ============ */
+
+.drawerHead {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.drawerMeta {
+	font-weight: 400;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+.drawerBody {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 16px;
+	font-size: 13px;
+}
+
+/* 列表中的选择按钮：名称 + ID 两行，md 起四列网格中占 4 列 */
+.pickButton {
+	display: grid;
+	min-width: 0;
+	grid-template-columns: 1fr;
+	gap: 8px;
+	padding-block: 16px;
+	padding-inline: 16px;
+	text-align: left;
+
+	&:focus-visible {
+		position: relative;
+		z-index: 10;
+		outline: 2px solid currentColor;
+		outline-offset: -2px;
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+}
+
+.pickName {
+	min-width: 0;
+	font-weight: 500;
+	color: var(--ant-color-primary);
+	overflow-wrap: anywhere;
+}
+
+.pickId {
+	min-width: 0;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+	overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) {
+	.pickButton {
+		grid-column: span 4 / span 4;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 16px;
+	}
+
+	.pickName,
+	.pickId {
+		grid-column: span 2 / span 2;
+	}
+}
+
+/* ============ 模版发布进度区（template-publish-status） ============ */
+
+.statusPanel {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	background: #fff;
+	padding: 16px;
+	font-size: 14px;
+}
+
+.progressNote {
+	color: var(--ant-color-text-secondary);
+}
+
+.reviewMessage {
+	white-space: pre-wrap;
+	font-size: 13px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* ============ 通用补充（详情页 / 调试预览） ============ */
+
+.fieldStack {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.stack2 {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.metaAny {
+	font-size: 13px;
+	color: var(--ant-color-text-secondary);
+	overflow-wrap: anywhere;
+}
+
+.preWrap {
+	white-space: pre-wrap;
+}
+
+.body13 {
+	font-size: 13px;
+}
+
+/* 标题行（flex 内防溢出） */
+.headRow {
+	display: flex;
+	min-width: 0;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+/* kit 等宽说明（caption 字号） */
+.kitMonoCaption {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: var(--kit-text-caption);
+	color: var(--kit-fg-muted);
+	overflow-wrap: anywhere;
+}
+
+/* kit 次要说明（label 字号） */
+.kitMetaNote {
+	font-size: var(--kit-text-label);
+	color: var(--kit-fg-muted);
+}
+
+/* 保存成功提示 */
+.successNote {
+	font-size: var(--kit-text-label);
+	color: var(--kit-success);
+}
+
+/* 详情页 tab 按钮排 */
+.tabList {
+	display: flex;
+	gap: 8px;
+}
+
+/* 内容根最小宽度 */
+.shrinkRoot {
+	min-width: 0;
+}
+
+/* ============ 模版编辑器页（template-editor-page） ============ */
+
+/* 页根：大组间距 + 底部留白（固定操作条 + 安全区） */
+.editorRoot {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+	padding-bottom: calc(16px * 4 + env(safe-area-inset-bottom));
+}
+
+/* 配置区布局：移动端纵排，xl 起摘要右栏 */
+.editorLayout {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 24px;
+}
+
+/* 配置主列 */
+.editorMain {
+	display: flex;
+	width: 100%;
+	min-width: 0;
+	flex: 1 1 0%;
+	flex-direction: column;
+	gap: 24px;
+}
+
+/* 白底配置卡（展示配置） */
+.configCard {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	border-radius: 6px;
+	background: #fff;
+	padding: 16px;
+	font-size: 13px;
+}
+
+@media (min-width: 1280px) {
+	.editorLayout {
+		flex-direction: row;
+	}
+}
+
+/* ============ 通用补充（模版列表页） ============ */
+
+.mutedOnly {
+	color: var(--ant-color-text-secondary);
+}
+
+.textXs {
+	font-size: 12px;
+}
+
+.nowrap {
+	white-space: nowrap;
+}
+
+.nowrapMuted {
+	white-space: nowrap;
+	color: var(--ant-color-text-secondary);
+}
+
+.nowrapSuccess {
+	white-space: nowrap;
+	color: var(--ant-color-success);
+}
+
+.successAny {
+	font-size: 13px;
+	color: var(--ant-color-success);
+	overflow-wrap: anywhere;
+}
+
+.wrapAnywhere {
+	overflow-wrap: anywhere;
+}
+
+.nameAny {
+	font-weight: 500;
+	overflow-wrap: anywhere;
+}
+
+.loadingRow {
+	display: flex;
+	justify-content: center;
+	padding-block: 24px;
+}
+
+.rowEnd13 {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 12px;
+	font-size: 13px;
+}
+
+.actionsRow {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+/* 筛选行 */
+.filterRow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+/* 筛选组：标签 + 下拉 */
+.filterGroup {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 搜索框：移动端通栏、sm 起弹性；胶囊圆角对齐 bailian-web FilterBar search。input 前缀抬高优先级，
+   否则被 antd 运行时注入的 :where(hash).ant-input-outlined 圆角规则后插反杀 */
+input.searchWide {
+	width: 100%;
+	min-width: 0;
+	border-radius: 100px;
+
+	@media (min-width: 640px) {
+		width: auto;
+		max-width: 384px;
+		flex: 1 1 0%;
+	}
+}
+
+.selectStatus {
+	width: 112px;
+}
+
+.selectCategory {
+	width: 128px;
+}
+
+/* 名称单元格：名称 + 描述同行（单元格 nowrap + 行高 60 的单行结构），长描述随表格横向滚动 */
+.nameCellWide {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	min-width: 0;
+}
+
+/* ============ 预览调试工作区（template-debug-preview） ============ */
+
+/* 工作区外壳：固定 70dvh 高度 + kit 底色 */
+.debugShell {
+	display: flex;
+	height: 70dvh;
+	min-height: 0;
+	min-width: 0;
+	flex-direction: column;
+	overflow: hidden;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	background: var(--kit-bg);
+	color: var(--kit-fg);
+}
+
+/* 透传容器（原 .contents，不产生盒） */
+.contents {
+	display: contents;
+}
+
+/* ============ 向导底部操作条（template-save-action） ============ */
+
+/* 固定底栏：移动端通栏，md 起让开侧栏（对齐 Sider width 200；折叠态 60px 时右侧留空属既有妥协） */
+.wizardFooter {
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 10;
+	background: #fff;
+	padding-bottom: env(safe-area-inset-bottom);
+}
+
+.wizardFooterInner {
+	display: flex;
+	width: 100%;
+	justify-content: flex-start;
+	gap: 12px;
+	padding-block: 16px;
+	padding-inline: 16px;
+}
+
+@media (min-width: 768px) {
+	.wizardFooter {
+		left: 200px;
+	}
+
+	.wizardFooterInner {
+		padding-inline: 24px;
+	}
+}
+
+/* 固定底栏不占流内空间：用等高占位垫底，避免滚动到底时末尾内容被底栏遮住。
+   高度 = 底栏 padding-block 16×2 + 按钮 controlHeight 36 + border-top 1，
+   移动端再叠加底栏的 safe-area-inset-bottom，与 .wizardFooter 改高度时需同步。 */
+.footerSpacer {
+	height: calc(69px + env(safe-area-inset-bottom));
+}

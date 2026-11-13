@@ -1,0 +1,55 @@
+// 统计卡与统计项样式（CSS Modules / Less）。颜色一律消费 --kit-* 冻结 token，
+// 蓝/灰交替底色取自 --kit-stat-tint / --kit-stat-subtle，不写死色值。
+
+.card {
+	min-width: 0;
+	border-radius: var(--kit-radius);
+	padding: 16px;
+}
+
+.cardTint {
+	background: var(--kit-stat-tint);
+}
+
+.cardSubtle {
+	background: var(--kit-stat-subtle);
+}
+
+/* 单个统计项：小标签 + 大号数字 */
+.cellRoot {
+	min-width: 0;
+}
+
+.cellLabel {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: var(--kit-text-caption);
+	color: var(--kit-fg-muted);
+}
+
+.cellMissing {
+	margin-top: 4px;
+	font-weight: 600;
+	font-size: var(--kit-text-body);
+}
+
+.cellValue {
+	margin-top: 4px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	font-size: var(--kit-text-display);
+}
+
+.cellUnit {
+	margin-left: 4px;
+	font-weight: 400;
+	font-size: var(--kit-text-caption);
+	color: var(--kit-fg-muted);
+}
+
+.cellHint {
+	margin-top: 4px;
+	font-size: var(--kit-text-caption);
+	color: var(--kit-fg-muted);
+}

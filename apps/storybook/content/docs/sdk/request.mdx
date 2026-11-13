@@ -1,0 +1,130 @@
+---
+title: Request 请求
+description: 用 createRequest 统一 HTTP、应用鉴权、响应与 SSE 字节读取
+---
+
+`createRequest` 来自 `@openagentpack/kit-sdk/request`。
+它管理 URL、动态身份头、fetch 与 HTTP 错误；`stream()` 内部组合
+[createSseStream](/docs/sdk/stream)。可独立使用，也可注入
+[createBailianChatProvider](/docs/sdk/custom-backend)。
+
+## 何时使用
+
+- 自有后端需要统一 HTTP 入口：动态身份头、统一错误映射与全程取消。
+- 读取 JSON 或原始 SSE 字节流：`json()` 返回解析结果，`stream()` 逐帧交付 `RawSseMessage`。
+- 访问 Kit Server 业务面时不直接使用它：用 [Client](/docs/sdk/client) 的数据面方法。
+
+## 使用说明
+
+最常见配置是 `baseUrl` 加动态身份头：
+
+{/* skill-example: kit-chat-provider/examples/request.ts */}
+
+```ts
+import { createRequest, type RequestClient } from "@openagentpack/kit-sdk/request";
+import type { RawSseMessage } from "@openagentpack/kit-sdk/stream";
+
+export function createApplicationRequest(baseUrl: string, getAppToken: () => Promise<string>): RequestClient {
+	return createRequest({
+		baseUrl,
+		headers: async () => ({ Authorization: `Bearer ${await getAppToken()}` }),
+	});
+}
+
+// Sample business routes, not fixed Bailian endpoints.
+export async function readStatus(request: RequestClient, signal: AbortSignal) {
+	return request.json<{ available: boolean }>("/status", { signal });
+}
+
+export async function observeUpdates(
+	request: RequestClient,
+	signal: AbortSignal,
+	onFrame: (frame: RawSseMessage) => void,
+) {
+	for await (const frame of request.stream(
+		"/updates",
+		{ signal, headers: { Accept: "text/event-stream" } },
+		{ utf8Fatal: true },
+	)) {
+		onFrame(frame);
+	}
+}
+```
+
+{/* /skill-example */}
+
+`/status`、`/updates` 是示例业务路由。`baseUrl` 来自应用运行时配置，不能假设页面与 API
+同源；headers 只传应用身份，百炼凭据留在后端。
+
+## 代码演示
+
+### 基础请求
+
+<Showcase name="request-basic" />
+
+`json()` 检查 HTTP 状态后解析 JSON；动态身份头在每次请求时重新解析。
+
+### 请求定制
+
+<Showcase name="request-custom" />
+
+单次 `RequestInit.headers` 覆盖同名动态头、其余合并下发，方法与 body 由调用方显式配置。
+
+### 读取 SSE 流
+
+<Showcase name="request-stream" />
+
+`stream()` 委托 Stream 解码分帧；取消贯穿 fetch 与读取，退出时关闭 reader。
+
+### 错误映射
+
+<Showcase name="request-error" />
+
+非成功 HTTP 默认抛出安全 `KitError`；`mapHttpError` 可替换为带业务语义的安全错误。
+
+## API
+
+### createRequest(options)
+
+```ts
+function createRequest(options: RequestOptions): RequestClient
+```
+
+| 选项 | 类型 | 作用 |
+| --- | --- | --- |
+| `baseUrl` | `string` | 请求基址，按路径拼接 |
+| `headers` | `() => HeadersInit \| Promise<HeadersInit>` | 每次请求执行的函数，可异步返回请求头 |
+| `fetchImpl` | `typeof fetch` | 注入宿主或测试 fetch，默认 `globalThis.fetch` |
+| `mapHttpError` | `(response: Response) => Error \| Promise<Error>` | 非成功 HTTP 响应的安全错误映射 |
+
+### 方法
+
+| 方法 | 返回值 | 责任 |
+| --- | --- | --- |
+| `response(path, init?)` | `Promise<Response>` | HTTP 状态检查后交付原始响应，调用方消费或关闭 body |
+| `json<T>(path, init?)` | `Promise<T>` | 解析 JSON；204 返回 undefined，不做业务 Schema 验证 |
+| `stream(path, init?, streamOptions?)` | `AsyncGenerator<RawSseMessage>` | 请求后委托 Stream 解码分帧，退出时关闭 reader |
+| `url(path)` | `string` | 仅生成地址，不发请求或附加鉴权头 |
+
+`streamOptions` 使用 Stream 选项。两处 signal 任一取消都会停止请求或读取。
+对返回 JSON 的字段验证、后端响应包装和 Agent 生命周期，应在 Provider 中处理。
+原始 SSE 工厂使用 `response()` 交接 body 与真实 ready，由 Provider 控制开始读取和历史重建。
+
+## 错误、超时与重试
+
+Request 默认无超时、无重试。调用方可传 AbortSignal 施加生命周期或截止时间；Provider
+负责持久订阅的连接/静默策略，Chat Controller 负责重连调度。不得自动重发消息或审批。
+
+非成功 HTTP 默认抛出安全 `KitError`，仅包含状态摘要；401/403/404/429 对应权限、资源或
+限流错误，429 和 5xx 标记为 retryable。需要识别业务错误时配置 `mapHttpError`，保留安全
+摘要，不能把原始响应正文、URL、身份头或凭据直接展示。取消贯穿异步 headers、fetch 和
+错误映射；取消后迟到的响应仍关闭。
+
+体验页把此 Request 注入公开
+[`createSessionEventChatProvider`](/docs/sdk/custom-backend#与真实体验页一致的接入)，
+显式配置 Kit Server 的路径、协议头与 JSON 映射，与用户自建后端采用同一接入方法。
+已有应用继续使用 [KitClient](/docs/sdk/client) 或 `createTransport`；
+后者是建立在 Request/Stream 上的 Kit 协议适配，保留协议头、Kit 错误体、45 秒有效帧超时
+及 done/error 控制帧处理。其 `request()` 保留现有优先级：动态身份 headers 覆盖单次
+headers，`x-kit-protocol-version` 最后固定为 Kit 当前版本；这与通用 Request 的单次头
+优先规则不同。通用 Request 不隐式套用这些后端约定。

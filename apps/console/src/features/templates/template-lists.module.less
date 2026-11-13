@@ -1,0 +1,362 @@
+// 「智能体资产」选择列表家族聚合样式（CSS Modules / Less）：环境/文件/记忆库/密钥库
+// 的可选列表（表头 + 可滚动行）共用本文件。颜色一律消费 --kit-* / --ant-* 变量，
+// 不写死色值；断点 sm 640px / md 768px。
+
+/* 列表根：搜索框 + 表格 */
+.listRoot {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.searchInputSm {
+	@media (min-width: 640px) {
+		width: 256px;
+	}
+}
+
+.tableWrap {
+	overflow: hidden;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	background: #fff;
+}
+
+/* 表头：md 起显示 */
+.tableHead2 {
+	display: none;
+	gap: 16px;
+	padding-block: 12px;
+	padding-inline: 16px;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+.tableHead5 {
+	display: none;
+	gap: 16px;
+	padding-block: 12px;
+	padding-inline: 16px;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+.headCol2 {
+	grid-column: span 2 / span 2;
+}
+
+.rowList {
+	max-height: 384px;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+
+	& li + li {
+		border-top: 1px solid var(--ant-color-border);
+	}
+}
+
+/* 选择行公共态：选中实底、未选中 hover 浅底 */
+.selectRowSelected {
+	background: var(--kit-bg-subtle);
+}
+
+.selectRowIdle {
+	&:hover {
+		background: var(--ant-color-fill-quaternary);
+	}
+}
+
+/* 2 列选择行（记忆库） */
+.selectRow {
+	display: grid;
+	width: 100%;
+	min-width: 0;
+	cursor: pointer;
+	grid-template-columns: 1fr;
+	gap: 8px;
+	padding-block: 16px;
+	padding-inline: 16px;
+	text-align: left;
+	font-size: 13px;
+	transition: background-color 0.2s ease-out;
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+}
+
+/* 5 列选择行（文件/环境外层 li：无 cursor，按钮在内） */
+.selectRow5 {
+	display: grid;
+	width: 100%;
+	min-width: 0;
+	grid-template-columns: 1fr;
+	font-size: 13px;
+	transition: background-color 0.2s ease-out;
+}
+
+/* 5 列行的内嵌按钮 */
+.selectRowButton5 {
+	display: grid;
+	min-width: 0;
+	cursor: pointer;
+	grid-template-columns: 1fr;
+	gap: 8px;
+	padding-block: 16px;
+	padding-inline: 16px;
+	text-align: left;
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+}
+
+/* 环境列表行内按钮（md 起占满 5 列） */
+.envRowButton {
+	display: grid;
+	min-width: 0;
+	cursor: pointer;
+	grid-template-columns: 1fr;
+	gap: 8px;
+	padding-block: 16px;
+	padding-inline: 16px;
+	text-align: left;
+}
+
+/* 单元格 */
+.nameCell {
+	display: flex;
+	min-width: 0;
+	align-items: center;
+	gap: 8px;
+}
+
+.checkMark {
+	display: flex;
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 2px;
+	font-size: 12px;
+	color: var(--ant-color-primary);
+}
+
+.nameText {
+	min-width: 0;
+	font-weight: 500;
+	overflow-wrap: anywhere;
+}
+
+.metaCell {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 4px;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+	overflow-wrap: anywhere;
+}
+
+.monoBlock {
+	display: block;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* 环境列表行名/ID/动作 */
+.envRowName {
+	min-width: 0;
+	font-weight: 500;
+	overflow-wrap: anywhere;
+}
+
+.envRowId {
+	min-width: 0;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+	overflow-wrap: anywhere;
+}
+
+.envRowAction {
+	color: var(--ant-color-primary);
+}
+
+/* 行尾操作列（密钥库选择） */
+.actionCell {
+	padding-inline: 16px;
+	padding-bottom: 16px;
+}
+
+.linkFlush {
+	height: auto;
+	padding-inline: 0;
+}
+
+/* 已选摘要列表 */
+.selectedList {
+	min-width: 0;
+
+	& li + li {
+		border-top: 1px solid var(--ant-color-border);
+	}
+}
+
+.selectedItem {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 8px;
+	padding-block: 12px;
+}
+
+/* 已选摘要：横向排布变体（文件） */
+.selectedItemRow {
+	display: flex;
+	min-width: 0;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding-block: 12px;
+}
+
+.noteCount {
+	margin-left: 8px;
+}
+
+/* ============ 通用补充（智能体列表） ============ */
+
+.shrinkRoot {
+	min-width: 0;
+}
+
+.shrinkZero {
+	flex-shrink: 0;
+}
+
+.mutedOnly {
+	color: var(--ant-color-text-secondary);
+}
+
+.textXs {
+	font-size: 12px;
+}
+
+.loadingRow {
+	display: flex;
+	justify-content: center;
+	padding-block: 24px;
+}
+
+.padBox {
+	padding: 16px;
+}
+
+/* 选中行主色浅底变体（智能体列表） */
+.selectRowPrimary {
+	background: var(--ant-color-primary-bg);
+}
+
+/* 列表卡头：搜索行 + 底边线 */
+.listToolbar2 {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	border-bottom: 1px solid var(--ant-color-border);
+	padding: 16px;
+}
+
+/* 卡内搜索框容器：移动端通栏、sm 起自适应宽 */
+.searchBox {
+	display: flex;
+	width: 100%;
+	min-width: 0;
+	align-items: center;
+	gap: 8px;
+
+	@media (min-width: 640px) {
+		width: auto;
+	}
+}
+
+/* 卡脚内分页行 */
+.listPager {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+/* 列表卡脚：总数说明 + 分页 */
+.listFooter {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	border-top: 1px solid var(--ant-color-border);
+	padding: 16px;
+	font-size: 13px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* md 起 5 列网格中的 2 列单元格 */
+.cellSpan2 {
+	@media (min-width: 768px) {
+		grid-column: span 2 / span 2;
+	}
+}
+
+@media (min-width: 768px) {
+	.tableHead2 {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		border-bottom: 1px solid var(--ant-color-border);
+		background: var(--kit-bg-subtle);
+	}
+
+	.tableHead5 {
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		border-bottom: 1px solid var(--ant-color-border);
+		background: var(--kit-bg-subtle);
+	}
+
+	.selectRow {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		align-items: center;
+		gap: 16px;
+	}
+
+	.selectRow5 {
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		align-items: center;
+	}
+
+	.selectRowButton5 {
+		grid-column: span 4 / span 4;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 16px;
+	}
+
+	.envRowButton {
+		grid-column: span 5 / span 5;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: 16px;
+	}
+
+	.envRowName,
+	.envRowId {
+		grid-column: span 2 / span 2;
+	}
+
+	.actionCell {
+		padding-block: 16px;
+	}
+}

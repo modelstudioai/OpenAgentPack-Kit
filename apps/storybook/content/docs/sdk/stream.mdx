@@ -1,0 +1,152 @@
+---
+title: Stream 流解析
+description: 独立解析 SSE 字节流：解码、分帧、取消与资源释放
+---
+
+本页 API 来自 `@openagentpack/kit-sdk/stream` 与 `@openagentpack/kit-sdk/protocol`；安装方式与包职责见
+[SDK 总览](/docs/sdk)。
+
+`createSseStream` 来自 `@openagentpack/kit-sdk/stream`。它把已有
+`ReadableStream<Uint8Array>` 解码为 `AsyncGenerator<RawSseMessage>`，通过 `for await` 逐帧消费；
+不发 HTTP 请求，自然 EOF 只表示字节流结束，不代表 Agent 执行完成。
+
+## 何时使用
+
+- 已有 `Response.body` 等字节流：用 `createSseStream` 解码分帧，`data` 保持字符串。
+- 已有文本读取链路：用 `createSseParser` 切帧，`decodeFrame` 解码 Kit 协议帧。
+
+订阅 Kit Server 会话流与无 React 编排是上层入口，分别见 [Client](/docs/sdk/client) 与
+[useChat](/docs/sdk/use-chat)。
+
+## 使用说明
+
+最常见输入是 `fetch` 返回的 `response.body`：
+
+{/* skill-example: kit-chat-provider/examples/sse-stream.ts */}
+
+```ts
+import { createSseStream, type RawSseMessage } from "@openagentpack/kit-sdk/stream";
+
+// The caller already owns a response body; no network request is made here.
+export async function consumeSse(
+	body: ReadableStream<Uint8Array>,
+	signal: AbortSignal,
+	onFrame: (frame: RawSseMessage) => void,
+) {
+	for await (const frame of createSseStream(body, { signal, utf8Fatal: true, maxFrameChars: 1024 * 1024 })) {
+		// data remains a string. The Provider validates JSON and business semantics.
+		onFrame(frame);
+	}
+	// EOF ends this iterator; it does not establish Agent execution completion.
+}
+```
+
+{/* /skill-example */}
+
+- 输出帧包含 `event`、`data` 和可选 `id`；分块 UTF-8、CR/LF/CRLF、多行 data、注释与未完成帧由 Stream 处理。
+- `break`、取消或解析失败都会释放 reader。解码或分帧失败抛 `SseStreamError`；reader 的网络错误原样上抛，由上层分类决定是否恢复。
+- 需要自行发请求时使用 [Request](/docs/sdk/request)。
+
+## 代码演示
+
+### 解析 SSE 字节流
+
+<Showcase name="sse-stream" />
+
+mock 字节流按所选分隔符编码、分块到达；切换分隔符观察 CR/LF/CRLF 兼容，注释心跳与 EOF 语义见输出。
+
+### 仅解析 SSE 文本
+
+已有文本读取链路时可以单独使用 parser；字节流需先经 `TextDecoder` 增量解码。parser 只切帧，
+`decodeFrame` 只识别 Kit 协议帧，不承担百炼原生事件适配。
+
+<Showcase name="sse-parser" />
+
+可编辑文本推入 parser：未知 `event` 返回 `null` 由调用方决定丢弃，注释心跳走 `onComment`，`end()` 交付尾帧。
+
+## API
+
+### createSseStream
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `body` | 待解码的字节流 | `ReadableStream<Uint8Array>` | - |
+| `signal` | 取消读取和排队帧交付 | `AbortSignal` | - |
+| `utf8Fatal` | 非法 UTF-8 时失败，否则以替换字符解码 | `boolean` | `false` |
+| `maxFrameChars` | 单帧字符上限，超过后失败 | `number` | 无上限 |
+| `onComment` | 注释心跳通知，不生成业务帧 | `() => void` | - |
+| `flushOnEnd` | 自然 EOF 时交付尚未由空行结束的尾帧 | `boolean` | `true` |
+
+解码或分帧失败抛出 `SseStreamError`，继承 `Error`，`cause` 保留原始错误。
+
+### RawSseMessage
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `event` | SSE 事件名 | `string` | - |
+| `data` | 原始数据，保持字符串 | `string` | - |
+| `id` | SSE 传输游标，可作 `client.stream` 的 `after` | `string \| undefined` | - |
+
+### createSseParser / decodeFrame
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `onMessage` | 每切出一个原始帧回调一次，业务解码由调用方负责 | `(message: RawSseMessage) => void` | - |
+| `options.onComment` | 注释行通知，不进入解码 | `() => void` | - |
+| `options.maxFrameChars` | 单帧字符上限（含未收尾的行），超过抛 `RangeError` | `number` | 无上限 |
+| `parser.push(chunk)` | 增量推入文本分片；任意切分位置都安全，包括把 CR 与 LF 切开 | `(chunk: string) => void` | - |
+| `parser.end()` | 冲刷缓冲并交付未以空行收尾的尾帧 | `() => void` | - |
+
+| 属性 | 说明 | 类型 |
+| --- | --- | --- |
+| `decodeFrame(message)` | 解码为强类型帧；未知 `event` 或 JSON 解析失败返回 `null`，由调用方决定丢弃 | `(message: RawSseMessage) => SseFrame \| null` |
+
+`SseFrame` 按 `type` 区分 `reset` / `ready` / `event` / `done` / `error` / `ping` / `operation`；
+`event` 帧的 `data` 是 SDK `SessionEvent`，`cursor` 来自 SSE `id`。
+
+### streamProtocolFrames
+
+已经使用本文的 `SseFrame` 协议时，可以从 `@openagentpack/kit-sdk/providers/kit` 调用
+`streamProtocolFrames(request, path, handlers)`，复用现有 Request、解码和取消逻辑。
+原始百炼 SSE 通过[自建后端 Provider](/docs/sdk/custom-backend)接入。
+
+{/* skill-example: kit-chat-provider/examples/protocol-frames.ts */}
+
+```ts
+import type { SseFrame } from "@openagentpack/kit-sdk/protocol";
+import { streamProtocolFrames } from "@openagentpack/kit-sdk/providers/kit";
+import type { RequestClient } from "@openagentpack/kit-sdk/request";
+
+/** The request already owns the backend base URL and any required identity/version headers. */
+export async function observeProtocolFrames(
+	request: RequestClient,
+	path: string,
+	signal: AbortSignal,
+	onFrame: (frame: SseFrame) => void,
+) {
+	await streamProtocolFrames(request, path, {
+		signal,
+		onFrame,
+		init: { method: "GET" },
+		idleTimeoutMs: 45_000,
+	});
+	// done ended this subscription. It does not establish Agent execution completion.
+	// Unexpected EOF, protocol error frames, and idle timeouts reject instead.
+}
+```
+
+{/* /skill-example */}
+
+| 参数 | 说明 |
+| --- | --- |
+| `request` | 已配置后端地址、身份与必要协议头的 `RequestClient` |
+| `path` | 应用提供的订阅路径 |
+| `handlers.onFrame` | 接收已解码的 `SseFrame`；未知或无法解码的帧被忽略 |
+| `handlers.signal` | 取消连接并释放 reader |
+| `handlers.init` | 请求方法、请求头等 `RequestInit`；取消由独立 `signal` 管理 |
+| `handlers.idleTimeoutMs` | 无有效帧的超时，默认 `45000` 毫秒；注释心跳不算有效帧 |
+
+这个协议适配层收到 `done` 后正常返回；`error` 按帧中的错误码和 `retryable` 抛错。
+没有 `done` 的自然 EOF 和无有效帧超时均抛可重试错误，并取消读取、释放 reader。
+它不自动重连、不重发写入，也不维护 Chat 消息；`done` 只结束连接，Agent 执行状态仍以
+业务事件为准。`createSseStream` 的原始 EOF 语义保持不变。

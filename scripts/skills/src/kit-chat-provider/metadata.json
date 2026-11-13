@@ -1,0 +1,7 @@
+{
+  "name": "kit-chat-provider",
+  "description": "Connect Kit Server or a self-owned Bailian backend through the public Request and createSessionEventChatProvider configuration, or use createBailianChatProvider for raw SSE. Covers readiness, history, cancellation and tool decisions.",
+  "displayName": "Kit Chat Provider",
+  "shortDescription": "Adapt a self-owned Bailian backend to Kit chat",
+  "defaultPrompt": "Use $kit-chat-provider to connect my Bailian backend and its raw SSE subscription to Kit useChat."
+}

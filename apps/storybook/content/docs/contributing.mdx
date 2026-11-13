@@ -1,0 +1,38 @@
+---
+title: 参与开发
+description: 权威顺序、门禁、hooks、文档防腐与提交规范
+---
+
+先读仓库根 `AGENTS.md`（权威顺序与执行红线），再按其中的索引查阅架构、接口、协议与验收文档。
+
+## 门禁
+
+```bash
+pnpm gate    # typecheck + lint(strict) + test + build + 架构 + 文档 + 零内网依赖
+pnpm e2e     # Playwright（桌面 + H5 视口）
+pnpm verify:push   # pre-push hook 跑的子集
+```
+
+本地 hook（`.githooks/`，`pnpm setup` 启用）可被 `--no-verify` 绕过。
+当前仓库未配置 CI 流水线，提交前按变更范围运行上述验收命令并记录结果。
+
+默认 `pnpm e2e` 使用 Mock + 匿名模式；成员登录与用量回归单独运行：
+
+```bash
+pnpm --filter web exec playwright test --config playwright.members.config.ts
+pnpm --filter web exec playwright test --config playwright.member-usage.config.ts
+```
+
+仅体验应用时先按[快速开始](/docs/quickstart)启动本地环境，再参照
+[本地跑通完整 Demo](/docs/local-demo)完成成员对话与后续操作。
+
+## 改行为就改文档
+
+- 新增后端操作：`docs/interfaces.md` 登记 → 路由 schema → service → `pnpm gen:openapi` → 契约测试；
+- 改协议：同步 `docs/protocol.md`；改分层：同步 `docs/architecture.md` 与 dependency-cruiser；
+- `pnpm check:docs` 会校验文档中出现的根 `pnpm` 脚本真实存在，并阻止引用已移除的独立 CLI。
+
+## 提交规范
+
+简体中文 Conventional Commits：`<type>(scope): <description>`，scope 用包名短称
+（protocol/core/server/chat-ui/web/console/cli/docs/repo）。

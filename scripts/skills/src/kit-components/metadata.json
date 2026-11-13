@@ -1,0 +1,7 @@
+{
+  "name": "kit-components",
+  "description": "Build or update React chat interfaces with OpenAgentPack Kit components, including message rendering, input attachments, prompts, feedback, session navigation, and tool approval UI. Use for component selection and composition; backend protocol adaptation belongs to kit-chat-provider.",
+  "displayName": "Kit Components",
+  "shortDescription": "Compose Kit chat components and attachment flows",
+  "defaultPrompt": "Use $kit-components to build a chat interface with caller-managed attachments and message feedback."
+}

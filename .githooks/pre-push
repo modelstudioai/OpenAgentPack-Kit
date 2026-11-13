@@ -1,0 +1,5 @@
+#!/bin/sh
+# push 前跑 verify:push。可用 git push --no-verify 绕过；完整本地验收使用 pnpm gate。
+root=$(git rev-parse --show-toplevel) || exit 1
+cd "$root" || exit 1
+pnpm verify:push

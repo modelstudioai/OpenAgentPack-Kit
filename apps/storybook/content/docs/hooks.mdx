@@ -1,0 +1,28 @@
+---
+title: React Hooks
+description: SDK 功能 Hooks 速查与接入文档入口
+---
+
+Kit 的数据接入文档已整理到 [SDK 栏目](/docs/sdk)，原 Hooks 地址保留作为速查入口。
+功能 hooks 从各模块的 `/hooks` 子入口导入，下表省略 `@openagentpack/kit-sdk` 前缀。
+`/providers/kit/react` 提供 `KitProvider` 组件与 Context，通用 `/hooks` 只公开屏幕判断
+`useIsMobile`，旧 `/react` 入口已移除。默认后端接入在稳定 Client 实例的
+`<KitProvider client={client}>` 内使用；初始化示例见 [Client 请求](/docs/sdk/client)。
+显式传入 Provider 的 `useChat` 可独立使用，见 [自建后端](/docs/sdk/custom-backend)。
+
+| Hook | 导入入口 | 用途与详细用法 |
+| --- | --- | --- |
+| `useChat(sessionId)` | `/chat/hooks` | 消息、执行状态、发送、停止与审批，见 [useChat 对话](/docs/sdk/use-chat) |
+| `useChat({ sessionId, provider })` | `/chat/hooks` | 使用自建后端，无需 KitProvider；仍返回相同消息与动作 |
+| `useSessions({ agentSlug?, limit? })` | `/sessions/hooks` | 当前身份的会话索引、loading、reload，见 [useSessions 会话](/docs/sdk/use-sessions) |
+| `useAgentCatalog()` | `/agents/hooks` | 已上架条目的 agents / loading / error / reload |
+| `useAgentResources(slug)` | `/agents/hooks` | 工具、MCP、Skill 元数据及可选 `memory_stores` 名称/描述；null 时不查询，见 [资源与限额](/docs/sdk/discovery-usage#智能体资源与成员限额) |
+| `useUsageLimits({ enabled?, days? })` | `/usage/hooks` | 本地成员限额的 data/loading/error/reload；与 ChatProvider 独立，见 [资源与限额](/docs/sdk/discovery-usage#智能体资源与成员限额) |
+| `useKitClient()` | `/providers/kit/react` | 获取 Kit Context 中的 Client，调用会话与文件等 API |
+| `useKitContext()` | `/providers/kit/react` | 读取 KitProvider 提供的 Context |
+| `useIsMobile(bp?)` | `/hooks` | 按断点判断移动布局 |
+| `usePlaza({ category?, q? })` | `/agents/hooks` | 广场条目、精选与热门列表，见 [广场与配额](/docs/sdk/discovery-usage) |
+| `useQuota()` / `useQuotaRequests()` | `/usage/hooks` | 当前身份的月度 Credits 和提额申请，见 [广场与配额](/docs/sdk/discovery-usage) |
+
+无需 React 生命周期的编排见 [Controller](/docs/sdk/use-chat/#无-react-的-chat-controller)；
+审批待办与显式批准/拒绝见 [工具审批](/docs/sdk/tool-approvals)。

@@ -1,0 +1,1218 @@
+// 「智能体资产」配置表单家族聚合样式（CSS Modules / Less）：模版/智能体/环境/文件/
+// 记忆库/密钥库/Skill 的配置表单与字段块共用本文件。颜色一律消费 --kit-* / --ant-*
+// 变量，不写死色值；断点与 Tailwind 同口径（sm 640px / md 768px / xl 1280px）。
+
+/* ============ 表单家族通用层 ============ */
+
+/* 通用辅助小灰字（原 text-xs text-neutral-500） */
+.metaText {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 区块标题（原 text-base font-semibold） */
+.sectionTitle {
+	font-size: 16px;
+	font-weight: 600;
+}
+
+/* 页面标题（原 text-lg font-semibold） */
+.pageTitle {
+	font-size: 18px;
+	font-weight: 600;
+}
+
+/* 页面纵向节奏（原 space-y-4） */
+.pageStack {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+/* 区块纵向节奏（原 space-y-3） */
+.blockStack {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+/* 字段纵向节奏（原 space-y-1） */
+.fieldStack {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+/* 两行节奏（原 space-y-2） */
+.stack2 {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+/* 字段行：两端对齐（原 flex flex-wrap items-center justify-between gap-3） */
+.rowBetween {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+/* 字段行：换行居中（原 flex flex-wrap items-center gap-3） */
+.rowWrap {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+}
+
+/* 工具行：靠左排列（原 flex flex-wrap justify-start gap-3） */
+.rowStart {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	gap: 12px;
+}
+
+/* 标题行：基线对齐（原 flex flex-wrap items-baseline justify-between gap-2） */
+.rowBaseline {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+/* 通用满宽控件 */
+.fullControl {
+	width: 100%;
+}
+
+/* 必填星号（原 ml-1 text-[var(--ant-color-error)]） */
+.requiredStar {
+	margin-left: 4px;
+	color: var(--ant-color-error);
+}
+
+/* 字段错误文案（原 text-[13px] text-[var(--ant-color-error)]） */
+.errorText {
+	font-size: 13px;
+	color: var(--ant-color-error);
+}
+
+/* 12px 错误文案 */
+.errorSmall {
+	font-size: 12px;
+	color: var(--ant-color-error);
+}
+
+/* 纯错误色（无 margin 的星号/图标） */
+.errorColor {
+	color: var(--ant-color-error);
+}
+
+/* 任意位置断行（code 展示长 token） */
+.breakAll {
+	word-break: break-all;
+}
+
+/* 视觉隐藏（sr-only 等价） */
+.srOnly {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}
+
+/* 抽屉/弹窗标题（原 text-base font-semibold 在 Drawer title 内） */
+.drawerTitle {
+	font-size: 16px;
+	font-weight: 600;
+}
+
+/* 抽屉底部操作行 */
+.drawerFooter {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+}
+
+/* 抽屉底部多行包装（错误提示 + 操作行） */
+.drawerFooterStack {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+/* 选择抽屉内容根（fieldset） */
+.pickerFieldset {
+	min-width: 0;
+}
+
+/* 内容根最小宽度（防 flex/grid 溢出） */
+.shrinkRoot {
+	min-width: 0;
+}
+
+/* 靠右操作行（无间距） */
+.rowEnd {
+	display: flex;
+	justify-content: flex-end;
+}
+
+/* 居中加载占位 */
+.loadingRow {
+	display: flex;
+	justify-content: center;
+	padding-block: 24px;
+}
+
+/* 小灰字 + 任意断行 */
+.metaAny {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+	overflow-wrap: anywhere;
+}
+
+/* 13px 辅助说明 */
+.formNote {
+	font-size: 13px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 任意断行 */
+.wrapAnywhere {
+	overflow-wrap: anywhere;
+}
+
+/* 靠右操作行（弹窗 footer，间距 8px） */
+.formActions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+/* 13px 纯字段标签 */
+.fieldLabel {
+	font-size: 13px;
+}
+
+/* 13px 小节标题 */
+.heading13 {
+	font-size: 13px;
+}
+
+/* 禁止收缩 */
+.shrinkZero {
+	flex-shrink: 0;
+}
+
+/* 横排单元格行（原 flex min-w-0 items-center gap-2） */
+.entryRow {
+	display: flex;
+	min-width: 0;
+	align-items: center;
+	gap: 8px;
+}
+
+/* 小间距两端对齐行（原 flex items-center justify-between gap-2） */
+.rowBetweenSm {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+/* 弹性行：占满剩余宽度 */
+.flexFill {
+	min-width: 0;
+	flex: 1 1 0%;
+}
+
+/* 包管理器选择列（1/4 宽） */
+.managerCell {
+	width: 25%;
+	flex-shrink: 0;
+}
+
+/* ============ 环境创建字段（environment-create-fields） ============ */
+
+.createRoot {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 24px;
+}
+
+/* 元数据区：上分隔线 + 大间距 */
+.metadataSection {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 12px;
+	border-top: 1px solid var(--ant-color-border);
+	padding-top: 24px;
+}
+
+/* ============ 环境内联表单（template-environment-form） ============ */
+
+/* 不可完整复制配置的提示面板 */
+.copyIssuesPanel {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	padding: 16px;
+	font-size: 14px;
+}
+
+.copyIssuesList {
+	list-style-type: disc;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding-left: 20px;
+}
+
+/* ============ 记忆条目编辑（template-memory-entries） ============ */
+
+/* 弹窗正文：13px 基准 + 16px 组间距 */
+.dialogBody {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	font-size: 13px;
+}
+
+/* 等宽控件 */
+.monoControl {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* antd link 按钮去内边距贴齐 */
+.linkButton {
+	padding-inline: 0;
+}
+
+/* 标题行内的粗体小节标题 */
+.nameAny {
+	font-weight: 500;
+	overflow-wrap: anywhere;
+}
+
+.body13 {
+	font-size: 13px;
+}
+
+/* 13px 加粗小标题 */
+.formLabel {
+	font-size: 13px;
+	font-weight: 500;
+}
+
+/* 单行截断 */
+.truncate {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 已选文件条（灰底描边 + 弹性占位） */
+.fileChip {
+	display: flex;
+	min-width: 0;
+	flex: 1 1 0%;
+	align-items: center;
+	gap: 10px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	background: var(--kit-bg-subtle);
+	padding: 8px;
+}
+
+/* 可换行的说明文字 */
+.noteAny {
+	white-space: pre-wrap;
+	font-size: 13px;
+	color: var(--ant-color-text-secondary);
+	overflow-wrap: anywhere;
+}
+
+/* ============ 密钥凭据编辑弹窗（template-vault-credential-dialog） ============ */
+
+/* 请求预览盒（灰底小字示例） */
+.previewBox {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	border-radius: 6px;
+	background: var(--kit-bg-subtle);
+	padding: 12px;
+	font-size: 12px;
+}
+
+/* 共享密钥确认盒（灰底描边小字 + 勾选） */
+.acknowledgeBox {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	background: var(--kit-bg-subtle);
+	padding: 12px;
+	font-size: 12px;
+}
+
+/* ============ 资源配置卡骨架（文件/环境/记忆库/密钥库配置卡共用） ============ */
+
+/* 纯次要色（继承字号） */
+.mutedOnly {
+	color: var(--ant-color-text-secondary);
+}
+
+/* 卡内字段区 */
+.configFields {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 16px;
+}
+
+/* 仅复用提示 */
+.referenceNote {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	color: var(--ant-color-text-secondary);
+}
+
+.configRoot {
+	min-width: 0;
+	border-radius: 6px;
+	background: #fff;
+	font-size: 13px;
+}
+
+.configHeader {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 16px;
+}
+
+.configBody {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding: 16px;
+}
+
+/* 卡头提示（继承字号，与 metaText 的 12px 区分） */
+.configHint {
+	color: var(--ant-color-text-secondary);
+}
+
+/* 卡内单个资源的字段卡（入场动画） */
+.resourceCard {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 16px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	padding: 16px;
+	animation: var(--kit-animate-in);
+}
+
+.legendNote {
+	padding-inline: 4px;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 文件配置卡内的文件行 */
+.fileList {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.fileItem {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 8px;
+	animation: var(--kit-animate-in);
+}
+
+.fileCard {
+	width: 100%;
+	min-width: 0;
+}
+
+.fileActions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+/* ============ 智能体基础配置卡（template-agent-configuration） ============ */
+
+/* 带底边线的卡头（标题独立成行） */
+.configHeading {
+	padding: 16px;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.pickerButton {
+	flex-shrink: 0;
+}
+
+.placeholder {
+	color: var(--ant-color-text-secondary);
+}
+
+.versionRow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+}
+
+/* ============ 智能体工具权限表（template-agent-tools-fields） ============ */
+
+.toolsLabel {
+	font-weight: 500;
+}
+
+.toolsBody {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.permissionRow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+}
+
+.permissionSelect {
+	width: 160px;
+}
+
+.toolsHint {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 内置工具权限表 */
+.toolsTableWrap {
+	overflow: hidden;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	background: #fff;
+}
+
+.toolsTable {
+	width: 100%;
+	text-align: left;
+}
+
+.toolsTableHead {
+	background: var(--kit-bg-subtle);
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+.toolsTableTh {
+	white-space: nowrap;
+	padding: 12px;
+	font-weight: 500;
+}
+
+.toolsTableBody {
+	& tr + tr {
+		border-top: 1px solid var(--ant-color-border);
+	}
+}
+
+.toolsTableName {
+	padding: 12px;
+	font-weight: 400;
+	font-size: 13px;
+	overflow-wrap: anywhere;
+}
+
+.toolsTableCell {
+	padding: 12px;
+}
+
+.permissionCellSelect {
+	width: 192px;
+	max-width: 100%;
+}
+
+/* ============ 智能体 MCP 配置字段（template-agent-mcp-fields） ============ */
+
+.mcpRoot {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.mcpHeader {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.mcpIntro {
+	font-size: 13px;
+	color: var(--ant-color-text-secondary);
+}
+
+.mcpList {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.serverCard {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 16px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	padding: 16px;
+}
+
+.removeRow {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+}
+
+/* 字段块：label + 控件 + 错误 */
+.fieldBlock {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	font-size: 13px;
+}
+
+.fieldBlockFlex {
+	min-width: 0;
+	flex: 1 1 0%;
+}
+
+.toolsSection {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.toolRow {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.toolRowMain {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 12px;
+}
+
+.toolCheckbox {
+	padding-bottom: 6px;
+}
+
+.removeButton {
+	margin-bottom: 2px;
+}
+
+/* ============ 智能体版本选择器（template-agent-version-picker） ============ */
+
+.pickerRoot {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.pickerRow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.versionChip {
+	overflow-wrap: anywhere;
+}
+
+.triggerButton {
+	white-space: nowrap;
+}
+
+.statusText {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+.drawerHead {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.drawerAgent {
+	font-weight: 400;
+	font-size: 13px;
+	color: var(--ant-color-text-secondary);
+	overflow-wrap: anywhere;
+}
+
+/* ============ Multi-Agent 模式区（template-agent-multiagent-fields） ============ */
+
+.content {
+	min-width: 0;
+
+	> * + * {
+		margin-block-start: 8px;
+	}
+}
+
+.description {
+	font-size: 12px;
+	color: var(--ant-color-text-tertiary);
+}
+
+/* 展开收起：grid-template-rows 过渡，收起为 0fr、展开为 1fr */
+.collapse {
+	display: grid;
+	transition: grid-template-rows 0.2s ease-out;
+
+	&[data-open="false"] {
+		grid-template-rows: 0fr;
+	}
+
+	&[data-open="true"] {
+		grid-template-rows: 1fr;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+	}
+}
+
+.collapseInner {
+	min-height: 0;
+	overflow: hidden;
+}
+
+/* 子 Agent 选择面板（与版本抽屉 .panel 区分命名） */
+.agentPanel {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	padding: 12px;
+}
+
+.agentHeader {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.agentPanelTitle {
+	font-weight: 500;
+}
+
+.panelCount {
+	color: var(--ant-color-text-tertiary);
+}
+
+.memberList {
+	max-height: 256px;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+
+	> li + li {
+		border-top: 1px solid var(--ant-color-border);
+	}
+}
+
+.memberItem {
+	display: flex;
+	width: 100%;
+	min-width: 0;
+	align-items: center;
+	gap: 12px;
+	padding: 12px;
+	cursor: pointer;
+	transition: background-color 0.2s ease-out;
+
+	&:hover {
+		background: var(--ant-color-fill-quaternary);
+	}
+}
+
+.memberInfo {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.memberName {
+	display: block;
+}
+
+.memberId {
+	display: block;
+	font-size: 12px;
+	color: var(--ant-color-text-tertiary);
+}
+
+.emptyText {
+	color: var(--ant-color-text-tertiary);
+}
+
+/* ============ 已保存版本配置视图（agent-version-configuration-view） ============ */
+
+/* 标题行（flex 内防溢出） */
+.headRow {
+	display: flex;
+	min-width: 0;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.textXs {
+	font-size: 12px;
+}
+
+/* 分区：虚线上分隔，首块无线 */
+.configSection {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 12px;
+	border-top: 1px dashed var(--ant-color-border);
+	padding-block: 16px;
+
+	&:first-child {
+		border-top: 0;
+		padding-top: 0;
+	}
+
+	&:last-child {
+		padding-bottom: 0;
+	}
+}
+
+/* 「版本」分区标题不加粗 */
+.sectionTitlePlain {
+	font-weight: 400;
+}
+
+.sectionTitleMed {
+	font-weight: 500;
+}
+
+/* 未配置占位文字 */
+.plainText {
+	white-space: pre-wrap;
+	color: var(--ant-color-text-secondary);
+	overflow-wrap: anywhere;
+}
+
+/* 模型名展示盒 */
+.modelBox {
+	border: 1px solid var(--ant-color-border);
+	border-radius: 2px;
+	background: var(--kit-bg-subtle);
+	padding: 12px;
+}
+
+/* 工具包配置卡 */
+.toolkitCard {
+	min-width: 0;
+	overflow: hidden;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 2px;
+}
+
+.toolkitHeader {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	background: var(--kit-bg-subtle);
+	padding: 12px;
+}
+
+.toolkitGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+	padding: 12px;
+	font-size: 12px;
+}
+
+.toolkitBody {
+	min-width: 0;
+	border-top: 1px solid var(--ant-color-border);
+}
+
+.toolkitTable {
+	width: 100%;
+	table-layout: fixed;
+	text-align: left;
+	font-size: 12px;
+}
+
+.toolkitThead {
+	background: var(--kit-bg-subtle);
+	color: var(--ant-color-text-secondary);
+}
+
+.toolkitTh {
+	width: 50%;
+	padding-block: 8px;
+	padding-inline: 12px;
+	font-weight: 500;
+}
+
+.toolkitTh25 {
+	width: 25%;
+	padding-block: 8px;
+	padding-inline: 12px;
+	font-weight: 500;
+}
+
+.toolkitTbody {
+	& tr + tr {
+		border-top: 1px solid var(--ant-color-border);
+	}
+}
+
+.toolkitTr {
+	vertical-align: top;
+}
+
+.toolkitRowHead {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding-block: 12px;
+	padding-inline: 12px;
+	font-weight: 400;
+	overflow-wrap: anywhere;
+}
+
+.blockMedium {
+	display: block;
+	font-weight: 500;
+}
+
+.blockMuted {
+	display: block;
+	color: var(--ant-color-text-secondary);
+}
+
+.toolkitTd {
+	padding-block: 12px;
+	padding-inline: 12px;
+}
+
+.toolkitTdAny {
+	padding-block: 12px;
+	padding-inline: 12px;
+	overflow-wrap: anywhere;
+}
+
+/* 小屏才显示的列标题 */
+.toolkitTdLabel {
+	display: block;
+	margin-bottom: 4px;
+	color: var(--ant-color-text-secondary);
+}
+
+.toolkitInherit {
+	display: block;
+	margin-top: 4px;
+	color: var(--ant-color-text-secondary);
+}
+
+.toolkitEmpty {
+	padding: 12px;
+}
+
+/* MCP 服务器卡 */
+.mcpCard {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 12px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 2px;
+	padding: 12px;
+}
+
+/* 技能标签流 */
+.skillList {
+	display: flex;
+	min-width: 0;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.skillChip {
+	display: flex;
+	max-width: 100%;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 2px;
+	background: var(--kit-bg-subtle);
+	padding-block: 8px;
+	padding-inline: 12px;
+}
+
+/* 系统提示词滚动盒 */
+.instructionsBox {
+	max-height: 256px;
+	overflow-y: auto;
+	border-radius: 2px;
+	background: var(--kit-bg-subtle);
+	padding: 12px;
+}
+
+/* 启用状态徽标：base + 启用/禁用色 */
+.badge {
+	display: inline-flex;
+	max-width: 100%;
+	align-items: center;
+	border-radius: 2px;
+	background: var(--kit-bg-subtle);
+	padding-block: 4px;
+	padding-inline: 8px;
+	font-size: 12px;
+	overflow-wrap: anywhere;
+}
+
+.badgeOn {
+	color: var(--ant-color-success);
+}
+
+.badgeOff {
+	color: var(--ant-color-text-secondary);
+}
+
+/* ============ 智能体表单与 Skill 选择（template-agent-form / capability-picker） ============ */
+
+/* 可选行（Skill 候选）：items-start 变体 */
+.choiceRow {
+	display: flex;
+	width: 100%;
+	min-width: 0;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 16px;
+	text-align: left;
+	font-size: 13px;
+	transition: background-color 0.15s ease;
+
+	&:focus-visible {
+		outline: 2px solid var(--ant-color-primary);
+		outline-offset: -2px;
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+}
+
+/* 选中态：主色浅底；未选中 hover 浅灰 */
+.choiceRowOn {
+	background: var(--ant-color-primary-bg);
+}
+
+.choiceRowIdle {
+	&:hover {
+		background: var(--kit-bg-subtle);
+	}
+}
+
+/* 已选 Skill 卡片行 */
+.selectedItemCard {
+	display: flex;
+	min-width: 0;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	padding: 12px;
+}
+
+/* 靠右换行操作组（间距 8px） */
+.actionsWrap {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+/* 来源切换按钮 */
+.sourceTabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.sourceTab {
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	padding-block: 4px;
+	padding-inline: 12px;
+	font-size: 14px;
+	transition:
+		border-color 0.15s ease,
+		color 0.15s ease;
+
+	&[aria-pressed="true"] {
+		border-color: var(--ant-color-primary);
+		color: var(--ant-color-primary);
+	}
+}
+
+/* 候选列表卡：行间分隔线 */
+.choiceListCard {
+	overflow: hidden;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+
+	& li + li {
+		border-top: 1px solid var(--ant-color-border);
+	}
+}
+
+/* 靠右分页行（13px） */
+.rowEnd13 {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 12px;
+	font-size: 13px;
+}
+
+/* 勾选框图标 */
+.checkMark {
+	display: flex;
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 2px;
+	font-size: 12px;
+	color: var(--ant-color-primary);
+}
+
+/* ============ 密钥凭据列表（template-vault-credentials） ============ */
+
+.vaultRoot {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.vaultHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.vaultTitle {
+	font-weight: 500;
+}
+
+.credentialList {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.credentialItem {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 2px;
+	padding: 12px;
+}
+
+.credentialHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.credentialName {
+	min-width: 0;
+	font-weight: 500;
+	word-break: break-all;
+}
+
+.credentialActions {
+	display: flex;
+	flex-shrink: 0;
+	gap: 8px;
+}
+
+/* antd link 按钮去掉内边距贴齐（凭据行） */
+.linkFlushSm {
+	padding-inline: 0;
+}
+
+.credentialMeta {
+	word-break: break-all;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+.emptyNote {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}

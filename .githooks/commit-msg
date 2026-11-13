@@ -1,0 +1,12 @@
+#!/bin/sh
+# 中文 Conventional Commits 校验；存在全局 hook 时先转发（对齐 OpenAgentPack）。
+GLOBAL_HOOK="$HOME/.githooks/commit-msg"
+if [ -x "$GLOBAL_HOOK" ]; then
+  "$GLOBAL_HOOK" "$@" || exit 1
+fi
+msg="$(head -1 "$1")"
+if ! echo "$msg" | grep -Eq '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9-]+\))?!?: .{1,100}$'; then
+  echo "commit-msg: 首行需符合 Conventional Commits：<type>(scope): <描述>，如 feat(server): 增加会话流式路由" >&2
+  exit 1
+fi
+exit 0

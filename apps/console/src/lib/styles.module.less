@@ -1,0 +1,38 @@
+// 管理端共享按钮样式（CSS Modules / Less）：桥接层，颜色消费 antd css-var。
+// 页面迁移到 antd 组件后，对应类随之删除；不要往这里新增类。
+
+/* 主按钮（提交/保存） */
+.primaryButton {
+	border-radius: 6px;
+	background: var(--ant-color-primary);
+	padding-block: 6px;
+	padding-inline: 16px;
+	font-size: 14px;
+	color: #fff;
+	transition: background-color 0.15s ease;
+
+	&:hover {
+		background: var(--ant-color-primary-hover);
+	}
+
+	&:disabled {
+		opacity: 0.5;
+	}
+}
+
+/* 次级按钮（编辑/展开等中性动作） */
+.ghostButton {
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	padding-block: 4px;
+	padding-inline: 12px;
+	font-size: 14px;
+	transition:
+		border-color 0.15s ease,
+		color 0.15s ease;
+
+	&:hover {
+		border-color: var(--ant-color-text);
+		color: var(--ant-color-text);
+	}
+}

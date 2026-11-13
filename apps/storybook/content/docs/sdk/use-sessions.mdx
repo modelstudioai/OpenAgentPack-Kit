@@ -1,0 +1,142 @@
+---
+title: useSessions 会话列表
+description: 查询会话、选择当前会话，以及通过 Client 创建和管理会话
+---
+
+`useSessions(options?)` 来自 `@openagentpack/kit-sdk/sessions/hooks`，可显式传入 `{ client }`，或在兼容 `KitProvider` 内查询会话列表。
+传入 `{ agentSlug }` 时只查询该上架条目的会话；省略时查询当前身份可见的会话。
+`{ limit }` 只控制单页数量（上限 200），不代表完整目录。
+这个 Hook 使用数据 Client；自建后端通过 `createKitClient({ request, operations })` 配置列表等接口，
+将选中 ID 传给 `useChat({ sessionId, provider })`。目录、搜索与首次发送优先复用
+[组件交互与后端调用](/docs/sdk/experience)，不用在页面重写查询和创建流程。
+
+## 何时使用
+
+- 侧栏或会话选择器需要会话列表：hook 提供第一页列表与 `loading` 状态。
+- 新建会话后立即出现在列表：经 `useKitClient()` 创建，成功后 `reload()`。
+- 分组目录与按需翻页：使用 `useSessionDirectory({ client })`；`useSessions` 只负责第一页查询。
+
+## 使用说明
+
+体验页先使用 `client.sessionAgents(signal?)` 枚举本人会话关联的智能体；分组展开后使用
+`client.sessions({ agentSlug, limit: 10, includeArchived: false, pageToken }, signal?)` 按需翻页。
+全局最近同样每页 10 条，省略 `agentSlug`。公开目录 hook 复用这些接口管理分页缓存；
+`useSessionSearch(input, { client })` 查询服务端完整未归档索引并防抖、取消旧请求，已下架智能体的历史入口继续保留。
+需要显式完整读取目录时可用 `client.sessionDirectory(signal?)`，按智能体完整翻页后按活动时间合并。
+
+hook 提供列表，创建操作通过 `useKitClient()` 完成。当前选中的 Session 由页面或路由管理，
+创建成功后调用 `reload()` 刷新列表。
+
+```tsx
+import { useKitClient } from "@openagentpack/kit-sdk/providers/kit/react";
+import { useSessions } from "@openagentpack/kit-sdk/sessions/hooks";
+import { useState } from "react";
+
+export function SessionPicker({
+  agentSlug,
+  activeSessionId,
+  onSelect,
+}: {
+  agentSlug: string;
+  activeSessionId: string | null;
+  onSelect: (sessionId: string) => void;
+}) {
+  const client = useKitClient();
+  const { sessions, loading, reload } = useSessions({ agentSlug });
+  const [creating, setCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function create() {
+    setCreating(true);
+    setError(null);
+    try {
+      const session = await client.createSession({ agentSlug });
+      onSelect(session.session_id);
+      reload();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "创建会话失败");
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  return (
+    <nav aria-label="会话列表">
+      <button type="button" disabled={creating} onClick={() => void create()}>
+        {creating ? "正在创建…" : "新建会话"}
+      </button>
+      {loading && <p role="status">正在加载会话…</p>}
+      {error && <p role="alert">{error}</p>}
+      <ul>
+        {sessions.map((session) => (
+          <li key={session.session_id}>
+            <button
+              type="button"
+              aria-current={session.session_id === activeSessionId ? "true" : undefined}
+              onClick={() => onSelect(session.session_id)}
+            >
+              {session.title || "未命名会话"}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+```
+
+将选中的 id 传给 [useChat](/docs/sdk/use-chat)，即可订阅消息与执行状态。
+`agentSlug` 是 Kit 上架条目的 slug，不是 Provider 的 `agent_id`。
+
+## 代码演示
+
+### 会话列表与新建
+
+<Showcase name="sessions" />
+
+mock KitClient 走真实合同：hook 挂载即查询，`createSession` 成功后 `reload()`，选中状态由页面保存。
+
+## API
+
+### useSessions(options?)
+
+| 返回值 | 说明 |
+| --- | --- |
+| `sessions` | `SessionSummary[]`，包含 `session_id`、`agent_slug`、可选标题与状态等索引信息 |
+| `loading` | 当前列表请求是否尚未结束 |
+| `reload()` | 发起一次重新查询，返回 `void`；通过 `loading` 观察完成状态 |
+
+当前 hook 只加载列表的第一页，没有分页、选中会话、多会话消息缓存或 CRUD 方法；
+`limit` 最大 200，完整分页请使用 Client 的 `pageToken` 与 `nextPageToken`。
+列表请求失败时会把 `sessions` 设为空数组，不返回 `error`，因此空列表不能用来区分
+“没有会话”和“加载失败”。需要独立错误提示、分页或更复杂缓存时，通过 Client 查询并由页面保存状态。
+
+### Client 管理接口
+
+| 操作 | 调用方式 |
+| --- | --- |
+| 会话智能体目录 | `client.sessionAgents(signal?)`，返回本人未归档会话关联的全部智能体 slug |
+| 完整两级目录 | `client.sessionDirectory(signal?)`，返回按最近活动合并的全部未归档会话摘要 |
+| 查询与分页 | `client.sessions({ agentSlug, limit, pageToken, includeArchived }, signal?)`，返回 `{ sessions, nextPageToken }` |
+| 创建会话 | `client.createSession({ agentSlug, title?, files? })` |
+| 查询详情 | `client.session(sessionId)` |
+| 修改标题 | `client.renameSession(sessionId, title)` |
+| 生成归档或删除计划 | `client.sessionPlan(sessionId, "archive" / "delete")` |
+| 确认后归档 | `client.archiveSession(sessionId, { plan_id, confirm_token })` |
+| 确认后删除 | `client.deleteSession(sessionId, { plan_id, confirm_token })` |
+
+翻页时把上一页的 `nextPageToken` 传入下一次请求；为 `null` 时已无下一页。
+Client 操作成功后，由调用方刷新列表并更新选中状态。
+`includeArchived` 缺省为 true；设置为 false 时在服务端分页前排除归档。
+翻页时保持智能体与归档筛选条件不变，否则游标会被拒绝；同活动时间按会话 ID 倒序稳定分页。
+完整目录查询支持取消，任一组失败或游标循环都会拒绝，不返回部分目录。
+
+归档与删除需先展示计划，再由用户在确认界面明确确认，最后回传该次计划的
+`plan_id` 和 `confirm_token`。删除会话使用 AlertDialog；不要在拿到计划后自动执行。
+完整接口说明见[接口总览](/docs/server-api)。
+
+本地成员的会话删除前，服务端先确认执行结束并保存最新用量快照；任何停止或保存失败都
+保留会话并提示重试。删除失败不代表执行仍在运行；远端结果未确认时禁止新发送和审批，
+应重新生成计划并由用户确认重试。成功后仍保留成员用量统计，普通会话列表不展示该会话。
+中断请求已发出后同样保留写保护；后续 idle 或采集失败不会自动恢复发送，防止迟到的旧
+中断作用于新执行。删除网络错误后仍能查到会话，也不能作为解除保护的依据。

@@ -1,0 +1,506 @@
+// 「成员管理」聚合样式（CSS Modules / Less）：成员列表、会话用量、创建成员、
+// 指标卡、采集状态与深链路由共用本文件。颜色一律消费 --kit-* / --ant-* 变量，
+// 不写死色值；断点与 Tailwind 同口径（sm 640px / md 768px / xl 1280px）。
+
+/* ============ 通用（列表页 / 会话用量页 / 创建页共用） ============ */
+
+.stack {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+/* 页头：标题行（会话用量页与成员列表页共用） */
+.pageHeader {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+/* 页头：创建页的标题行垂直居中变体 */
+.pageHeaderCenter {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.headerLeft {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.pageTitle {
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.pageSub {
+	margin-top: 4px;
+	font-size: 14px;
+	color: var(--ant-color-text-secondary);
+}
+
+.mutedNote {
+	font-size: 14px;
+	color: var(--ant-color-text-secondary);
+}
+
+.mutedText {
+	color: var(--ant-color-text-secondary);
+}
+
+.tabularNum {
+	font-variant-numeric: tabular-nums;
+}
+
+.loadingRow {
+	display: flex;
+	justify-content: center;
+	padding-block: 32px;
+}
+
+/* 深链路由页的加载占位：更高留白 */
+.loadingRowTall {
+	display: flex;
+	justify-content: center;
+	padding-block: 40px;
+}
+
+/* ============ 成员列表页（members-page） ============ */
+
+/* 列表工具行 */
+.controlsRow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.searchForm {
+	display: flex;
+	min-width: 0;
+	flex: 1 1 0%;
+	align-items: center;
+	gap: 8px;
+}
+
+/* 搜索框胶囊圆角（对齐 bailian-web FilterBar search）：input 前缀抬高优先级，
+   否则被 antd 运行时注入的 :where(hash).ant-input-outlined 圆角规则后插反杀 */
+input.searchInput {
+	max-width: 384px;
+	border-radius: 100px;
+}
+
+.searchSubmit {
+	flex-shrink: 0;
+}
+
+.pager {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 12px;
+	font-size: 14px;
+}
+
+/* 表格单元格 */
+.nameText {
+	font-weight: 500;
+}
+
+.monoText {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.monoSmall {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 12px;
+}
+
+.nowrapMuted {
+	white-space: nowrap;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 空态 */
+.emptyWrap {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+	padding-block: 24px;
+}
+
+.emptyHint {
+	margin-top: 4px;
+	font-size: 12px;
+	color: var(--ant-color-text-quaternary);
+}
+
+/* 身份确认中 */
+.pendingRow {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 14px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* ============ 会话用量页（member-usage-page） ============ */
+
+/* Agent 筛选字段（自绘骨架） */
+.agentFilterLabel {
+	display: block;
+	width: 224px;
+	font-size: 14px;
+}
+
+.agentFilterSelect {
+	margin-top: 4px;
+	width: 100%;
+}
+
+/* 汇总行 */
+.summaryRow {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	font-size: 14px;
+	color: var(--ant-color-text-secondary);
+}
+
+.summaryNote {
+	font-size: 14px;
+	color: var(--ant-color-text-secondary);
+}
+
+.metricsNote {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 会话明细区 */
+.detailStack {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.detailHeader {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.detailTitle {
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.detailControls {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+}
+
+.sessionPicker {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.sessionSelect {
+	width: 384px;
+}
+
+.sessionPager {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	font-size: 13px;
+}
+
+/* 选中会话概览 */
+.cardsStack {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.sessionHead {
+	min-width: 0;
+}
+
+.sessionTitle {
+	font-weight: 600;
+	font-size: var(--kit-text-body);
+}
+
+.sessionMeta {
+	margin-top: 2px;
+	word-break: break-all;
+	font-size: var(--kit-text-caption);
+	color: var(--kit-fg-muted);
+}
+
+.cardGrid {
+	display: grid;
+	gap: 12px;
+	grid-template-columns: 1fr;
+}
+
+.statCardSpan3 {
+	grid-column: span 3 / span 3;
+}
+
+.statPair {
+	display: flex;
+	flex-wrap: wrap;
+	column-gap: 32px;
+	row-gap: 12px;
+}
+
+/* 模型/工具遥测区：加载提示悬浮右上角，不参与布局 */
+.telemetryRoot {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.telemetryLoading {
+	position: absolute;
+	top: 0;
+	right: 0;
+	font-weight: 400;
+	font-size: 12px;
+	color: var(--kit-fg-muted);
+}
+
+.telemetryTitle {
+	margin-bottom: 8px;
+	font-weight: 500;
+	font-size: 12px;
+}
+
+.telemetryEmpty {
+	font-size: 12px;
+	color: var(--kit-fg-muted);
+}
+
+.telemetryPager {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 12px;
+	font-size: 12px;
+}
+
+/* ============ 创建成员页（create-member-page） ============ */
+
+.formSections {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.fieldGrid {
+	display: grid;
+	gap: 16px;
+	grid-template-columns: 1fr;
+}
+
+/* 单个字段行：label + 控件 + hint 纵排 */
+.fieldRow {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.fieldHint {
+	margin-top: 4px;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+.fieldError {
+	margin-top: 4px;
+	font-size: 12px;
+	color: var(--ant-color-error);
+}
+
+.requiredMark {
+	color: var(--ant-color-error);
+}
+
+.optionalTag {
+	color: var(--ant-color-text-secondary);
+}
+
+.sectionLabel {
+	margin-bottom: 8px;
+}
+
+/* 静态只读字段（认证方式） */
+.staticField {
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	background: var(--kit-bg-subtle);
+	padding-block: 8px;
+	padding-inline: 12px;
+}
+
+.passwordSection {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.legendTitle {
+	margin-bottom: 12px;
+}
+
+.autoPasswordHint {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 创建成功页 */
+.createdGrid {
+	display: grid;
+	gap: 12px;
+	grid-template-columns: 1fr;
+}
+
+.monoValue {
+	margin-top: 4px;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.termValue {
+	margin-top: 4px;
+}
+
+.passwordPanel {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	background: var(--kit-bg-subtle);
+	padding: 16px;
+}
+
+.panelTitle {
+	font-weight: 600;
+}
+
+.passwordText {
+	word-break: break-all;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 16px;
+}
+
+/* 视觉隐藏（fieldset legend） */
+.srOnly {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}
+
+/* ============ 采集状态与指标卡 ============ */
+
+/* 用量采集状态：单行结构（状态 + 时间同行，配合表格 td 的 60 行高） */
+.statusRoot {
+	display: flex;
+	align-items: baseline;
+	gap: 6px;
+	min-width: 0;
+	color: var(--ant-color-text-secondary);
+}
+
+.statusTime {
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+.metricsGrid {
+	display: grid;
+	gap: 12px;
+	grid-template-columns: 1fr;
+}
+
+.metricCard {
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	background: var(--kit-bg-subtle);
+	padding: 12px;
+}
+
+.metricLabel {
+	color: var(--ant-color-text-secondary);
+}
+
+.metricValue {
+	margin-top: 8px;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.metricHint {
+	margin-top: 4px;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* ============ 深链路由页（member-usage-route） ============ */
+
+.routeRoot {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+/* ============ 响应式（sm 640 / md 768 / xl 1280） ============ */
+
+@media (min-width: 640px) {
+	.createdGrid,
+	.fieldGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.cardGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.metricsGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1280px) {
+	.cardGrid {
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+	}
+
+	.metricsGrid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}

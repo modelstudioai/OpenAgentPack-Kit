@@ -1,0 +1,75 @@
+// 「目录」聚合样式（CSS Modules / Less）：上架展示字段、广场分类与远端资源选择器
+// 共用本文件。颜色一律消费 --ant-* 变量，不写死色值。
+
+.requiredStar {
+	margin-left: 4px;
+	color: var(--ant-color-error);
+}
+
+.fullControl {
+	width: 100%;
+}
+
+/* 展示字段的辅助说明（agent-presentation-fields 示例问题弹窗） */
+.hintText {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* ============ 远端资源选择器（remote-resource-picker） ============ */
+
+/* 下拉浮层内的加载/错误/空态块 */
+.pickerLoading {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding-block: 12px;
+	padding-inline: 12px;
+	font-size: 14px;
+	color: var(--ant-color-text-secondary);
+}
+
+.pickerErrorBlock {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding-block: 12px;
+	padding-inline: 12px;
+	font-size: 14px;
+}
+
+.pickerErrorText {
+	color: var(--ant-color-error);
+	overflow-wrap: anywhere;
+}
+
+.pickerEmpty {
+	padding-block: 12px;
+	padding-inline: 12px;
+	font-size: 14px;
+	color: var(--ant-color-text-secondary);
+}
+
+/* 选项渲染：名称 + 可选 ID/描述 */
+.optionDetail {
+	padding-block: 2px;
+}
+
+.optionName {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.optionId {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}
+
+.optionDetailText {
+	font-size: 12px;
+	color: var(--ant-color-text-secondary);
+}

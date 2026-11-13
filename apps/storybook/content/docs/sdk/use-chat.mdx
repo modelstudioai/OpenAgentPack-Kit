@@ -1,0 +1,196 @@
+---
+title: useChat 会话交互
+description: 订阅消息、发送与停止，以及连接状态和工具审批
+---
+
+`useChat(sessionId)` 来自 `@openagentpack/kit-sdk/chat/hooks`，把 core Chat 的连接、历史回放、消息状态与
+请求编排绑定到 React；Provider 定义事件到消息的转换，Chat 在快照重建时调用并保存结果。默认入口在
+`<KitProvider client={client}>` 内使用，Client 初始化见 [Client 接入](/docs/sdk/client)；自建百炼
+后端改用 `useChat({ sessionId, provider })`，返回字段与操作保持一致，见
+[自建后端](/docs/sdk/custom-backend)。给 coding agent 的英文工作步骤与可复用示例见
+[use-kit-chat Skill](/docs/skill/use-kit-chat)。
+
+## 何时使用
+
+体验页和自建后端示例统一采用 `useChat({ sessionId, provider })`。
+对标准事件后端，先使用
+[`createSessionEventChatProvider`](/docs/sdk/custom-backend#与真实体验页一致的接入)
+配置实际接口；示例 Kit Server 也走这条路径。Provider 按后端与身份绑定保持稳定，
+不得每次 render 创建。默认 `useChat(sessionId)` 继续服务已有 KitClient 应用。
+
+- React 页面里订阅一个会话：历史回放、实时事件与乐观消息归并成可直接渲染的 `messages`。
+- 需要跟随 `phase` / `connection` 渲染连接与执行状态、停止按钮或工具审批入口。
+- 无 React 宿主或需要自管订阅生命周期时，改用 `createChatController`。
+
+## 使用说明
+
+### 发送与停止
+
+`send` 内部先等待流订阅就绪；resolve 表示消息已受理，回复内容继续经 SSE 到达，不表示回答完成。
+
+| 规则 | 行为 |
+| --- | --- |
+| 草稿 | 成功后只清除已发送的文本；失败时保留草稿，由用户决定下一步 |
+| `submitDisabled` | 只禁止发送（按钮与回车），输入仍可编辑 |
+| `stop()` | 请求远端中断，返回后保持 `stopping`，直到 Provider 事件确认结束 |
+| 自动重发 | 连接恢复不会自动重发消息与审批 |
+
+展示工具批准/拒绝入口见 [工具审批](/docs/sdk/tool-approvals)。
+
+### 会话切换
+
+切换 `sessionId` 或显式 `provider` 会释放旧 controller 并连接新会话，卸载组件同样清理；这只是连接
+切换，不等于向 Provider 发出停止请求。Provider 在应用初始化或 `useState` 初始化器中创建一次并保持
+稳定，同一页面由一个 `useChat` 实例提供状态，结果传给消息、输入与审批组件。
+
+刚创建会话并写入 React 状态后，在同一处理函数里指定新会话发送，避免闭包里的旧 ID：
+
+```tsx
+const session = await client.createSession({ agentSlug });
+await chat.send(text, { sessionId: session.session_id });
+```
+
+默认会话创建与列表管理见 [useSessions](/docs/sdk/use-sessions)；自建模式调用自己的创建接口，把真实
+Session ID 传给 Hook，不需要实现完整 KitClient。
+
+## 代码演示
+
+### 订阅与发送
+
+<Showcase name="use-chat" />
+
+状态行读 hook 的 `connection` / `phase` / `canSend` / `turnRunning`；演示 Provider 是脚本化 mock，
+真实接入直接传 KitClient 或 [自建后端](/docs/sdk/custom-backend) 实例。
+
+### 状态与工具审批
+
+<Showcase name="tool-approvals" />
+
+进入 `requires_action` 时暂停发送并渲染审批卡；完整审批流见[工具审批](/docs/sdk/tool-approvals)。
+
+### 无 React：Chat Controller
+
+<Showcase name="controller" />
+
+`connect()` 建立订阅，`send()` 提交后用户消息回显并从局部快照更新到完整，主会话 `idle` 结束本轮；
+完整接线与 API 见下方[无 React 的 Chat Controller](#无-react-的-chat-controller)。
+
+## API
+
+### useChat(sessionId | options)
+
+```ts
+function useChat(sessionId: string | null): UseChatResult
+function useChat(options: UseChatOptions): UseChatResult
+```
+
+`UseChatOptions = { sessionId: string | null, provider: ChatProvider }`：传入 `null` 表示尚未选择
+会话，不建立订阅；显式 Provider 优先于 Context，无需 KitProvider，默认入口缺 Context 会报错。
+
+| 字段或方法 | 用途 |
+| --- | --- |
+| `messages` | 主会话消息，已经过历史与实时事件归并，可直接交给 `MessageList` |
+| `threads` | 按线程 id 分组的子线程消息 |
+| `multiAgent` | 原生 Chat 的线程摘要、选择、加载/错误/分页状态与动作，传给 `<Chat multiAgent={chat.multiAgent} />` |
+| `artifacts` | 从事件提取的文件描述；由 Kit Server 或自建后端提供下载 |
+| `phase` | `idle`、`running`、`requires_action`、`stopping`、`failed` 或 `interrupted` |
+| `connection` | `disconnected`、`connecting`、`connected` 或 `reconnecting` |
+| `connected` | `connection === "connected"` 的便捷布尔值 |
+| `canSend` | 当前连接与执行状态是否允许发送普通消息 |
+| `turnRunning` | 当前 Turn 尚在运行、等待工具审批或等待停止确认 |
+| `streamError` | 流错误 `{ code, message }`，无错误时为 `null` |
+| `send(text, options?)` | 返回 `Promise<void>`；`options.sessionId` 指定刚创建的会话，`attachments` 与 `skills` 随消息提交 |
+| `stop()` | 请求中断当前执行，返回 `Promise<void>` |
+| `approvals` | 当前有效批次的工具请求及其提交状态 |
+| `refreshApprovals()` | 重新查询当前审批状态，返回 `Promise<void>` |
+| `submitApproval(decision)` | 提交单项允许或拒绝，返回 `Promise<void>` |
+| `setMessageFiles(entries)` | 注入会话详情的 message_files 关联，刷新后历史用户气泡据此补附件分片 |
+
+## 常见问题
+
+### connection 和 phase 有什么区别？
+
+`connection` 描述订阅连接，`phase` 描述百炼执行进度。断线不表示执行结束；`requires_action` 仍属于
+当前 Turn，不能把它视为普通的空闲状态。
+
+### stop() 之后为什么还是 stopping？
+
+`stop()` 只是请求中断；Provider 事件确认本轮结束后，`phase` 才回到 `idle` 并恢复下一轮交互。
+
+### 断线后乐观消息还在吗？
+
+在。断流后重建历史会保留尚未回显的乐观消息及其发送状态；回放发送前的旧 `idle` 不会重新开放发送，
+Provider 确认本轮完成后才恢复下一轮交互。
+
+### 能直接修改或重新生成消息吗？
+
+不能。当前没有公开的 `setMessages`、`removeMessage`、编辑重发或重新生成 API，也没有内置请求队列。
+消息由 Provider 事件重建，累计快照可能替换或删除分片，自定义消息渲染使用 SDK 提供的稳定分片 id；
+多会话缓存、选中状态与草稿保留策略由页面管理。
+
+## 无 React 的 Chat Controller
+
+同一会话编排可通过 `@openagentpack/kit-sdk/chat` 的 `createChatController` 独立使用（演示见上方
+[无 React：Chat Controller](#无-reactchat-controller)）。它持有状态、重连和会话动作；宿主负责订阅
+和释放，React 页面通常继续使用 `useChat`。更低层的 `createSessionStore(sessionId, options)` 接受
+`SessionStoreOptions.transformMessage`，省略时采用默认转换。独立 Store 不建立连接，调用方需要自行
+通过 `applyEvent` 交付事件并维护生命周期；通常使用 Controller 即可，下面的 `createLocalStore` 仅
+展示这一可选入口。
+
+{/* skill-example: use-kit-chat/examples/controller.ts */}
+
+```ts
+import {
+	createChatController,
+	createSessionStore,
+	type SessionSnapshot,
+	type SessionStoreOptions,
+} from "@openagentpack/kit-sdk/chat";
+import type { ChatProvider } from "@openagentpack/kit-sdk/providers";
+
+// This owner is independent of React and must be disposed by its host.
+export function observeSession(
+	provider: ChatProvider,
+	sessionId: string,
+	onChange: (snapshot: SessionSnapshot) => void,
+) {
+	const controller = createChatController(provider, sessionId);
+	const unsubscribe = controller.subscribe(() => onChange(controller.getSnapshot()));
+	const dispose = () => {
+		unsubscribe();
+		controller.dispose();
+	};
+	const ready = controller.connect().catch((error) => {
+		dispose();
+		throw error;
+	});
+	return { controller, ready, dispose };
+}
+
+// Lower-level alternative: this host must feed SDK SessionEvent snapshots through
+// applyEvent and manage lifecycle itself. Ordinary chat integrations use the owner above.
+export function createLocalStore(sessionId: string, provider: ChatProvider) {
+	const options: SessionStoreOptions = { transformMessage: provider.transformMessage?.bind(provider) };
+	return createSessionStore(sessionId, options);
+}
+```
+
+{/* /skill-example */}
+
+`connect()` 等待完整重建后的 ready，`send()` 等待消息受理；二者都不表示回答完成。
+`dispose()` 取消本地订阅，`stop()` 请求远端停止。执行是否结束仍观察快照的 `phase`。
+Provider 可直接传 KitClient，自建后端传 [createBailianChatProvider](/docs/sdk/custom-backend)
+返回的实例。
+
+| 方法或属性 | 说明 | 类型 |
+| --- | --- | --- |
+| `connect()` | 建立订阅，resolve 于回放结束的 ready；不表示一轮回答完成 | `() => Promise<void>` |
+| `send(text, options?)` | 内部先等 `connect()`，resolve 于服务端受理消息；不表示回答完成 | `(text: string, options?) => Promise<void>` |
+| `stop()` | 请求中断当前执行 | `() => Promise<void>` |
+| `subscribe(listener)` | 快照变化时通知，返回退订函数 | `(listener: () => void) => () => void` |
+| `getSnapshot()` | 读取当前快照 | `() => ChatSnapshot` |
+| `refreshApprovals()` / `submitApproval(decision)` | 工具审批动作，语义同 [工具审批](/docs/sdk/tool-approvals) | `() => Promise<void>` |
+| `dispose()` | 关闭订阅并释放状态，宿主负责调用 | `() => void` |
+| `connected` | 订阅是否就绪 | `boolean` |
+
+快照字段（`phase` / `connection` / `canSend` / `messages` 等）与上文 `useChat` 返回值一致。

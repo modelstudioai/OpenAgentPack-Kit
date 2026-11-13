@@ -1,0 +1,532 @@
+[
+	{
+		"name": "createSessionEventChatProvider",
+		"export": "createSessionEventChatProvider",
+		"module": "providers/session-events",
+		"description": "Connect a backend that emits standard SessionEvent snapshots and documented lifecycle frames through configurable HTTP operations.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/normalized-provider.ts",
+		"notes": [
+			"Web and self-owned backends use this same public factory; paths, identity headers and JSON envelopes are application configuration.",
+			"Requires reset/ready/event/ping/done/error control frames; it does not parse original Bailian deltas.",
+			"Defaults: connectTimeoutMs 30000, idleTimeoutMs 45000. An unexpected EOF remains retryable.",
+			"Protocol version headers are explicit request configuration. Writes are never automatically retried."
+		]
+	},
+	{
+		"name": "SessionEventChatProviderOptions",
+		"export": "SessionEventChatProviderOptions",
+		"module": "providers/session-events",
+		"description": "Injected RequestClient, one stream operation, four required mutations/queries, optional thread queries and message conversion.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/normalized-provider.ts"
+	},
+	{
+		"name": "SessionEventStreamOperation",
+		"export": "SessionEventStreamOperation",
+		"module": "providers/session-events",
+		"description": "Build the subscription path and request from Session identity and an opaque update cursor.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/normalized-provider.ts"
+	},
+	{
+		"name": "BackendOperation",
+		"export": "BackendOperation",
+		"module": "providers",
+		"description": "Typed backend request construction and response mapping executed once by the shared Request layer.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/normalized-provider.ts"
+	},
+	{
+		"name": "BackendRequestContext",
+		"export": "BackendRequestContext",
+		"module": "providers",
+		"description": "Provider-owned cancellation propagated through request construction and response mapping.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/normalized-provider.ts"
+	},
+	{
+		"name": "BackendRequestSpec",
+		"export": "BackendRequestSpec",
+		"module": "providers",
+		"description": "A backend path and optional RequestInit whose signal is owned by the Provider.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/normalized-provider.ts"
+	},
+	{
+		"name": "createSseStream",
+		"export": "createSseStream",
+		"module": "stream",
+		"description": "Decode an existing byte stream into raw SSE frames without network or business conversion.",
+		"doc": "apps/storybook/content/docs/sdk/stream.mdx",
+		"example": "examples/sse-stream.ts",
+		"notes": [
+			"Use for await; data remains a string and the Provider validates its business meaning.",
+			"Defaults: utf8Fatal false; flushOnEnd true; no frame limit unless maxFrameChars is supplied.",
+			"Cancellation, early iterator exit, and parse failure release the reader. EOF is not Agent execution completion."
+		]
+	},
+	{
+		"name": "SseStreamOptions",
+		"export": "SseStreamOptions",
+		"module": "stream",
+		"description": "Cancellation, UTF-8 strictness, frame size, comment notification and tail-frame delivery.",
+		"doc": "apps/storybook/content/docs/sdk/stream.mdx",
+		"example": "examples/sse-stream.ts"
+	},
+	{
+		"name": "SseStreamError",
+		"export": "SseStreamError",
+		"module": "stream",
+		"description": "Safe decoding or framing failure, distinct from a reader transport failure.",
+		"doc": "apps/storybook/content/docs/sdk/stream.mdx",
+		"example": "examples/sse-stream.ts",
+		"notes": [
+			"Providers decide whether failures are retryable; malformed framing is not a successful completion."
+		]
+	},
+	{
+		"name": "createRequest",
+		"export": "createRequest",
+		"module": "request",
+		"description": "Create an independent HTTP client that composes SSE reading with createSseStream.",
+		"doc": "apps/storybook/content/docs/sdk/request.mdx",
+		"example": "examples/request.ts",
+		"notes": [
+			"No automatic retries, timeouts, Kit protocol header or Content-Type.",
+			"Application identity headers are resolved for each request; per-request headers take precedence."
+		]
+	},
+	{
+		"name": "RequestClient",
+		"export": "RequestClient",
+		"module": "request",
+		"description": "Response, JSON, raw SSE and URL methods for an application backend.",
+		"doc": "apps/storybook/content/docs/sdk/request.mdx",
+		"example": "examples/request.ts",
+		"notes": [
+			"response hands body ownership to its consumer; stream releases it when iteration ends.",
+			"json parses JSON without validating its business schema; HTTP 204 returns undefined."
+		]
+	},
+	{
+		"name": "RequestOptions",
+		"export": "RequestOptions",
+		"module": "request",
+		"description": "Explicit base URL, asynchronous HeadersInit, injected fetch and safe HTTP error mapping.",
+		"doc": "apps/storybook/content/docs/sdk/request.mdx",
+		"example": "examples/request.ts",
+		"notes": [
+			"Provider credentials remain on the backend.",
+			"mapHttpError returns an Error, not an arbitrary backend body."
+		]
+	},
+	{
+		"name": "ChatProvider",
+		"export": "ChatProvider",
+		"module": "providers",
+		"description": "Frontend adapter with five required Session operations, optional thread queries and message transformation.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/normalized-provider.ts",
+		"notes": [
+			"This contract connects the existing Bailian upstream; it is not a second provider abstraction.",
+			"Session creation/listing and file upload/download are outside this contract.",
+			"Each stream invocation manages one connection; the Controller owns retry scheduling.",
+			"Chat owns the event ledger and returned messages; an omitted strategy uses transformSessionEvent."
+		]
+	},
+	{
+		"name": "ChatProvider.stream",
+		"export": "ChatProvider",
+		"member": "stream",
+		"module": "providers",
+		"description": "Open one abortable persistent subscription delivering SessionEvent snapshots and lifecycle callbacks.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/normalized-provider.ts",
+		"notes": [
+			"Announce ready only after authoritative history and live updates are reconciled.",
+			"Do not reconnect internally or use a business event ID as an update cursor.",
+			"Unexpected EOF is a recoverable transport failure, not business completion."
+		]
+	},
+	{
+		"name": "ChatProvider.sendMessage",
+		"export": "ChatProvider",
+		"member": "sendMessage",
+		"module": "providers",
+		"description": "Submit the text and client identity once and return the actual acceptance response.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/backend-http.ts",
+		"notes": [
+			"Preserve client_message_id and event_ids for optimistic message reconciliation."
+		]
+	},
+	{
+		"name": "ChatProvider.interrupt",
+		"export": "ChatProvider",
+		"member": "interrupt",
+		"module": "providers",
+		"description": "Request remote interruption; subscription cancellation alone does not interrupt execution.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/backend-http.ts"
+	},
+	{
+		"name": "ChatProvider.toolApprovals",
+		"export": "ChatProvider",
+		"member": "toolApprovals",
+		"module": "providers",
+		"description": "Retrieve current pending batch/calls and complete frozen tool arguments.",
+		"doc": "apps/storybook/content/docs/sdk/tool-approvals.mdx",
+		"example": "examples/backend-http.ts",
+		"notes": [
+			"Historical requests alone must not activate a current approval."
+		]
+	},
+	{
+		"name": "ChatProvider.submitToolApproval",
+		"export": "ChatProvider",
+		"member": "submitToolApproval",
+		"module": "providers",
+		"description": "Submit one real allow or deny decision after backend ownership and pending-state validation.",
+		"doc": "apps/storybook/content/docs/sdk/tool-approvals.mdx",
+		"example": "examples/backend-http.ts",
+		"notes": [
+			"No automatic POST retries; refresh after an uncertain response before renewed user confirmation."
+		]
+	},
+	{
+		"name": "ChatProvider.transformMessage",
+		"export": "ChatProvider",
+		"member": "transformMessage",
+		"module": "providers",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/message-transform.ts",
+		"description": "Optional synchronous event-to-message strategy invoked by Chat while rebuilding the latest snapshots.",
+		"notes": [
+			"Omission preserves the default transformSessionEvent behavior.",
+			"Do not hold cross-Session messages in the Provider or treat cumulative snapshots as new deltas."
+		]
+	},
+	{
+		"name": "transformSessionEvent",
+		"export": "transformSessionEvent",
+		"module": "messages",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/message-transform.ts",
+		"description": "Default pure SessionEvent-to-ChatMessage strategy shared by the Kit and raw Bailian Providers.",
+		"notes": [
+			"Use the supplied identity to preserve stable message and part IDs.",
+			"Changes only presentation; Chat retains execution, optimistic reconciliation, approval, and reconnect state.",
+			"This function does not parse raw Bailian SSE or load the SDK normalizer."
+		]
+	},
+	{
+		"name": "MessageTransformer",
+		"export": "MessageTransformer",
+		"module": "messages",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/message-transform.ts",
+		"description": "Synchronous message transformation function, without persistent state or network access."
+	},
+	{
+		"name": "MessageTransformInput",
+		"export": "MessageTransformInput",
+		"module": "messages",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/message-transform.ts",
+		"description": "Current-thread temporary messages, one latest SessionEvent snapshot, and its stable Chat-assigned identity.",
+		"notes": [
+			"The array belongs to the current reconstruction; do not retain it after the call or mutate the event."
+		]
+	},
+	{
+		"name": "MessageTransformResult",
+		"export": "MessageTransformResult",
+		"module": "messages",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/message-transform.ts",
+		"description": "The updated or replacement message array and optional artifacts, owned by Chat after return.",
+		"notes": [
+			"Preserve message and part IDs and reconciliation fields when adapting the default result."
+		]
+	},
+	{
+		"name": "createKitChatProvider",
+		"export": "createKitChatProvider",
+		"module": "providers/kit",
+		"description": "Wrap an existing KitClient with the default transformSessionEvent strategy, preserving request paths, cursors, and retry behavior.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/kit-client-provider.ts"
+	},
+	{
+		"name": "StreamSessionOptions",
+		"export": "StreamSessionOptions",
+		"module": "providers",
+		"description": "Abort signal, optional opaque replay cursor, and reset/event/ready/done/ping callbacks.",
+		"doc": "apps/storybook/content/docs/sdk/stream.mdx",
+		"example": "examples/normalized-provider.ts",
+		"notes": [
+			"onEvent receives cumulative SDK snapshots, including updates to existing event IDs.",
+			"onReset starts reconstruction and onReady commits its complete authoritative result.",
+			"onDone is explicit transport termination; onPing signals transport liveness."
+		]
+	},
+	{
+		"name": "createBailianChatProvider",
+		"export": "createBailianChatProvider",
+		"module": "providers/bailian",
+		"description": "Adapt six required and two optional thread operations through RequestClient into ChatProvider.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/raw-bailian-provider.ts",
+		"notes": [
+			"Requires the SDK session-events public normalizer. Kit Server thread queries additionally require the new SDK thread APIs; the local candidate must be published and pinned before deployment.",
+			"Kit owns framing and recovery; SDK owns cumulative event conversion.",
+			"Subscription and message submission are separate requests, not one POST returning a single response stream.",
+			"Uses transformSessionEvent for presentation; SDK normalization remains a separate step."
+		]
+	},
+	{
+		"name": "BailianChatProviderOptions",
+		"export": "BailianChatProviderOptions",
+		"module": "providers/bailian",
+		"description": "Required RequestClient and six buildRequest/mapResponse operations with bounded recovery settings.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/raw-bailian-provider.ts",
+		"notes": [
+			"Defaults: connectTimeoutMs 30000; idleTimeoutMs 45000; maxBufferedFrames 1024; maxBufferedBytes 8388608; maxHistoryEvents 10000.",
+			"Limits fail explicitly rather than silently truncating history or dropping buffered updates.",
+			"Every reconnect rebuilds full history; no Kit after cursor is forwarded to raw Bailian."
+		]
+	},
+	{
+		"name": "openStream",
+		"export": "BailianChatProviderOptions",
+		"member": "openStream",
+		"module": "providers/bailian",
+		"description": "Describe the raw subscription request and map its untouched Response with a real upstream-ready promise.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/raw-bailian-provider.ts",
+		"notes": [
+			"Provider injects cancellation throughout request construction, HTTP and response mapping.",
+			"mapResponse must not consume the body or await ready; return both so reading begins while ready is pending.",
+			"HTTP 200 or the first business event is not an independent readiness guarantee.",
+			"The example accepts x-upstream-ready only under its documented backend subscription-before-headers contract."
+		]
+	},
+	{
+		"name": "listEvents",
+		"export": "BailianChatProviderOptions",
+		"member": "listEvents",
+		"module": "providers/bailian",
+		"description": "Describe one ascending history-page request and map complete raw events with an opaque next-page token.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/raw-bailian-provider.ts",
+		"notes": [
+			"Preserve event identity, timestamps, content, lifecycle information, and main Session status.",
+			"History must be complete; same-ID snapshot conflicts need update evidence.",
+			"created_at is not a version of a changed snapshot."
+		]
+	},
+	{
+		"name": "BailianStreamResponse",
+		"export": "BailianStreamResponse",
+		"module": "providers/bailian",
+		"description": "Raw streaming HTTP response plus a real upstream-readiness promise.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/raw-bailian-provider.ts"
+	},
+	{
+		"name": "BailianEventsPage",
+		"export": "BailianEventsPage",
+		"module": "providers/bailian",
+		"description": "Complete raw history objects in ascending order with an optional next page token.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/raw-bailian-provider.ts",
+		"notes": [
+			"End pagination with null or no token; never reuse a business event ID as a per-update cursor."
+		]
+	},
+	{
+		"name": "SessionEvent",
+		"export": "SessionEvent",
+		"module": "protocol",
+		"description": "SDK-owned business event contract consumed by Kit's normalized stream and message projection.",
+		"doc": "apps/storybook/content/docs/sdk/stream.mdx",
+		"example": "examples/normalized-provider.ts",
+		"notes": [
+			"Unknown event types and content blocks remain available for safe fallback rendering.",
+			"ready, reset, ping, and done are transport controls rather than business events."
+		]
+	},
+	{
+		"name": "SendMessageRequest",
+		"export": "SendMessageRequest",
+		"module": "protocol",
+		"description": "Text submission with optional optimistic identity; mounting files is a Session-creation operation.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/backend-http.ts"
+	},
+	{
+		"name": "SendMessageResponse",
+		"export": "SendMessageResponse",
+		"module": "protocol",
+		"description": "Actual Session ID, acceptance flag, and submitted event IDs returned by a write.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/backend-http.ts"
+	},
+	{
+		"name": "ToolApprovalsResponse",
+		"export": "ToolApprovalsResponse",
+		"module": "protocol",
+		"description": "Current requires_action state, pending batch/calls, and frozen tool requests.",
+		"doc": "apps/storybook/content/docs/sdk/tool-approvals.mdx",
+		"example": "examples/backend-http.ts"
+	},
+	{
+		"name": "ToolApprovalDecision",
+		"export": "ToolApprovalDecision",
+		"module": "protocol",
+		"description": "One explicit allow or deny decision identified by the current batch and call.",
+		"doc": "apps/storybook/content/docs/sdk/tool-approvals.mdx",
+		"example": "examples/backend-http.ts"
+	},
+	{
+		"name": "KitError",
+		"export": "KitError",
+		"module": "protocol",
+		"description": "Safe error code and summary with explicit retryability for Controller recovery.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/backend-http.ts",
+		"notes": [
+			"Do not expose backend response bodies, authorization headers, or provider credentials in errors.",
+			"Authorization and contract failures stop automatic reconnect; temporary transport failures may retry."
+		]
+	},
+	{
+		"name": "BailianOperation",
+		"export": "BailianOperation",
+		"module": "providers/bailian",
+		"description": "Backend request description and response conversion; HTTP execution belongs to the Provider and RequestClient.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/raw-bailian-provider.ts"
+	},
+	{
+		"name": "BailianRequestSpec",
+		"export": "BailianRequestSpec",
+		"module": "providers/bailian",
+		"description": "Application path and RequestInit without signal; cancellation is owned by the Provider.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/raw-bailian-provider.ts"
+	},
+	{
+		"name": "BailianRequestContext",
+		"export": "BailianRequestContext",
+		"module": "providers/bailian",
+		"description": "Provider cancellation context shared by request construction and response mapping.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/raw-bailian-provider.ts"
+	},
+	{
+		"name": "createBailianThreadOperations",
+		"export": "createBailianThreadOperations",
+		"module": "providers/bailian",
+		"description": "Standard Bailian thread-list and thread-event operation configs; customize proxy basePath or mappings.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/multi-agent.tsx"
+	},
+	{
+		"name": "BailianThreadOperations",
+		"export": "BailianThreadOperations",
+		"module": "providers/bailian",
+		"description": "Optional thread query configurations for the raw Bailian Provider.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/multi-agent.tsx"
+	},
+	{
+		"name": "BailianThreadQuery",
+		"export": "BailianThreadQuery",
+		"module": "providers/bailian",
+		"description": "Session identity and opaque pagination options for a thread query.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/multi-agent.tsx"
+	},
+	{
+		"name": "ThreadQueryOptions",
+		"export": "ThreadQueryOptions",
+		"module": "providers",
+		"description": "Optional page size, cursor and AbortSignal for normalized thread queries.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/multi-agent.tsx"
+	},
+	{
+		"name": "ChatProvider.listThreads",
+		"export": "ChatProvider",
+		"member": "listThreads",
+		"module": "providers",
+		"description": "Optional child Agent history query; keep Session ownership and cancellation intact.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/multi-agent.tsx"
+	},
+	{
+		"name": "ChatProvider.listThreadEvents",
+		"export": "ChatProvider",
+		"member": "listThreadEvents",
+		"module": "providers",
+		"description": "Optional child Agent history query; keep Session ownership and cancellation intact.",
+		"doc": "apps/storybook/content/docs/sdk/custom-backend.mdx",
+		"example": "examples/multi-agent.tsx"
+	},
+	{
+		"name": "ClientOperations",
+		"export": "ClientOperations",
+		"module": "providers/kit",
+		"description": "Typed optional operations configured with buildRequest and mapResponse.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/backend-data.ts"
+	},
+	{
+		"name": "ClientOperation",
+		"export": "ClientOperation",
+		"module": "providers/kit",
+		"description": "A supported data Client operation name.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/backend-data.ts"
+	},
+	{
+		"name": "ExplicitKitClientOptions",
+		"export": "ExplicitKitClientOptions",
+		"module": "providers/kit",
+		"description": "Inject Request and operations without hidden Kit routes.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/backend-data.ts"
+	},
+	{
+		"name": "createMemberSessionStorage",
+		"export": "createMemberSessionStorage",
+		"module": "auth",
+		"description": "Create injected identity storage scoped to the complete backend URL.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/backend-data.ts"
+	},
+	{
+		"name": "normalizeMemberApiBaseUrl",
+		"export": "normalizeMemberApiBaseUrl",
+		"module": "auth",
+		"description": "Validate and normalize an HTTP backend URL without credentials.",
+		"doc": "apps/storybook/content/docs/sdk/client.mdx",
+		"example": "examples/backend-data.ts"
+	},
+	{
+		"name": "streamProtocolFrames",
+		"export": "streamProtocolFrames",
+		"module": "providers/kit",
+		"description": "Consume documented protocol frames through an injected RequestClient, with cancellation and valid-frame idle detection.",
+		"doc": "apps/storybook/content/docs/sdk/stream.mdx",
+		"example": "examples/protocol-frames.ts",
+		"notes": [
+			"The caller owns the path, identity and protocol headers; this helper does not reconnect or maintain Chat state.",
+			"done ends one subscription; error and unexpected EOF reject. The default idle timeout is 45000 ms.",
+			"Use only for the documented protocol frames, not original Bailian SSE deltas."
+		]
+	}
+]

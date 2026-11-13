@@ -1,0 +1,16 @@
+{
+  "title": "OpenAgentPack Kit",
+  "pages": [
+    "index",
+    "quickstart",
+    "local-demo",
+    "concepts",
+    "components",
+    "sdk",
+    "skill",
+    "advanced",
+    "api",
+    "guides",
+    "contributing"
+  ]
+}

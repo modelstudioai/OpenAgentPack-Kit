@@ -1,0 +1,102 @@
+---
+title: AgentHeader Agent 页头
+description: 展示当前 Agent 的图标、名称与描述，提供 Agent 切换与操作区插槽
+---
+
+`AgentHeader` 展示当前 Agent 的图标、名称与描述：`agents` 与 `onPickAgent` 同时传入时标题变成
+Agent 切换器。操作区默认是新会话按钮，用 `actions` 插槽整体替换。
+
+```tsx
+import { AgentHeader } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（复制后 import 改为项目内路径）：
+
+```bash
+pnpm kit:add agent-header
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 聊天视图顶栏：展示当前 Agent、切换入口与新会话按钮；侧栏里的会话目录区用
+  [SessionSidebar](/docs/components/general/session-sidebar)，`header` 插槽组合见 [Layout](/docs/components/layout)。
+- 操作区放状态徽标或自定义按钮：显式传 `actions` 替代默认新会话按钮（如
+  [StatusIndicator](/docs/components/chrome#状态灯) 徽标），传 `null` 隐藏操作区。
+- 自定义头像布局复用 `isIconImageSource` 判定图标是否为图片地址，与 AgentHeader、PlazaCard
+  同一规则，不用复制正则。
+
+## 代码演示
+
+预览使用本地 Agent 数据；每个演示的面板内可查看源码与接入命令。
+
+### 基本用法
+
+标题下拉切换 Agent；`compact` 固定 `h-16` 并省略描述，`leading` 放侧栏开关。
+
+<Showcase name="agent-header" />
+
+### 操作区与状态徽标
+
+显式传 `actions` 时替代默认新会话按钮——右侧放自定义按钮与
+[StatusIndicator](/docs/components/chrome#状态灯) 徽标；勾选后观察 `actions` 置 `null` 隐藏整块操作区。
+
+<Showcase name="agent-header-actions" />
+
+## API
+
+### AgentHeader
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `agent` | 必填，Agent 展示信息；展示 `display_name` / `description` / `icon`，`null` 显示「未选择 Agent」占位 | [`AgentSummary \| null`](#agentsummary) | — |
+| `agents` | 可切换的已上架 Agent；与 `onPickAgent` 同时传入且非空时，标题渲染为原生 `select` 切换器，长名单行省略并保留 `title` 提示 | [`AgentSummary[]`](#agentsummary) | — |
+| `onPickAgent` | 切换器选择后回调；路由、会话选择与消息状态由调用方更新 | `(slug: string) => void` | — |
+| `leading` | 标题左侧入口，如移动端侧栏开关；紧凑模式下与图标一起不收缩 | `ReactNode` | — |
+| `compact` | 工作区页头：固定 `h-16`、省略描述、右侧操作区最多占 40% 宽 | `boolean` | `false` |
+| `actions` | 自定义操作区：显式传入（含 `null`）时替代默认新会话按钮；右侧内容建议可收缩，避免长文本挤压标题 | `ReactNode` | — |
+| `onNewSession` | 未传 `actions` 时的默认「新会话」按钮回调 | `() => void` | — |
+
+组件不创建 Session，按钮行为由调用方负责；`icon` 支持图片 URL、相对路径与 emoji，未配置时显示默认图标。
+
+### AgentSummary
+
+从 `@openagentpack/kit-sdk/protocol` 导入；由服务端 Agent 列表返回，通常经数据层直接传入。AgentHeader 只消费展示字段，
+`opening_remarks` / `suggested_prompts` / `capabilities` 等其余字段由对话与广场组件消费：
+
+| 属性 | 说明 | 类型 | 必填 |
+| --- | --- | --- | --- |
+| `slug` | Agent 唯一标识，作切换器的选项值与 `onPickAgent` 回调入参 | `string` | 是 |
+| `display_name` | 展示名称 | `string` | 是 |
+| `description` | 一句话描述；紧凑页头不展示 | `string` | 否 |
+| `icon` | 图标：图片 URL、相对路径或 emoji；未配置显示默认图标 | `string` | 否 |
+
+### isIconImageSource
+
+```tsx
+import { isIconImageSource } from "@openagentpack/kit-chat-ui";
+```
+
+`isIconImageSource(icon?: string): boolean`——以 `http(s):`、`data:`、`/` 或 `./` 开头返回 `true`（按图片渲染），
+其余文本（含 emoji）与未配置返回 `false`（按文本展示）。纯工具函数，不请求图片，也不检查图片是否存在；
+调用方据此选择图片或文本，并提供缺省图标。
+
+## 主题变量（Design Token）
+
+引入 `@openagentpack/kit-chat-ui/theme.css` 后使用以下冻结 token。下表列出亮色值，
+暗色由 `data-kit-theme="dark"` 使用对应色板。
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-user-bubble` | Agent 图标容器底色 | `#eef0ff` | `#efefef` |
+| `--kit-bg` | 紧凑页头底色 | `#ffffff` | `#ffffff` |
+| `--kit-bg-subtle` | 切换器悬停底色；操作区底色 | `#f6f7fb` | `#f7f7f7` |
+| `--kit-border` | 操作区描边；非紧凑切换器悬停描边 | `#e3e6ef` | `#e5e5e5` |
+| `--kit-border-subtle` | 紧凑页头底部分隔线与图标容器描边 | `#e3e6ef` | `#ececec` |
+| `--kit-surface` | 切换器下拉 option 底色 | `#ffffff` | `#ffffff` |
+
+键盘焦点环用 `--kit-focus`；描述文字与下拉箭头走 `--kit-fg-muted`；文字档位
+`--kit-text-heading` / `--kit-text-body` / `--kit-text-caption`，图标容器圆角 `--kit-radius-icon-sm`。
+更多主题配置见 [组件总览](/docs/components#主题)。

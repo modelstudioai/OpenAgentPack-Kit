@@ -1,0 +1,60 @@
+{
+  "name": "@openagentpack/kit-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenAgentPack Kit 服务端：数据面 /api/kit/* 与控制面 /api/admin/*（Hono + node:sqlite）",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/app.js",
+  "types": "./dist/app.d.ts",
+  "bin": {
+    "agents-kit-server": "./dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/app.d.ts",
+      "import": "./dist/app.js",
+      "default": "./dist/app.js"
+    },
+    "./app": {
+      "types": "./dist/app.d.ts",
+      "import": "./dist/app.js",
+      "default": "./dist/app.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx watch --env-file-if-exists=../../.env src/bin.ts",
+    "start": "node --env-file-if-exists=../../.env dist/bin.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "gen:openapi": "tsx src/openapi.ts",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.4",
+    "@hono/zod-openapi": "^1.6.3",
+    "@openagentpack/sdk": "0.10.0",
+    "hono": "^4.13.13",
+    "jszip": "3.10.2",
+    "zod": "^4.1.12",
+    "@openagentpack/kit-eval": "workspace:*",
+    "yaml": "^2.9.1",
+    "@openagentpack/kit-sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "openapi-typescript": "^7.13.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

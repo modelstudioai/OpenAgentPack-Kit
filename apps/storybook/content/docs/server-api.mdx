@@ -1,0 +1,179 @@
+---
+title: 接口总览
+description: 数据面 /api/kit/*、控制面 /api/admin/*、SSE 协议与错误模型
+---
+
+完整机器可读定义见 `apps/server/openapi.json`（由 zod schema 生成）；op 对照表与状态列见
+仓库 `docs/interfaces.md`。
+
+## 数据面（终端用户）
+
+| op | 方法与路径 |
+| --- | --- |
+| config | `GET /api/config` |
+| auth | `POST /api/kit/auth/login` · `GET /api/kit/auth/me` · `POST /api/kit/auth/logout` |
+| agents | `GET /api/kit/agents` · `GET /api/kit/agents/:slug` |
+| sessions | `GET/POST /api/kit/sessions` · `GET/PATCH/DELETE /api/kit/sessions/:id` · `POST .../plan` · `POST .../archive` |
+| messages | `POST /api/kit/sessions/:id/messages` · `POST .../interrupt` |
+| tool-approvals | `GET/POST /api/kit/sessions/:id/tool-approvals`（查询待办 / 逐项批准或拒绝） |
+| events | `GET /api/kit/sessions/:id/events` · `GET .../stream`（SSE） |
+| files | `POST /api/kit/files`（multipart 上传） · `GET /api/kit/files/:fileId/download` |
+
+### 身份与会话归属
+
+Identity 表示 Kit 请求主体，其稳定 `subjectId` 决定会话和上传文件归属；Provider 访问权限
+由服务端凭据决定。管理端与成员体验页使用各自的身份。
+
+默认 `KIT_AUTH_MODE=member`，必须登录后访问业务 API。登录提交 `{username,password}`，
+返回 `{data:{access_token,token_type:"Bearer",expires_at,member}}`，令牌 8 小时有效。
+HTTP、上传、下载和 SSE 统一携带 `Authorization: Bearer <access_token>`；不能使用百炼密钥。
+`me` 校验当前登录并返回 `{data:{identity,member,expires_at}}`；`logout` 撤销当前令牌并返回
+204。错误账号或密码统一 401，限流返回 429；认证响应禁止缓存。
+
+登录后 `subjectId` 为稳定 `member_id`，会话与用量按成员隔离。退出和到期关闭该令牌的 SSE；
+流内 `unauthorized` 不可重试。显式 `KIT_AUTH_MODE=anonymous` 仅用于匿名兼容；无效 Bearer
+不会回落匿名。配置可信 JWT 时可继续使用外部身份，但 sub 不能使用本地保留的 `member_` 前缀。
+
+会话的归档/删除是破坏性动作，走两段式：先 `POST .../plan` 拿 `{ plan_id, confirm_token }`，
+再带令牌执行（空/畸形令牌 `400`，缺失/伪造/重放 `428`）。
+
+本地成员的体验会话还必须满足「确认执行结束 → 重新查询用量 → 快照成功落库 → 删除」。
+运行中或等待工具审批时先中断并确认停止；停止、查询或保存失败会保留会话，返回可重试的
+`409 conflict`。删除结果不明时保留快照并暂时禁止发送或审批，用户重新获取计划、确认
+重试后先核实远端状态。已删除会话的数值继续计入成员统计。此保护不改变匿名、外部 JWT
+和管理员调试会话的统计范围。
+
+连接重置等网络错误后，即使仍能查询到会话，也不能证明 DELETE 已被拒绝；保护与已保存
+快照会跨重试、重启保留。已发出中断时也采用保守保护：后来查到 idle，但再次采集失败，
+仍须重新获取计划并显式确认删除，不能先恢复发送让迟到的中断影响新执行。
+
+附件**只能在创建会话时挂载**：`POST /api/kit/sessions` 的 `files: [{ file_id, mount_path? }]`
+（省略 `mount_path` 时服务端解析为 `/mnt/session/uploads/<文件名>`，重名自动 `-2`），
+创建后 `GET /api/kit/sessions/:id` 会回显挂载。`POST .../messages` 带非空 `attachments`
+一律 `400`——Provider 没有「中途挂载」API，客户端应引导用户新建会话携带这些 `file_id`。
+只能挂载本人上传文件。下载本人上传文件可直接按 ID 请求；下载 Artifact 须提供
+`?session_id=<所属会话>`，服务端检查会话归属及 Provider 历史中的文件引用，越权返回 404。
+前端使用 `client.downloadFile(fileId, { sessionId })`，避免裸链接遗漏 Bearer。
+
+## 控制面（管理端，ADMIN_TOKEN）
+
+- Catalog：`GET/POST /api/admin/agents` · `PATCH /api/admin/agents/:slug` · `GET /api/admin/remote/agents`
+- 资源发布批次：`POST /api/admin/resource-drafts` · `GET .../:id` ·
+  `POST .../:id/discard` · `POST .../:id/finalize` · `GET .../:id/resources` · `GET/PUT/DELETE .../:id/resources/declarations/:type/:key` ·
+  `POST .../:id/resources/validate` · `POST .../:id/resources/plan` · `POST .../:id/resources/publish`
+- 运营：`GET /api/admin/operations[/:id[/events]]` · `GET /api/admin/audit`
+
+### 模版与资源发布批次
+
+模版保存所选智能体版本、运行资源和展示信息；上架时建立关联的 Catalog 条目，作为体验页的
+可选入口。Catalog 保存远端 Agent ID 与可选的 `agent_version`：显式版本固定绑定，
+省略时新建会话使用最新版本。管理员也可直接选择已有远端 Agent，无需先创建资源发布批次。
+
+发布（Publish）将批次中的资源声明交给 SDK 校验、计算差异并创建远端资源；上架（Listing）
+控制 Kit 体验入口的可见性。模版的历史版本、上下架与发布确认由 Kit 管理。
+
+每个未发布批次持有独立的 YAML 声明和 SDK state，无需本地 Project 目录：
+
+| 名称 | 来源与用途 |
+| --- | --- |
+| config | SQLite 中的 YAML 文本，描述当前批次的资源配置 |
+| state | SQLite 中的 SDK state，记录声明资源对应的远端 ID、版本与内容哈希 |
+| remote | Provider 上实际存在的资源 |
+
+`plan` 返回 SDK 差异；Kit 展示计划并取得用户显式确认后，使用 `plan_id` 和一次性
+`confirm_token` 发起 `publish`。批次的归属、修订号、执行记录和恢复由 Kit 管理；
+发布结果未知或部分成功时保留记录，不自动重放远端创建。成功后保留发布回执并清理临时声明和上传文件。
+
+MA 凭据由 Kit 的服务端配置显式传入 SDK；Vault 密钥通过当前批次的内存解析器注入，
+不写入 YAML、SDK state 或进程环境变量。服务重启后，未发布的 Vault 密钥须重新输入。
+
+目录 Project API、Build、源码快照版本接口与 `KIT_PROJECT_DIR` 已下线。
+旧目录批次记录迁移到只读归档，原文件保留；新建和编辑模版统一走 YAML 批次。
+
+### 后台执行与进度
+
+Operation 是长耗时控制面动作的异步任务记录，包含 `operation_id`、阶段、进度与日志。
+通过 `GET /api/admin/operations/:id` 查询，或订阅 `/api/admin/operations/:id/events`。
+它与成员对话中的一轮 Turn 分别管理，不能用 Operation 的结束帧判断 Session 是否执行完成。
+
+### 成员管理
+
+`GET /api/admin/members` 按 `search` 查询用户名或显示名称，支持 `limit`、`page_token` 分页。
+`POST /api/admin/members` 创建本地成员，字段为 `username`、`display_name`、可选 `email`、
+`auth_type: "local"`、`password_mode: "auto" | "custom"`；自定义模式必须提供 `password`。
+
+创建返回 `{ data: { member, initial_password? } }`：仅自动模式返回一次初始密码，响应禁止缓存。
+成员列表不返回任何密码信息。用户名大小写不敏感，重复返回 `409 conflict`；`auditor` 只读。
+创建的账号可以登录体验页；暂不提供密码重置、停用或删除接口。
+实际操作见[创建本地成员](/docs/local-demo/#创建本地成员)。
+
+### 成员累计会话用量
+
+成员总用量是该成员全部体验会话的最近一次累计快照之和，包含已有记录的已删除会话。
+统计只关联真实本地成员的 `member_id = subjectId`，排除匿名、外部 JWT 与管理员调试。
+
+| 接口 | 返回与查询 |
+| --- | --- |
+| `GET /api/admin/members` | 每个列表成员附带 `usage_summary`，先读缓存并按需刷新当前页成员 |
+| `GET /api/admin/members/:memberId/usage` | `{data: MemberUsageSummary}`；支持 `agent_slug`，`refresh=1` 手动刷新 |
+| `GET /api/admin/members/:memberId/sessions` | `{data,next_cursor?}`；支持 `agent_slug`、`cursor`、`limit`（默认 20，最多 100） |
+
+管理员与 auditor 均可查看，普通成员不能读取管理端统计。汇总包含会话数、已删除会话数、
+最近采集时间、进度和每项指标的 `value / covered_sessions`。输入、输出、缓存读取、缓存
+创建 token 分开统计；`active_seconds`、`duration_seconds` 的单位为秒，不把缓存重复
+相加到输入，也不推算金额。会话详情 `GET /api/kit/sessions/:id` 同样可返回 `usage/stats`。
+
+无会话时为 0；有会话但指标未知时为 null，界面显示待获取或部分统计。采集失败可以保留
+之前的值，成员列表与详情必须同时显示状态与采集时间，即使指标覆盖数量完整也不能省略
+部分统计或失败提示。Agent 筛选同时约束合计和明细，分页只影响明细；翻页失败后重试须
+保持游标与页码对应，不能复用旧的下一页游标继续增加页码。
+普通刷新缓存 60 秒，同一成员任务合并；单详情 15 秒超时，迟到响应不写入。刷新返回当前
+快照，不等待所有 Provider 查询完成；可按 `refresh_status` 继续读取进度。
+
+本节的累计统计与当前周期的 Token、执行时长限额计量分别管理；本地成员发送受周期限额检查，
+兼容匿名或外部 JWT 的 Credits 是另一套计量。Provider 当次返回的累计值不是最终账单结算保证；
+上线前已删除且没有快照的会话不能补算。操作步骤见
+[查看成员会话用量](/docs/local-demo/#查看管理员-session-用量)。
+
+## SSE 帧
+
+协议 2.x：`event: reset | ready | event | done | error | ping | operation`。SSE 标准 `id` 是
+Kit 的不透明传输游标，重连用 `?after=<cursor>`；业务 `event_id` 表示快照身份，同 ID
+新快照更新原消息。游标失效时 `reset → event* → ready` 原子重建，idle 后订阅继续保持。
+
+启动读取 `/api/config` 检查主版本，消息发送、Session stream 与审批 GET/POST 必须携带
+`x-kit-protocol-version: 2.0.0`，缺失或不兼容返回 409。控制面 Operation 流仍以 done 结束，
+不使用 Session 的 reset 语义。详见仓库 `docs/protocol.md`。
+
+## 工具审批
+
+查询返回当前 `requires_action / batch_id / pending_call_ids / requests`；只有匹配当前批次、
+尚未处理且协议可识别的工具能操作。POST 单项决定：
+
+```json
+{ "batch_id": "batch-current", "call_id": "call-current", "result": "deny", "deny_message": "请勿写入该目录" }
+```
+
+`result` 可为 `allow` 或 `deny`，拒绝原因可省略，最多 200 字符。202 表示已提交；剩余待办和
+执行结果由后续事件确认。过期或重复返回 409，越权返回 404。网络响应丢失先重新 GET 查询，
+不得后台重发。UI 接入见 [ToolApprovalCard](/docs/components/feedback/tool-approval)。
+
+## 错误模型
+
+`{ error: { code, message, details?, retryable } }`；code 含 `invalid_request / unauthorized /
+forbidden / not_found / conflict / confirmation_required(428) / rate_limited / provider_error /
+not_implemented / internal`。
+
+## 机器可读参考（自动生成）
+
+侧栏「API 参考」分组下的各接口页面由 `apps/server/openapi.json` 在构建期生成（fumadocs-openapi，按 tag 分组），
+含请求/响应 schema、状态码与多语言请求示例；**不要手改**，改路由后跑 `pnpm gen:openapi`。
+
+常用入口：
+
+- [建会话（含附件挂载）](/docs/api/kit/sessions/post)
+- [发消息](/docs/api/kit/sessions/sessionid/messages/post) 与 [SSE 流](/docs/api/kit/sessions/sessionid/stream/get)
+- [会话级破坏性动作闸门](/docs/api/kit/sessions/sessionid/plan/post)（plan → 确认令牌 → archive/delete）
+- [上传附件](/docs/api/kit/files/post) 与 [代理下载](/docs/api/kit/files/fileid/download/get)
+- [资源发布计划](/docs/api/admin-resource-draft/name/resources/plan/post) / [确认发布](/docs/api/admin-resource-draft/name/resources/publish/post)
+- [审计日志](/docs/api/admin/audit/get) 与 [指标](/docs/api/admin/metrics/get)

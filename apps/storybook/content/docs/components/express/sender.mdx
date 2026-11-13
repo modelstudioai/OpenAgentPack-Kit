@@ -1,0 +1,145 @@
+---
+title: Sender 输入框
+description: 受控输入、提交、停止生成与头尾插槽
+---
+
+`Sender` 渲染对话输入框：受控草稿、回车/按钮提交与生成中停止，头尾插槽挂附件或技能。
+它只管理输入交互，不发送请求；与 [Chat](/docs/components/chat) 组合时由 Chat 接线会话状态。
+
+```tsx
+import { Sender } from "@openagentpack/kit-chat-ui";
+```
+
+copy-in 接入（复制后 import 改为项目内路径）：
+
+```bash
+pnpm kit:add sender
+```
+
+交给 coding agent 接入时使用 [kit-components Skill](/docs/skill/kit-components)；主题与渲染依赖见
+[组件总览](/docs/components#主题)。
+
+## 何时使用
+
+- 会话输入：与 [MessageList](/docs/components/general/message-list) 手动组合，或直接使用
+  [Chat](/docs/components/chat)——内置默认 Sender，草稿保留、`canSend` 门控与技能透传自动接线。
+- 输入框挂附件用 [Attachments](/docs/components/express/attachments) 加 `Sender.Header`；
+  斜杠快捷指令候选用 [Suggestion](/docs/components/express/suggestion)。
+
+## 代码演示
+
+预览使用本地状态；每个演示的面板内可查看源码与接入命令。
+
+### 基本用法
+
+受控草稿与提交方式；勾选生成中后发送按钮变停止。`onSubmit` 不自动清空——提交成功且草稿未被改写时才重置，失败保留文本。
+
+<Showcase name="sender" />
+
+### 工作区布局与插槽
+
+`workspace` 上编辑区下工具栏（`prefix` 左、`suffix` 右、`footer` 在工具栏下方），`default` 同行排列；`header` 都在边框内、编辑区上方，编辑区与面板超高时各自滚动。
+
+<Showcase name="sender-slots" />
+
+### 技能 chip 与 Suggestion 组合
+
+`Sender` 只负责把已知 `/name ` 标记渲染成原子 chip（退格整体删除），不内置 `/` 候选弹层。
+候选查询、过滤和键盘选择由 [Suggestion](/docs/components/express/suggestion) 负责，业务层把选中的
+技能通过 `ref.replaceRange` 插回正文；`onSubmit` 第二参数仍是从正文标记派生的技能名，正文为空、
+仅有 chip 时也可发送。消息回显 chip 需把同一批技能名传给
+[MessageList](/docs/components/general/message-list) 的 `skills`；[Chat](/docs/components/chat) 已自动透传。
+
+<Showcase name="sender-skills" />
+
+### 组合附件与上传
+
+`prefix` 打开文件选择，粘贴与拖放进入同一处理函数；未就绪附件经 `submitDisabled` 阻塞发送（上传中仍可编辑文本）。上传适配由调用方注入，例如使用已配置的 `KitClient`：
+
+<Showcase name="sender-attachments" />
+
+```tsx
+const uploadFile = async (file: File): Promise<{ file_id: string }> => {
+  const result = await client.uploadFile({
+    name: file.name,
+    bytes: new Uint8Array(await file.arrayBuffer()),
+    mimeType: file.type || undefined,
+  });
+  return { file_id: result.file_id };
+};
+```
+
+「源码」中的 `AttachmentSender` 组合组件把以上接线收拢为 `onSubmit(message, fileIds, skills?)`；附件 ID 是组合示例添加的参数，基础 `Sender.onSubmit` 只返回文本和技能名。移除附件仅更新本次列表，不调用远端删除；上传成功不代表附件已挂载到会话。
+
+## API
+
+### Sender
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `variant` | 工作区布局或同行默认布局 | `"default" \| "workspace"` | `"default"` |
+| `value` / `defaultValue` | 受控值 / 非受控初始值 | `string` | `""`（非受控） |
+| `onChange` | 输入变化 | `(value: string) => void` | — |
+| `onSubmit` | 提交；不会自动清空，第二参数是从正文标记派生的技能名（无标记时省略） | `(message: string, skills?: string[]) => void` | — |
+| `onCancel` | `loading` 时点击停止 | `() => void` | — |
+| `loading` | 发送按钮变为停止按钮 | `boolean` | `false` |
+| `submitDisabled` | 仅禁发（按钮和回车），草稿仍可编辑；等待审批/重连用 `!chat.canSend` | `boolean` | `false` |
+| `disabled` | 禁用输入和发送等动作；生成中的停止按钮仍可使用 | `boolean` | `false` |
+| `readOnly` | 输入只读且不可提交 | `boolean` | `false` |
+| `placeholder` | 占位文案 | `string` | 随提交方式变化 |
+| `skills` | 当前 Agent 已绑定技能；用于把正文中的 `/name ` 标记渲染成 chip | `{ name, description? }[]` | — |
+| `onSelectionChange` | 编辑区选区变化（`{ start, end }` 文本 offset）；配合 Suggestion 的 `value/caret` 自动触发 | `(selection) => void` | — |
+| `submitType` | 回车、Shift+Enter 或仅按钮提交；输入法合成期间不会提交 | `"enter" \| "shiftEnter" \| false` | `"enter"` |
+| `autoSize` | 按换行和窄屏自动折行调整高度；`false` 固定一行 | `boolean \| { minRows?, maxRows? }` | `{ minRows: 1, maxRows: 6 }` |
+| `onKeyDown` | 先于内置提交逻辑；`preventDefault()` 可拦截提交，便于接入 Suggestion | `(event) => void` | — |
+| `onPasteFile` | 粘贴内容含文件时触发，并阻止文件名写进输入框 | `(files: File[]) => void` | — |
+| `inputProps` | 输入框的辅助技术属性；可直接接入 Suggestion 提供的 `inputProps` | `AriaAttributes & { id?, role? }` | — |
+| `prefix` | 默认在输入框前；工作区布局在底部工具栏左侧 | `ReactNode` | — |
+| `suffix` | 默认在输入框后；工作区布局在底部工具栏右侧；函数可组合默认按钮与 `components` | `ReactNode \| false \| (origin, info) => ReactNode` | 默认发送/停止 |
+| `header` | 边框内、输入区上方内容，通常传 `Sender.Header` | `ReactNode` | — |
+| `footer` | 边框内底部内容 | `ReactNode \| (info) => ReactNode` | — |
+| `className` / `classNames` | 根节点 / 分区插槽样式 | `string` / `Partial<Record<SenderSemantic, string>>` | — |
+
+`suffix` 与 `footer` 的 `info.components` 提供 `SendButton`、`LoadingButton`、`ClearButton`；`SenderSemantic` 为 `root / prefix / input / suffix / footer`。
+
+### Ref
+
+| 方法/属性 | 说明 |
+| --- | --- |
+| `focus()` / `blur()` | 聚焦或失焦输入框 |
+| `clear()` | 清空输入 |
+| `insert(text)` | 在当前选区插入文本 |
+| `replaceRange(start, end, text)` | 替换草稿中的 `[start, end)` 并恢复光标；Suggestion 选中后插入技能标记用 |
+| `nativeElement` | 根 `<form>` |
+| `inputElement` | 编辑区 `<div>`（contenteditable） |
+
+### Sender.Header
+
+面板位于输入框边框内，内容超过高度限制时独立纵向滚动。`open` 由调用方控制，收起只改变
+面板展示；附件、引用等数据仍由调用方持有。
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `title` | 标题 | `ReactNode` | — |
+| `open` | 是否渲染 | `boolean` | `false` |
+| `onOpenChange` | 关闭回调 | `(open: boolean) => void` | — |
+| `closable` | 是否显示关闭按钮 | `boolean` | `true` |
+| `children` | 面板内容 | `ReactNode` | — |
+| `className` | 根节点 class | `string` | — |
+
+## 主题变量（Design Token）
+
+| Token | 用途 | 默认主题 | 工作区主题 |
+| --- | --- | --- | --- |
+| `--kit-accent` / `--kit-accent-fg` | 发送按钮与工作区停止按钮；default 变体的停止按钮用 `--kit-danger` | `#4f46e5` / `#ffffff` | `#171717` / `#ffffff` |
+| `--kit-focus` | 输入容器聚焦描边与 ring、按钮键盘轮廓 | `#4f46e5` | `#737373` |
+| `--kit-radius-composer` | workspace 输入容器圆角（default 用 `--kit-radius`） | `24px` | `24px` |
+| `--kit-composer-pane-max-height` | header 面板最大高度（再与视口 1/5 取小） | `160px` | `160px` |
+| `--kit-skill-chip-bg` / `--kit-skill-chip-fg` | 技能 chip 拍板靛蓝色板，不随 accent 变灰（暗色为半透明靛蓝） | `#eef2ff` / `#3730a3` | `#eef2ff` / `#3730a3` |
+| `--kit-radius-chip` | 技能 chip 圆角 | `6px` | `6px` |
+| `--kit-surface` | 输入容器与候选弹层底色；禁用态换 `--kit-bg-subtle` | `#ffffff` | `#ffffff` |
+
+技能 chip 消费 `--kit-skill-chip-bg` / `--kit-skill-chip-fg` 与 `--kit-radius-chip`；弹层入场动效由
+[Suggestion](/docs/components/express/suggestion) 消费 `--kit-animate-overlay-in`。`--kit-viewport-height`
+由 [Layout](/docs/components/layout) 注入，参与 header 面板最大高度计算。更多主题配置见
+[组件总览](/docs/components#主题)。
